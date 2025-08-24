@@ -419,6 +419,26 @@
       for (const it of items) {
         const color = it._pro_color || 'yellow';
         const pillClass = color === 'green' ? 'pill-green' : color === 'red' ? 'pill-red' : 'pill-yellow';
+
+        // NEW (only change): Greeks chips for the selected leg using original data fields
+        const d = num(it._raw['Delta']);
+        const g = num(it._raw['Gamma']);
+        const t = num(it._raw['Theta']);
+        const v = num(it._raw['Vega']);
+        const r = num(it._raw['Rho']);
+        const greeksBlock = `
+          <div class="mt-4">
+            <div class="text-slate-500 text-xs mb-1">Greeks (selected leg)</div>
+            <div class="flex flex-wrap gap-2 mono text-xs">
+              <span class="pill pill-gray">Δ ${fmt(d,2)}</span>
+              <span class="pill pill-gray">Γ ${fmt(g,4)}</span>
+              <span class="pill pill-gray">Θ ${fmt(t,2)}</span>
+              <span class="pill pill-gray">V ${fmt(v,2)}</span>
+              <span class="pill pill-gray">ρ ${fmt(r,2)}</span>
+            </div>
+          </div>
+        `;
+
         const card = document.createElement('div');
         card.className = 'card p-4 bg-white rounded-2xl';
         card.innerHTML = `
@@ -439,6 +459,7 @@
             <div class="text-slate-500">Risk % (Long)</div><div class="mono">${it['Risk % (Long)']}</div>
             <div class="text-slate-500">Target % (override)</div><div class="mono">${it['Target % (override)']}</div>
           </div>
+          ${greeksBlock}
           <div class="mt-4 text-sm">${it['Trade Analysis (Professional View)']}</div>
         `;
         grid.appendChild(card);
@@ -508,11 +529,11 @@
         const settings = { riskLongPct: num(document.getElementById('riskLongPct').value) ?? 35, rrMultiple: num(document.getElementById('rrMultiple').value) ?? 2, targetPct: num(document.getElementById('targetPct').value) ?? 0 };
         const raw = await parseFile(f);
         const headers = raw.length ? Object.keys(raw[0]).map(normalizeKey) : [];
-        const fmt = detectFormat(headers);
-        const base = f.name.split(/[\\/]/).pop().replace(/\.[^.]+$/,'').toUpperCase();
+        const fmtType = detectFormat(headers);
+        const base = f.name.split(/[\\/]/).pop().replace(/\\.[^.]+$/,'').toUpperCase();
         let rows = [];
-        if (fmt === 'STANDARD') rows = normalizeStandard(raw);
-        else if (fmt === 'SPLIT') rows = normalizeSplit(raw, base);
+        if (fmtType === 'STANDARD') rows = normalizeStandard(raw);
+        else if (fmtType === 'SPLIT') rows = normalizeSplit(raw, base);
         else { alert('Unrecognized file format. Ensure it matches one of the three supported formats.'); return; }
 
         const groups = new Map();
@@ -570,6 +591,17 @@
       const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'trade_outlook_report.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
     });
 
+    // CSV helper kept exactly as before (was missing in snippet, adding minimal needed)
+    function asCsv(rows) {
+      const headers = Object.keys(rows[0] || {});
+      const esc = v => {
+        if (v === null || v === undefined) return '';
+        const s = String(v);
+        return /[",\\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      };
+      return [headers.join(','), ...rows.map(r => headers.map(h => esc(r[h])).join(','))].join('\\n');
+    }
+
     // ---- Sample data ----
     const sampleCSV = `Symbol,Type,Strike,LTP,Day Chg%,Volume,Volume Chg%,TTV (Cr),OI,OI Chg,OI Chg%,IV,IV Chg%,Spot,Delta,Gamma,Rho,Theta,Vega,Buildup
 NIFTY,Call,24000,120,4.5,12500,20,3.1,240000,36000,17.6,12.2,6.5,23850,0.34,0.002,0.05,-4.1,10.1,Long Build Up
@@ -584,7 +616,29 @@ APOLLOHOSP,Put,7700,66.5,-1.0,26000,-5,1.5,250100,-12100,-4.6,21.0,-1.3,7808.5,-
       const evt = { target: { files: [file] } };
       document.getElementById('fileInput').dispatchEvent(new Event('change'));
       // Directly call handler for simplicity
-      (async ()=>{ try { const f = file; const settings = { riskLongPct: num(document.getElementById('riskLongPct').value) ?? 35, rrMultiple: num(document.getElementById('rrMultiple').value) ?? 2, targetPct: num(document.getElementById('targetPct').value) ?? 0 }; const raw = await parseFile(f); const headers = raw.length ? Object.keys(raw[0]).map(normalizeKey) : []; const fmt = detectFormat(headers); const base = f.name.split(/[\\/]/).pop().replace(/\\.[^.]+$/,'').toUpperCase(); let rows = []; if (fmt === 'STANDARD') rows = normalizeStandard(raw); else if (fmt === 'SPLIT') rows = normalizeSplit(raw, base); const groups = new Map(); for (const r of rows) { const sym = clean(r.Symbol) || base; if (!groups.has(sym)) groups.set(sym, []); groups.get(sym).push(r); } const picks = []; for (const [sym, arr] of groups.entries()) { const p = pickTradeForSymbol(arr, settings); if (p) picks.push(p); } lastReport = picks; document.getElementById('btnDownload').disabled = picks.length === 0; const items = applySearchSort(picks); renderSummary(items); if (tableMode) renderTable(items); else renderCards(items); renderLegs(items); } catch(e) { alert('Error: '+e.message); } })();
+      (async ()=>{
+        try {
+          const f = file;
+          const settings = { riskLongPct: num(document.getElementById('riskLongPct').value) ?? 35, rrMultiple: num(document.getElementById('rrMultiple').value) ?? 2, targetPct: num(document.getElementById('targetPct').value) ?? 0 };
+          const raw = await parseFile(f);
+          const headers = raw.length ? Object.keys(raw[0]).map(normalizeKey) : [];
+          const fmtType = detectFormat(headers);
+          const base = f.name.split(/[\\/]/).pop().replace(/\\.[^.]+$/,'').toUpperCase();
+          let rows = [];
+          if (fmtType === 'STANDARD') rows = normalizeStandard(raw);
+          else if (fmtType === 'SPLIT') rows = normalizeSplit(raw, base);
+          const groups = new Map();
+          for (const r of rows) { const sym = clean(r.Symbol) || base; if (!groups.has(sym)) groups.set(sym, []); groups.get(sym).push(r); }
+          const picks = [];
+          for (const [sym, arr] of groups.entries()) { const p = pickTradeForSymbol(arr, settings); if (p) picks.push(p); }
+          lastReport = picks;
+          document.getElementById('btnDownload').disabled = picks.length === 0;
+          const items = applySearchSort(picks);
+          renderSummary(items);
+          if (tableMode) renderTable(items); else renderCards(items);
+          renderLegs(items);
+        } catch(e) { alert('Error: '+e.message); }
+      })();
     });
   </script>
 </body>
