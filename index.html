@@ -16,6 +16,13 @@
     .pill-red { background:#fff1f2; color:#9f1239; }
     .pill-gray { background:#f1f5f9; color:#334155; }
     .mono { font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+    /* HALF-CARD reveal behavior */
+    .hover-details { max-height: 0; opacity: 0; overflow: hidden; transition: max-height .25s ease, opacity .2s ease; }
+    .card.group:hover .hover-details,
+    .card.expanded .hover-details { max-height: 2000px; opacity: 1; }
+    .card-expander { transition: opacity .15s ease; }
+    .card.group:hover .card-expander { opacity: 0; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
@@ -563,7 +570,8 @@
           const reasonHtml = buildWhyTakeThisTrade(pick._raw, pick._dir);
 
           const card = document.createElement('div');
-          card.className = `card p-4 rounded-2xl bg-gradient-to-r ${gradient} shadow`;
+          // group enables hover child transitions; expanded class toggled on mobile
+          card.className = `group card p-4 rounded-2xl bg-gradient-to-r ${gradient} shadow`;
           card.innerHTML = `
             <div class="flex items-start justify-between">
               <div>
@@ -572,20 +580,53 @@
               </div>
               <div class="mono">${pick._pro_label} — ${fmt(pick._pro_score,1)}/5</div>
             </div>
-            <div class="grid grid-cols-2 gap-x-4 gap-y-1 mt-3 text-sm">
-              <div class="text-slate-700">Strike price to trade</div><div class="mono">${pick['Strike price to trade']}</div>
-              <div class="text-slate-700">Entry price</div><div class="mono">${pick['Entry price']}</div>
-              <div class="text-slate-700">Stop Loss</div><div class="mono">${pick['Stop Loss']}</div>
-              <div class="text-slate-700">Target 1</div><div class="mono">${pick['Target 1']}</div>
-              <div class="text-slate-700">Target 2</div><div class="mono">${pick['Target 2']}</div>
-              <div class="text-slate-700">R:R Multiple</div><div class="mono">${pick['R:R Multiple']}</div>
-              <div class="text-slate-700">Risk % (Long)</div><div class="mono">${pick['Risk % (Long)']}</div>
-              <div class="text-slate-700">Target % (override)</div><div class="mono">${pick['Target % (override)']}</div>
+
+            <!-- HALF-CARD LAYOUT -->
+            <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- LEFT: always-visible summary (acts as the "half card on display") -->
+              <div>
+                <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                  <div class="text-slate-700">Strike price to trade</div><div class="mono">${pick['Strike price to trade']}</div>
+                  <div class="text-slate-700">Entry price</div><div class="mono">${pick['Entry price']}</div>
+                  <div class="text-slate-700">Stop Loss</div><div class="mono">${pick['Stop Loss']}</div>
+                  <div class="text-slate-700">Target 1</div><div class="mono">${pick['Target 1']}</div>
+                  <div class="text-slate-700">Target 2</div><div class="mono">${pick['Target 2']}</div>
+                  <div class="text-slate-700">R:R Multiple</div><div class="mono">${pick['R:R Multiple']}</div>
+                  <div class="text-slate-700">Risk % (Long)</div><div class="mono">${pick['Risk % (Long)']}</div>
+                  <div class="text-slate-700">Target % (override)</div><div class="mono">${pick['Target % (override)']}</div>
+                </div>
+
+                <!-- Mobile expander -->
+                <button class="md:hidden mt-3 text-xs underline text-slate-700 card-expander" aria-label="Toggle details">Tap to expand</button>
+              </div>
+
+              <!-- RIGHT: details (the "other half" revealed on hover / tap) -->
+              <div class="relative">
+                <!-- Placeholder visible until hover on desktop -->
+                <div class="hidden md:flex items-center justify-center text-slate-700/80 text-xs h-full md:group-hover:hidden select-none">
+                  Hover for full details →
+                </div>
+
+                <!-- The revealable details -->
+                <div class="hover-details md:block md:opacity-0 md:max-h-0">
+                  ${greeksBlock}
+                  ${reasonHtml}
+                  <div class="mt-4 text-sm">${pick['Trade Analysis (Professional View)']}</div>
+                </div>
+              </div>
             </div>
-            ${greeksBlock}
-            ${reasonHtml}
-            <div class="mt-4 text-sm">${pick['Trade Analysis (Professional View)']}</div>
           `;
+
+          // Touch/Small-screen: toggle details by tapping the expander
+          const expander = card.querySelector('.card-expander');
+          if (expander) {
+            expander.addEventListener('click', (e) => {
+              e.stopPropagation();
+              card.classList.toggle('expanded');
+              expander.textContent = card.classList.contains('expanded') ? 'Tap to collapse' : 'Tap to expand';
+            });
+          }
+
           grid.appendChild(card);
         }
       }
