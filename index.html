@@ -231,6 +231,11 @@
       const priceLine=`Option Price Δ%: ${dayChgP!==null?fmt(dayChgP,1)+'%':'—'} (LTP: ${ltp!==null?fmt(ltp,2):'—'})`;
       const ivLine=`IV Δ%: ${ivChgP!==null?fmt(ivChgP,1)+'%':'—'}`;
       const deltaLine=`Delta: ${delta!==null?fmt(delta,2):'—'}`;
+      const interp = [];
+      if (label === 'Strong') interp.push('Aggressive participation with supportive OI and momentum — higher probability trade.');
+      else if (label === 'Moderate') interp.push('Mixed signals — consider reduced size or wait for confirmation.');
+      else interp.push('Weak setup — avoid or treat as speculative with limited size.');
+      
       const html=`<div class="text-sm space-y-2">
         <div><strong>Trade Analysis (Professional View):</strong> <span class="${pillClass}">${label} — ${scoreOutOf5}/5</span></div>
         <div><strong>Summary:</strong> ${overall}</div>
@@ -238,6 +243,9 @@
           <ul class="list-disc pl-5 mt-1">
             <li>${dp}</li><li>${oiLine}</li><li>${priceLine}</li><li>${ivLine}</li><li>${deltaLine}</li>
           </ul>
+        </div>
+        <div><strong>Interpretation:</strong>
+          <ul class="list-disc pl-5 mt-1">${interp.map(i=>`<li>${i}</li>`).join('')}</ul>  
         </div>
       </div>`;
       return { html, label, color, scoreOutOf5 };
@@ -448,3 +456,4 @@ APOLLOHOSP,Put,7700,66.5,-1.0,26000,-5,1.5,250100,-12100,-4.6,21.0,-1.3,7808.5,-
   </script>
 </body>
 </html>
+
