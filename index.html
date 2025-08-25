@@ -39,7 +39,7 @@
         </div>
       </div>
       <div class="hidden md:flex items-center gap-2">
-        <a id="ctaWhatsApp" target="_blank" href="https://wa.me/919987567889?text=Hi%20I%20want%20the%20daily%20Options%20OI%20Outlook" class="px-3 py-2 rounded-xl bg-emerald-600 text-white text-sm hover:bg-emerald-700">Join Free Broadcast</a>
+        <a id="ctaWhatsApp" target="_blank" href="https://wa.me/911234567890?text=Hi%20I%20want%20the%20daily%20Options%20OI%20Outlook" class="px-3 py-2 rounded-xl bg-emerald-600 text-white text-sm hover:bg-emerald-700">Join Free Broadcast</a>
         <a id="ctaCall" href="#lead" class="px-3 py-2 rounded-xl bg-indigo-600 text-white text-sm hover:bg-indigo-700">Book 15‑min Mentorship Call</a>
       </div>
     </div>
@@ -447,7 +447,7 @@
       const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='trade_outlook_report.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
     });
     document.getElementById('leadForm').addEventListener('submit', (e)=>{ e.preventDefault(); const fd=new FormData(e.target); const name=fd.get('name'); const wa=(fd.get('wa')||'').replace(/\D/g,''); const email=fd.get('email'); console.log('Lead:', {name,email,wa}); if(wa){ window.open(`https://wa.me/${wa}?text=Hi%20this%20is%20${encodeURIComponent(name)}%20—%20please%20send%20me%20the%20daily%20OI%20watchlist%20%F0%9F%93%88`,'_blank'); } e.target.reset(); leadModal.close(); });
-    document.getElementById('waQuick').addEventListener('click', (e)=>{ e.preventDefault(); window.open('https://wa.me/919987567889?text=Hi%20I%20want%20the%20daily%20Options%20OI%20Outlook','_blank'); });
+    document.getElementById('waQuick').addEventListener('click', (e)=>{ e.preventDefault(); window.open('https://wa.me/911234567890?text=Hi%20I%20want%20the%20daily%20Options%20OI%20Outlook','_blank'); });
 
     // CSV helper
     function asCsv(rows){ const headers=Object.keys(rows[0]||{}); const esc=v=>{ if(v===null||v===undefined) return ''; const s=String(v); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }; return [headers.join(','), ...rows.map(r=> headers.map(h=>esc(r[h])).join(','))].join('\n'); }
