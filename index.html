@@ -3,52 +3,76 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Options OI Trade Outlook — Professional View + Reasons (Top 3 per symbol)</title>
+  <title>Options OI Trade Outlook — Pro View (Polished v2)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
-    .card { transition: transform 0.15s ease, box-shadow 0.15s ease; }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(2,6,23,0.08); }
-    .pill { font-weight:600; padding:4px 8px; border-radius:8px; font-size:12px; display:inline-block; }
+    .card { transition: transform .15s ease, box-shadow .15s ease, background .2s ease; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(2,6,23,0.08); }
+    .pill { font-weight:600; padding:4px 8px; border-radius:9999px; font-size:12px; display:inline-block; }
     .pill-green { background:#ecfdf5; color:#065f46; }
     .pill-yellow { background:#fffbeb; color:#92400e; }
     .pill-red { background:#fff1f2; color:#9f1239; }
     .pill-gray { background:#f1f5f9; color:#334155; }
     .mono { font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-    .rank-badge { font-size:11px; padding:2px 8px; border-radius:9999px; background:#0ea5e9; color:white; }
+
+    /* Half-card reveal */
+    .hover-details { max-height: 0; opacity: 0; overflow: hidden; transition: max-height .25s ease, opacity .2s ease; }
+    .card.group:hover .hover-details,
+    .card.expanded .hover-details { max-height: 2000px; opacity: 1; }
+    .card-expander { transition: opacity .15s ease; }
+    .card.group:hover .card-expander { opacity: 0; }
+
+    .glass { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
-  <div class="max-w-7xl mx-auto p-6">
-    <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-      <h1 class="text-2xl font-bold">🧠 Options OI Trade Outlook — Professional View (Top 3 per Symbol)</h1>
-      <div class="flex gap-2">
-        <button id="btnSample" class="px-3 py-2 rounded bg-slate-900 text-white text-sm">Load Sample</button>
-        <button id="btnDownload" class="px-3 py-2 rounded bg-indigo-600 text-white text-sm disabled:opacity-50" disabled>Download CSV</button>
+<body class="bg-gradient-to-br from-slate-50 via-slate-50 to-slate-100 text-slate-900">
+  <!-- Top Bar / Brand -->
+  <div class="sticky top-0 z-40 bg-white/80 glass border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-8 w-8 rounded-xl bg-indigo-600 text-white grid place-items-center font-bold">ST</div>
+        <div class="leading-tight">
+          <div class="font-bold">simpletradewithpatience</div>
+          <div class="text-xs text-slate-500">Options OI Trade Outlook — Professional View</div>
+        </div>
       </div>
-    </header>
+      <div class="hidden md:flex items-center gap-2">
+      </div>
+    </div>
+  </div>
 
+  <div class="max-w-7xl mx-auto p-6">
+    <!-- Controls / Uploader -->
     <section class="bg-white rounded-2xl p-4 shadow mb-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+        <h1 class="text-xl md:text-2xl font-bold">Upload OI Sheet → Get Actionable Trades</h1>
+        <div class="flex gap-2">
+          <button id="btnSample" class="px-3 py-2 rounded-xl bg-slate-900 text-white text-sm">Load Sample</button>
+          <button id="btnDownload" class="px-3 py-2 rounded-xl bg-indigo-600 text-white text-sm disabled:opacity-50" disabled>Download CSV</button>
+        </div>
+      </div>
+
       <div class="grid md:grid-cols-2 gap-4">
         <div>
           <label class="block text-sm font-medium mb-1">Upload CSV or XLS/XLSX</label>
           <input id="fileInput" type="file" accept=".csv,.xls,.xlsx" class="block w-full text-sm"/>
-          <p class="text-xs text-slate-500 mt-2">Supports your three formats (CALLS/STRIKE/PUTS split; standard OI table). Headers are auto-detected & normalized.</p>
+          <p class="text-xs text-slate-500 mt-2">Supports both standard OI tables and split CALL/STRIKE/PUTS files. Headers are auto‑detected.</p>
         </div>
         <div>
           <label class="block text-sm font-medium mb-1">Settings</label>
           <div class="grid grid-cols-3 gap-3">
-            <div class="p-3 bg-slate-50 rounded">
-              <label class="text-xs muted">Risk % (for SL)</label>
+            <div class="p-3 bg-slate-50 rounded-xl">
+              <label class="text-xs text-slate-600">Risk % (for SL)</label>
               <input id="riskLongPct" type="number" step="0.1" value="35" class="mt-1 w-full px-2 py-1 rounded border text-sm"/>
             </div>
-            <div class="p-3 bg-slate-50 rounded">
-              <label class="text-xs muted">R:R Multiple</label>
+            <div class="p-3 bg-slate-50 rounded-xl">
+              <label class="text-xs text-slate-600">R:R Multiple</label>
               <input id="rrMultiple" type="number" step="0.1" value="2" class="mt-1 w-full px-2 py-1 rounded border text-sm"/>
             </div>
-            <div class="p-3 bg-slate-50 rounded">
-              <label class="text-xs muted">Target % (override)</label>
+            <div class="p-3 bg-slate-50 rounded-xl">
+              <label class="text-xs text-slate-600">Target % (override)</label>
               <input id="targetPct" type="number" step="0.1" value="0" class="mt-1 w-full px-2 py-1 rounded border text-sm"/>
             </div>
           </div>
@@ -56,10 +80,25 @@
       </div>
 
       <div class="mt-4 grid md:grid-cols-2 gap-3 items-center">
-        <div class="flex gap-2 items-center">
-          <button id="toggleViewBtn" class="px-3 py-2 rounded bg-blue-600 text-white text-sm">Switch to Cards View</button>
-          <button id="btnMethod" class="px-3 py-2 rounded bg-slate-200 text-slate-800 text-sm">Methodology</button>
-          <button id="btnClear" class="px-3 py-2 rounded bg-slate-200 text-slate-800 text-sm">Clear</button>
+        <div class="flex flex-wrap gap-2 items-center">
+          <button id="toggleViewBtn" class="px-3 py-2 rounded-xl bg-blue-600 text-white text-sm">Switch to Cards View</button>
+          <div class="flex items-center gap-2">
+            <label for="cardViewMode" class="text-sm text-slate-700">Show</label>
+            <select id="cardViewMode" class="px-2 py-1 rounded border text-sm">
+              <option value="1">Top 1</option>
+              <option value="3">Top 3</option>
+              <option value="all">All</option>
+            </select>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-slate-700">Filter</span>
+            <button class="btnFilter px-2 py-1 rounded border text-xs" data-filter="all">All</button>
+            <button class="btnFilter px-2 py-1 rounded border text-xs" data-filter="strong">Strong</button>
+            <button class="btnFilter px-2 py-1 rounded border text-xs" data-filter="moderate">Moderate</button>
+            <button class="btnFilter px-2 py-1 rounded border text-xs" data-filter="weak">Weak</button>
+          </div>
+          <button id="btnMethod" class="px-3 py-2 rounded-xl bg-slate-200 text-slate-800 text-sm">Methodology</button>
+          <button id="btnClear" class="px-3 py-2 rounded-xl bg-slate-200 text-slate-800 text-sm">Clear</button>
         </div>
         <div class="flex gap-2">
           <input id="search" type="search" placeholder="Search symbol..." class="px-3 py-2 rounded border w-full"/>
@@ -71,6 +110,7 @@
           </select>
         </div>
       </div>
+      <p class="text-xs text-slate-500 mt-2">Cards show a quick trade plan. Hover to reveal Greeks, explanations and professional analysis. Educational use only.</p>
     </section>
 
     <section id="summary" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6"></section>
@@ -78,13 +118,15 @@
     <section class="bg-white rounded-2xl p-4 shadow mb-6">
       <div class="flex items-center justify-between mb-3">
         <h2 id="viewTitle" class="text-lg font-semibold">Per-Symbol Trade Outlook — Table View</h2>
-        <div class="text-sm text-slate-500">Each symbol shows its Top 3 trades by score.</div>
+        <div class="text-sm text-slate-500">Switch views to compare multiple legs visually.</div>
       </div>
       <div id="results" class="table-wrap"></div>
     </section>
 
     <section class="bg-white rounded-2xl p-4 shadow">
-      <h3 class="font-semibold mb-2">Top 3 Calls & Top 3 Puts (reference)</h3>
+      <div class="flex items-center justify-between">
+        <h3 class="font-semibold mb-2">Top Call & Top Put (reference)</h3>
+      </div>
       <div id="legs" class="table-wrap"></div>
     </section>
 
@@ -95,616 +137,299 @@
           <button onclick="modal.close()" class="px-2 py-1 rounded bg-slate-100">✕</button>
         </div>
         <div class="mt-3 text-sm leading-6 text-slate-700">
-          <p><strong>Signals:</strong> OI change, price change, IV change, buildup, and delta receive weighted scores and are combined into a composite strength metric which is normalized to a 0–5 scale.</p>
+          <p><strong>Signals:</strong> OI change, price change, IV change, buildup, and delta receive weighted scores and are combined into a composite strength metric normalized to a 0–5 scale.</p>
           <p><strong>Levels:</strong> Entry = LTP. Stop Loss = Entry × (1 − Risk%). Targets are derived from R:R or Target% override.</p>
-          <p class="text-slate-500 mt-3">Educational tool — not financial advice.</p>
+          <p class="text-slate-500 mt-3">This is an educational tool — not financial advice.</p>
         </div>
       </div>
     </dialog>
   </div>
 
   <script>
-    // ---- Utilities ----
-    const num = v => {
-      if (v === null || v === undefined) return null;
-      if (typeof v === 'number') return isFinite(v) ? v : null;
-      const s = String(v).replace(/[,]/g,'').trim();
-      if (s === '') return null;
-      const n = parseFloat(s);
-      return isFinite(n) ? n : null;
-    };
+    // ---------- Utilities ----------
+    const num = v => { if (v===null||v===undefined) return null; if (typeof v === 'number') return isFinite(v)?v:null; const s=String(v).replace(/[,]/g,'').trim(); if (!s) return null; const n=parseFloat(s); return isFinite(n)?n:null; };
     const clean = v => (v ?? '').toString().trim();
     const up = s => clean(s).toUpperCase();
-    const fmt = (n,d=2) => (n===null || n===undefined || isNaN(n)) ? '—' : Number(n).toFixed(d);
+    const fmt = (n,d=2) => (n===null||n===undefined||isNaN(n)) ? '—' : Number(n).toFixed(d);
     const clamp = (x,a,b) => Math.max(a,Math.min(b,x));
 
-    // ---- Format detection / normalization ----
+    // ---------- Format detection / normalization ----------
     const normalizeKey = k => k.replace(/\s+/g,' ').trim();
     function detectFormat(headers) {
-      const U = headers.map(h => up(h));
+      const U=headers.map(h=>up(h));
       if (U.includes('SYMBOL') && U.includes('TYPE') && U.includes('STRIKE')) return 'STANDARD';
       const strikeIdx = U.indexOf('STRIKE');
       if (strikeIdx > 0) {
         const left = new Set(U.slice(0,strikeIdx));
-        const right = new Set(U.slice(strikeIdx+1));
+        const right= new Set(U.slice(strikeIdx+1));
         const both = ['OI','CHNG IN OI','VOLUME','IV','LTP','CHNG'];
         if (both.every(x=>left.has(x)) && both.every(x=>right.has(x))) return 'SPLIT';
       }
       return 'UNKNOWN';
     }
 
-    function normalizeStandard(raw) {
+    function normalizeStandard(raw){
       const expected = ['Symbol','Type','Strike','LTP','Day Chg%','Volume','Volume Chg%','TTV (Cr)','OI','OI Chg','OI Chg%','IV','IV Chg%','Spot','Delta','Gamma','Rho','Theta','Vega','Buildup'];
-      return raw.map(r=>{
-        const out = {};
-        for (const k in r) out[normalizeKey(k)] = r[k];
-        for (const e of expected) if (!(e in out)) out[e] = null;
-        return out;
-      });
+      return raw.map(r=>{ const out={}; for(const k in r) out[normalizeKey(k)] = r[k]; for(const e of expected) if(!(e in out)) out[e]=null; return out; });
     }
 
-    function normalizeSplit(raw, filenameBase='UNKNOWN') {
-      if (!raw.length) return [];
+    function normalizeSplit(raw, filenameBase='UNKNOWN'){
+      if(!raw.length) return [];
       const headers = Object.keys(raw[0]).map(normalizeKey);
       const U = headers.map(h=>up(h));
       const strikeIdx = U.indexOf('STRIKE');
       const get = (obj,key) => obj[headers[U.indexOf(key)]];
-      const out = [];
-      for (const row of raw) {
+      const out=[];
+      for(const row of raw){
         const strike = num(row[headers[strikeIdx]]);
         // call
-        const callLtp = num(get(row,'LTP'));
-        const callChg = num(get(row,'CHNG'));
-        const callIv  = num(get(row,'IV'));
-        const callVol = num(get(row,'VOLUME'));
-        const callOi  = num(get(row,'OI'));
-        const callOiChg = num(get(row,'CHNG IN OI'));
-        const callDayPct = (callLtp && callChg) ? (callChg / Math.max(callLtp-callChg,0.01))*100 : null;
-        out.push({Symbol: filenameBase, Type:'Call', Strike: strike, LTP: callLtp, 'Day Chg%': callDayPct, Volume: callVol, 'Volume Chg%': null, 'TTV (Cr)': null, OI: callOi, 'OI Chg': callOiChg, 'OI Chg%': null, IV: callIv, 'IV Chg%': null, Spot:null, Delta:null, Gamma:null, Rho:null, Theta:null, Vega:null, Buildup:''});
+        const callLtp=num(get(row,'LTP')); const callChg=num(get(row,'CHNG')); const callIv=num(get(row,'IV')); const callVol=num(get(row,'VOLUME')); const callOi=num(get(row,'OI')); const callOiChg=num(get(row,'CHNG IN OI'));
+        const callDayPct = (callLtp && callChg) ? (callChg/Math.max(callLtp-callChg,0.01))*100 : null;
+        out.push({Symbol:filenameBase,Type:'Call',Strike:strike,LTP:callLtp,'Day Chg%':callDayPct,Volume:callVol,'Volume Chg%':null,'TTV (Cr)':null,OI:callOi,'OI Chg':callOiChg,'OI Chg%':null,IV:callIv,'IV Chg%':null,Spot:null,Delta:null,Gamma:null,Rho:null,Theta:null,Vega:null,Buildup:''});
         // put (right side)
-        const getRight = (obj,key) => obj[headers[U.lastIndexOf(key)]];
-        const putLtp = num(getRight(row,'LTP'));
-        const putChg = num(getRight(row,'CHNG'));
-        const putIv  = num(getRight(row,'IV'));
-        const putVol = num(getRight(row,'VOLUME'));
-        const putOi  = num(getRight(row,'OI'));
-        const putOiChg = num(getRight(row,'CHNG IN OI'));
-        const putDayPct = (putLtp && putChg) ? (putChg / Math.max(putLtp-putChg,0.01))*100 : null;
-        out.push({Symbol: filenameBase, Type:'Put', Strike: strike, LTP: putLtp, 'Day Chg%': putDayPct, Volume: putVol, 'Volume Chg%': null, 'TTV (Cr)': null, OI: putOi, 'OI Chg': putOiChg, 'OI Chg%': null, IV: putIv, 'IV Chg%': null, Spot:null, Delta:null, Gamma:null, Rho:null, Theta:null, Vega:null, Buildup:''});
+        const getRight=(obj,key)=>obj[headers[U.lastIndexOf(key)]];
+        const putLtp=num(getRight(row,'LTP')); const putChg=num(getRight(row,'CHNG')); const putIv=num(getRight(row,'IV')); const putVol=num(getRight(row,'VOLUME')); const putOi=num(getRight(row,'OI')); const putOiChg=num(getRight(row,'CHNG IN OI'));
+        const putDayPct = (putLtp && putChg) ? (putChg/Math.max(putLtp-putChg,0.01))*100 : null;
+        out.push({Symbol:filenameBase,Type:'Put',Strike:strike,LTP:putLtp,'Day Chg%':putDayPct,Volume:putVol,'Volume Chg%':null,'TTV (Cr)':null,OI:putOi,'OI Chg':putOiChg,'OI Chg%':null,IV:putIv,'IV Chg%':null,Spot:null,Delta:null,Gamma:null,Rho:null,Theta:null,Vega:null,Buildup:''});
       }
       return out;
     }
 
-    // ---- Scoring ----
-    function scoreRow(row) {
-      const type = clean(row.Type).toLowerCase();
-      const buildup = clean(row.Buildup).toLowerCase();
-      const oiChgP = num(row['OI Chg%']);
-      const oiChg = num(row['OI Chg']);
-      const dayChgP = num(row['Day Chg%']);
-      const ivChgP = num(row['IV Chg%']);
-      const delta = Math.abs(num(row['Delta']));
+    // ---------- Scoring ----------
+    function scoreRow(row){
+      const type=clean(row.Type).toLowerCase();
+      const buildup=clean(row.Buildup).toLowerCase();
+      const oiChgP=num(row['OI Chg%']); const oiChg=num(row['OI Chg']);
+      const dayChgP=num(row['Day Chg%']); const ivChgP=num(row['IV Chg%']);
+      const delta=Math.abs(num(row['Delta']));
+      let s=0;
+      if (buildup.includes('long build')) s+=2;
+      if (buildup.includes('short covering')) s+=1;
+      if (buildup.includes('short build')) s-=2;
+      if (buildup.includes('long unwinding')) s-=1;
+      if (oiChgP!==null) s += (oiChgP>15)?2:(oiChgP>0?1:(oiChgP<-10?-2:(oiChgP<0?-1:0)));
+      else if (oiChg!==null) s += Math.sign(oiChg)*0.5;
+      if (dayChgP!==null) s += (dayChgP>3)?2:(dayChgP>0?1:(dayChgP<-3?-2:(dayChgP<0?-1:0)));
+      if (ivChgP!==null) s += (ivChgP>5)?1.5:(ivChgP>0?0.5:(ivChgP<-5?-1.5:(ivChgP<0?-0.5:0)));
+      if (!isNaN(delta)) { const bonus = 1 - (Math.min(Math.abs(delta-0.35),0.35)/0.35); s += clamp(bonus,0,1); }
 
-      let s = 0;
-      if (buildup.includes('long build')) s += 2;
-      if (buildup.includes('short covering')) s += 1;
-      if (buildup.includes('short build')) s -= 2;
-      if (buildup.includes('long unwinding')) s -= 1;
-
-      if (oiChgP !== null) s += (oiChgP > 15) ? 2 : (oiChgP > 0 ? 1 : (oiChgP < -10 ? -2 : (oiChgP < 0 ? -1 : 0)));
-      else if (oiChg !== null) s += Math.sign(oiChg) * 0.5;
-
-      if (dayChgP !== null) s += (dayChgP > 3) ? 2 : (dayChgP > 0 ? 1 : (dayChgP < -3 ? -2 : (dayChgP < 0 ? -1 : 0)));
-      if (ivChgP !== null)  s += (ivChgP > 5) ? 1.5 : (ivChgP > 0 ? 0.5 : (ivChgP < -5 ? -1.5 : (ivChgP < 0 ? -0.5 : 0)));
-
-      if (!isNaN(delta)) {
-        const bonus = 1 - (Math.min(Math.abs(delta - 0.35), 0.35) / 0.35);
-        s += clamp(bonus, 0, 1);
-      }
-
-      let direction = 'neutral';
-      if (type === 'call') {
-        if (s >= 0.5) direction = 'bullish'; if (s <= -0.5) direction = 'bearish';
-      } else if (type === 'put') {
-        if (s >= 0.5) direction = 'bearish'; if (s <= -0.5) direction = 'bullish';
-      }
-      return { score: s, direction };
+      let direction='neutral';
+      if (type==='call'){ if (s>=0.5) direction='bullish'; if (s<=-0.5) direction='bearish'; }
+      else if (type==='put'){ if (s>=0.5) direction='bearish'; if (s<=-0.5) direction='bullish'; }
+      return {score:s, direction};
     }
 
-    function buildTradeAnalysis(row, baseScore) {
-      const ltp = num(row.LTP);
-      const oi = num(row.OI);
-      const oiChg = num(row['OI Chg']);
-      const oiChgP = num(row['OI Chg%']);
-      const dayChgP = num(row['Day Chg%']);
-      const ivChgP = num(row['IV Chg%']);
-      const delta = num(row['Delta']);
-
-      let composite = baseScore;
-      if (oiChgP !== null) composite += oiChgP / 10;
-      else if (oiChg !== null) composite += Math.sign(oiChg) * 0.5;
-      if (dayChgP !== null) composite += dayChgP / 5;
-      if (ivChgP !== null) composite += ivChgP / 10;
-
-      const normalized = clamp((composite + 3) / 9, 0, 1);
-      const scoreOutOf5 = +(normalized * 5).toFixed(1);
-
-      let label = 'Moderate', color = 'yellow', pillClass = 'pill-yellow';
-      if (normalized >= 0.66) { label = 'Strong'; color = 'green'; pillClass = 'pill-green'; }
-      else if (normalized < 0.33) { label = 'Weak'; color = 'red'; pillClass = 'pill-red'; }
-
-      const lines = [];
-      const overall = `${label} trade — composite strength ${scoreOutOf5}/5 (${color.toUpperCase()}).`;
+    function buildTradeAnalysis(row, baseScore){
+      const ltp=num(row.LTP); const oi=num(row.OI); const oiChg=num(row['OI Chg']); const oiChgP=num(row['OI Chg%']); const dayChgP=num(row['Day Chg%']); const ivChgP=num(row['IV Chg%']); const delta=num(row['Delta']);
+      let composite=baseScore; if(oiChgP!==null) composite+=oiChgP/10; else if(oiChg!==null) composite+=Math.sign(oiChg)*0.5; if(dayChgP!==null) composite+=dayChgP/5; if(ivChgP!==null) composite+=ivChgP/10;
+      const normalized=clamp((composite+3)/9,0,1); const scoreOutOf5=+(normalized*5).toFixed(1);
+      let label='Moderate', color='yellow', pillClass='pill-yellow'; if(normalized>=0.66){ label='Strong'; color='green'; pillClass='pill-green'; } else if(normalized<0.33){ label='Weak'; color='red'; pillClass='pill-red'; }
+      const lines=[]; const overall=`${label} trade — composite strength ${scoreOutOf5}/5 (${color.toUpperCase()}).`;
       lines.push(overall);
-
-      const dp = `Buildup: ${clean(row.Buildup) || '—'}`;
-      const oiLine = `OI: ${oi !== null ? fmt(oi,0) : '—'}${oiChgP !== null ? ' (OI Δ%: ' + fmt(oiChgP,1) + '%)' : (oiChg !== null ? ' (OI Δ: ' + fmt(oiChg,0) + ')' : '')}`;
-      const priceLine = `Option Price Δ%: ${dayChgP !== null ? fmt(dayChgP,1) + '%' : '—'} (LTP: ${ltp !== null ? fmt(ltp,2) : '—'})`;
-      const ivLine = `IV Δ%: ${ivChgP !== null ? fmt(ivChgP,1) + '%' : '—'}`;
-      const deltaLine = `Delta: ${delta !== null ? fmt(delta,2) : '—'}`;
-      const interp = [];
-      if (label === 'Strong') interp.push('Aggressive participation with supportive OI and momentum — higher probability trade.');
-      else if (label === 'Moderate') interp.push('Mixed signals — consider reduced size or wait for confirmation.');
-      else interp.push('Weak setup — avoid or treat as speculative with limited size.');
-
-      const html = `
-        <div class="text-sm space-y-2">
-          <div><strong>Trade Analysis (Professional View):</strong> <span class="${pillClass}">${label} — ${scoreOutOf5}/5</span></div>
-          <div><strong>Summary:</strong> ${overall}</div>
-          <div><strong>Key Data:</strong>
-            <ul class="list-disc pl-5 mt-1">
-              <li>${dp}</li>
-              <li>${oiLine}</li>
-              <li>${priceLine}</li>
-              <li>${ivLine}</li>
-              <li>${deltaLine}</li>
-            </ul>
-          </div>
-          <div><strong>Interpretation:</strong>
-            <ul class="list-disc pl-5 mt-1">${interp.map(i=>`<li>${i}</li>`).join('')}</ul>
-          </div>
+      const dp=`Buildup: ${clean(row.Buildup)||'—'}`;
+      const oiLine=`OI: ${oi!==null?fmt(oi,0):'—'}${oiChgP!==null?' (OI Δ%: '+fmt(oiChgP,1)+'%)':(oiChg!==null?' (OI Δ: '+fmt(oiChg,0)+')':'')}`;
+      const priceLine=`Option Price Δ%: ${dayChgP!==null?fmt(dayChgP,1)+'%':'—'} (LTP: ${ltp!==null?fmt(ltp,2):'—'})`;
+      const ivLine=`IV Δ%: ${ivChgP!==null?fmt(ivChgP,1)+'%':'—'}`;
+      const deltaLine=`Delta: ${delta!==null?fmt(delta,2):'—'}`;
+      const html=`<div class="text-sm space-y-2">
+        <div><strong>Trade Analysis (Professional View):</strong> <span class="${pillClass}">${label} — ${scoreOutOf5}/5</span></div>
+        <div><strong>Summary:</strong> ${overall}</div>
+        <div><strong>Key Data:</strong>
+          <ul class="list-disc pl-5 mt-1">
+            <li>${dp}</li><li>${oiLine}</li><li>${priceLine}</li><li>${ivLine}</li><li>${deltaLine}</li>
+          </ul>
         </div>
-      `;
+      </div>`;
       return { html, label, color, scoreOutOf5 };
     }
 
-    // ---- Reasoning block ----
-    function buildWhyTakeThisTrade(row, direction) {
-      const type = clean(row.Type).toLowerCase();
-      const strike = num(row.Strike);
-      const ltp = num(row.LTP);
-      const dayChgP = num(row['Day Chg%']);
-      const iv = num(row['IV']);
-      const ivChgP = num(row['IV Chg%']);
-      const oi = num(row['OI']);
-      const oiChg = num(row['OI Chg']);
-      const oiChgP = num(row['OI Chg%']);
-      const vol = num(row['Volume']);
-      const volChgP = num(row['Volume Chg%']);
-      const delta = num(row['Delta']);
-      const buildup = clean(row.Buildup);
-
-      const points = [];
-      if (buildup) {
-        if (/long build/i.test(buildup)) points.push(`Long Build-up at ${fmt(strike,0)} ${type === 'call' ? 'CE' : 'PE'} — participants adding longs.`);
-        else if (/short covering/i.test(buildup)) points.push(`Short Covering at ${fmt(strike,0)} — shorts exiting supports a bounce/continuation.`);
-        else if (/short build/i.test(buildup)) points.push(`Short Build-up — contra-bias, trade only with confirmation.`);
-        else if (/long unwinding/i.test(buildup)) points.push(`Long Unwinding — fading long interest, be selective.`);
+    function buildWhyTakeThisTrade(row, direction){
+      const type=clean(row.Type).toLowerCase(); const strike=num(row.Strike); const ltp=num(row.LTP); const dayChgP=num(row['Day Chg%']); const iv=num(row['IV']); const ivChgP=num(row['IV Chg%']); const oi=num(row['OI']); const oiChg=num(row['OI Chg']); const oiChgP=num(row['OI Chg%']); const vol=num(row['Volume']); const volChgP=num(row['Volume Chg%']); const delta=num(row['Delta']); const buildup=clean(row.Buildup);
+      const points=[];
+      if (buildup){ if(/long build/i.test(buildup)) points.push(`Long Build-up at ${fmt(strike,0)} ${type==='call'?'CE':'PE'} — participants adding longs.`);
+        else if(/short covering/i.test(buildup)) points.push(`Short Covering at ${fmt(strike,0)} — shorts exiting supports a bounce/continuation.`);
+        else if(/short build/i.test(buildup)) points.push(`Short Build-up — contra-bias, trade only with confirmation.`);
+        else if(/long unwinding/i.test(buildup)) points.push(`Long Unwinding — fading long interest, be selective.`);
       }
-
-      if (dayChgP !== null && (oiChgP !== null || oiChg !== null)) {
-        const oiMove = (oiChgP !== null) ? `${fmt(oiChgP,1)}%` : `${fmt(oiChg,0)}`;
-        if (dayChgP > 0 && (oiChgP > 0 || oiChg > 0)) points.push(`Price ↑ ${fmt(dayChgP,1)}% with OI ↑ ${oiMove} — classic long-side confirmation.`);
-        else if (dayChgP > 0 && (oiChgP < 0 || oiChg < 0)) points.push(`Price ↑ ${fmt(dayChgP,1)}% with OI ↓ ${oiMove} — short covering tailwind.`);
-        else if (dayChgP < 0 && (oiChgP > 0 || oiChg > 0)) points.push(`Price ↓ ${fmt(dayChgP,1)}% with OI ↑ ${oiMove} — fresh shorts dominating.`);
+      if (dayChgP!==null && (oiChgP!==null || oiChg!==null)){
+        const oiMove=(oiChgP!==null)?`${fmt(oiChgP,1)}%`:`${fmt(oiChg,0)}`;
+        if (dayChgP>0 && (oiChgP>0 || oiChg>0)) points.push(`Price ↑ ${fmt(dayChgP,1)}% with OI ↑ ${oiMove} — classic long-side confirmation.`);
+        else if (dayChgP>0 && (oiChgP<0 || oiChg<0)) points.push(`Price ↑ ${fmt(dayChgP,1)}% with OI ↓ ${oiMove} — short covering tailwind.`);
+        else if (dayChgP<0 && (oiChgP>0 || oiChg>0)) points.push(`Price ↓ ${fmt(dayChgP,1)}% with OI ↑ ${oiMove} — fresh shorts dominating.`);
       }
-
-      if (volChgP !== null) {
-        if (volChgP > 10) points.push(`Volume surge ${fmt(volChgP,1)}% — active participation.`);
-        else if (volChgP < -10) points.push(`Volume drop ${fmt(volChgP,1)}% — thin liquidity, size down.`);
-      }
-
-      if (iv !== null) {
-        if (iv < 15) points.push(`IV ${fmt(iv,1)} — relatively lower premium; favorable for buying options.`);
-        else if (iv > 30) points.push(`IV ${fmt(iv,1)} — rich premiums; consider spreads or faster profit booking.`);
-        else points.push(`IV ${fmt(iv,1)} — moderate, balanced risk–reward on premium.`);
-      }
-      if (ivChgP !== null) {
-        if (ivChgP > 5) points.push(`IV rising ${fmt(ivChgP,1)}% — momentum/uncertainty supportive of premium expansion.`);
-        else if (ivChgP < -5) points.push(`IV easing ${fmt(ivChgP,1)}% — better fills but smaller gamma tail.`);
-      }
-
-      if (delta !== null) {
-        if (type === 'call') {
-          if (delta >= 0.25 && delta <= 0.45) points.push(`Delta ${fmt(delta,2)} — sweet spot for convexity with decent ITM odds.`);
-          else if (delta > 0.45) points.push(`Delta ${fmt(delta,2)} — higher ITM probability, less convexity.`);
-          else points.push(`Delta ${fmt(delta,2)} — cheaper convexity, needs move/vol.`);
-        } else {
-          if (Math.abs(delta) >= 0.25 && Math.abs(delta) <= 0.45) points.push(`Delta ${fmt(delta,2)} — balanced risk on PE side, responsive to move.`);
-          else if (Math.abs(delta) > 0.45) points.push(`Delta ${fmt(delta,2)} — high sensitivity; quicker P&L swings.`);
-          else points.push(`Delta ${fmt(delta,2)} — low sensitivity; patience needed.`);
-        }
-      }
-
-      let verdict = 'Neutral setup — trade smaller or wait for confirmation.';
-      if (direction === 'bullish') verdict = 'Bullish edge — dips can be bought or momentum followed.';
-      if (direction === 'bearish') verdict = 'Bearish edge — rallies can be sold or momentum followed.';
-
-      const html = `
-        <div class="mt-4 text-sm">
-          <div class="text-slate-700 font-medium mb-1">Why take this trade?</div>
-          <ul class="list-disc pl-5 space-y-1">${points.map(p=>`<li>${p}</li>`).join('')}</ul>
-          <div class="mt-2 text-slate-600">${verdict}</div>
-        </div>
-      `;
+      if (volChgP!==null){ if (volChgP>10) points.push(`Volume surge ${fmt(volChgP,1)}% — active participation.`); else if (volChgP<-10) points.push(`Volume drop ${fmt(volChgP,1)}% — thin liquidity, size down.`); }
+      if (iv!==null){ if (iv<15) points.push(`IV ${fmt(iv,1)} — relatively lower premium; favorable for buying options.`);
+        else if (iv>30) points.push(`IV ${fmt(iv,1)} — rich premiums; consider spreads or faster profit booking.`); else points.push(`IV ${fmt(iv,1)} — moderate, balanced risk–reward.`); }
+      if (ivChgP!==null){ if (ivChgP>5) points.push(`IV rising ${fmt(ivChgP,1)}% — supportive of premium expansion.`); else if (ivChgP<-5) points.push(`IV easing ${fmt(ivChgP,1)}% — better fills but smaller gamma tail.`); }
+      if (delta!==null){ if (type==='call'){ if (delta>=0.25 && delta<=0.45) points.push(`Delta ${fmt(delta,2)} — sweet spot for convexity with decent ITM odds.`);
+          else if (delta>0.45) points.push(`Delta ${fmt(delta,2)} — higher ITM probability, less convexity.`); else points.push(`Delta ${fmt(delta,2)} — cheaper convexity, needs move/vol.`);
+        } else { if (Math.abs(delta)>=0.25 && Math.abs(delta)<=0.45) points.push(`Delta ${fmt(delta,2)} — balanced risk on PE side.`); else if (Math.abs(delta)>0.45) points.push(`Delta ${fmt(delta,2)} — high sensitivity; quicker P&L swings.`); else points.push(`Delta ${fmt(delta,2)} — low sensitivity; patience needed.`);} }
+      let verdict='Neutral setup — trade smaller or wait for confirmation.'; if(direction==='bullish') verdict='Bullish edge — buy dips or follow momentum.'; if(direction==='bearish') verdict='Bearish edge — sell rallies or follow momentum.';
+      const html=`<div class="mt-4 text-sm"><div class="text-slate-700 font-medium mb-1">Why take this trade?</div><ul class="list-disc pl-5 space-y-1">${points.map(p=>`<li>${p}</li>`).join('')}</ul><div class="mt-2 text-slate-600">${verdict}</div></div>`;
       return html;
     }
 
-    function computeLevels(ltp, riskPct, rr, targetPct) {
-      const entry = ltp ?? 0;
-      const risk = entry * (riskPct / 100);
-      const sl = Math.max(0, entry - risk);
-      let t1, t2;
-      if (targetPct && targetPct > 0) {
-        t1 = entry * (1 + (targetPct/100) * 0.75);
-        t2 = entry * (1 + (targetPct/100));
-      } else {
-        t1 = entry + risk * rr * 0.75;
-        t2 = entry + risk * rr;
-      }
-      return { entry, sl, t1, t2, rr, riskPct, targetPct };
+    function computeLevels(ltp, riskPct, rr, targetPct){ const entry=ltp??0; const risk=entry*(riskPct/100); const sl=Math.max(0, entry-risk); let t1,t2; if(targetPct && targetPct>0){ t1=entry*(1+(targetPct/100)*0.75); t2=entry*(1+(targetPct/100)); } else { t1=entry + risk*rr*0.75; t2=entry + risk*rr; } return { entry, sl, t1, t2, rr, riskPct, targetPct }; }
+
+    // ---------- Aggregation & pick ----------
+    function pickTradeForSymbol(rows, settings){
+      const calls=rows.filter(r=>up(r.Type)==='CALL'); const puts=rows.filter(r=>up(r.Type)==='PUT');
+      const scoredCalls=calls.map(r=>({row:r,...scoreRow(r)})); const scoredPuts=puts.map(r=>({row:r,...scoreRow(r)}));
+      const bullPower=scoredCalls.filter(x=>x.direction==='bullish').reduce((a,b)=>a+b.score,0) + scoredPuts.filter(x=>x.direction==='bullish').reduce((a,b)=>a+b.score,0);
+      const bearPower=scoredCalls.filter(x=>x.direction==='bearish').reduce((a,b)=>a+b.score,0) + scoredPuts.filter(x=>x.direction==='bearish').reduce((a,b)=>a+b.score,0);
+      let sentiment='Neutral', trend='Range'; if (bullPower-bearPower>1.5){ sentiment='Bullish'; trend='Up'; } else if (bearPower-bullPower>1.5){ sentiment='Bearish'; trend='Down'; }
+      const bestCall=scoredCalls.sort((a,b)=>b.score-a.score)[0]||null; const bestPut=scoredPuts.sort((a,b)=>b.score-a.score)[0]||null;
+      let pick=null; if(bestCall && bestPut) pick = bestCall.score>=bestPut.score?bestCall:bestPut; else pick = bestCall || bestPut; if(!pick) return null;
+      const side=clean(pick.row.Type); const strike=num(pick.row.Strike); const ltp=num(pick.row.LTP); const symbol=clean(pick.row.Symbol)||'UNKNOWN';
+      const levels=computeLevels(ltp, settings.riskLongPct, settings.rrMultiple, settings.targetPct);
+      const analysis=buildTradeAnalysis(pick.row, pick.score);
+      const legsInfo={ bestCall: bestCall?{strike:num(bestCall.row.Strike), ltp:num(bestCall.row.LTP), score:bestCall.score}:null, bestPut: bestPut?{strike:num(bestPut.row.Strike), ltp:num(bestPut.row.LTP), score:bestPut.score}:null };
+      const rankedCandidates=[...scoredCalls, ...scoredPuts].sort((a,b)=>b.score-a.score);
+      const rankedCards=rankedCandidates.map(c=>{ const lv=computeLevels(num(c.row.LTP), settings.riskLongPct, settings.rrMultiple, settings.targetPct); const an=buildTradeAnalysis(c.row, c.score); return { Symbol:symbol, Sentiment:sentiment, Trend:trend, 'Strike price to trade': `${fmt(num(c.row.Strike),0)} ${clean(c.row.Type).toUpperCase()}`, 'Entry price':fmt(lv.entry,2), 'Stop Loss':fmt(lv.sl,2), 'Target 1':fmt(lv.t1,2), 'Target 2':fmt(lv.t2,2), 'R:R Multiple':fmt(lv.rr,2), 'Risk % (Long)':fmt(lv.riskPct,1)+'%', 'Target % (override)': lv.targetPct>0 ? fmt(lv.targetPct,2)+'%':'—', 'Trade Analysis (Professional View)': an.html, _raw:c.row, _score:c.score, _pro_label:an.label, _pro_color:an.color, _pro_score:an.scoreOutOf5, _dir:c.direction, _rr:lv.rr, _strength:an.scoreOutOf5 }; });
+      return { Symbol:symbol, Sentiment:sentiment, Trend:trend, 'Strike price to trade': `${fmt(strike,0)} ${side.toUpperCase()}`, 'Entry price':fmt(levels.entry,2), 'Stop Loss':fmt(levels.sl,2), 'Target 1':fmt(levels.t1,2), 'Target 2':fmt(levels.t2,2), 'R:R Multiple':fmt(levels.rr,2), 'Risk % (Long)':fmt(levels.riskPct,1)+'%', 'Target % (override)': levels.targetPct>0 ? fmt(levels.targetPct,2)+'%':'—', 'Trade Analysis (Professional View)': analysis.html, _raw:pick.row, _score:pick.score, _pro_label:analysis.label, _pro_color:analysis.color, _pro_score:analysis.scoreOutOf5, _legs:legsInfo, _rr:levels.rr, _strength:analysis.scoreOutOf5, _dir:pick.direction, _ranked:rankedCards };
     }
 
-    // ---- NEW: Top 3 picks per symbol ----
-    function pickTopTradesForSymbol(rows, settings, topN = 3) {
-      const calls = rows.filter(r => up(r.Type) === 'CALL');
-      const puts  = rows.filter(r => up(r.Type) === 'PUT');
-      const scoredCalls = calls.map(r => ({ row:r, ...scoreRow(r) }));
-      const scoredPuts  = puts.map(r => ({ row:r, ...scoreRow(r) }));
+    // ---------- Rendering ----------
+    let lastReport=[]; let tableMode=true; let cardViewMode='1'; let strengthFilter='all';
 
-      const bullPower = scoredCalls.filter(x=>x.direction==='bullish').reduce((a,b)=>a+b.score,0)
-                       + scoredPuts.filter(x=>x.direction==='bullish').reduce((a,b)=>a+b.score,0);
-      const bearPower = scoredCalls.filter(x=>x.direction==='bearish').reduce((a,b)=>a+b.score,0)
-                       + scoredPuts.filter(x=>x.direction==='bearish').reduce((a,b)=>a+b.score,0);
-
-      let sentiment = 'Neutral', trend = 'Range';
-      if (bullPower - bearPower > 1.5) { sentiment = 'Bullish'; trend = 'Up'; }
-      else if (bearPower - bullPower > 1.5) { sentiment = 'Bearish'; trend = 'Down'; }
-
-      const combined = [...scoredCalls, ...scoredPuts].sort((a,b)=>b.score - a.score);
-      const top = combined.slice(0, topN);
-
-      const bestCallsTop3 = scoredCalls.slice().sort((a,b)=>b.score-a.score).slice(0,3)
-        .map(x => ({ strike: num(x.row.Strike), ltp: num(x.row.LTP), score: x.score }));
-      const bestPutsTop3  = scoredPuts.slice().sort((a,b)=>b.score-a.score).slice(0,3)
-        .map(x => ({ strike: num(x.row.Strike), ltp: num(x.row.LTP), score: x.score }));
-
-      const picks = [];
-      top.forEach((pick, idx) => {
-        const side = clean(pick.row.Type);
-        const strike = num(pick.row.Strike);
-        const ltp = num(pick.row.LTP);
-        const symbol = clean(pick.row.Symbol) || 'UNKNOWN';
-        const levels = computeLevels(ltp, settings.riskLongPct, settings.rrMultiple, settings.targetPct);
-        const analysis = buildTradeAnalysis(pick.row, pick.score);
-        picks.push({
-          Rank: idx+1,
-          Symbol: symbol,
-          Sentiment: sentiment,
-          Trend: trend,
-          'Strike price to trade': `${fmt(strike,0)} ${side.toUpperCase()}`,
-          'Entry price': fmt(levels.entry,2),
-          'Stop Loss': fmt(levels.sl,2),
-          'Target 1': fmt(levels.t1,2),
-          'Target 2': fmt(levels.t2,2),
-          'R:R Multiple': fmt(levels.rr,2),
-          'Risk % (Long)': fmt(levels.riskPct,1) + '%',
-          'Target % (override)': levels.targetPct > 0 ? fmt(levels.targetPct,2) + '%' : '—',
-          'Trade Analysis (Professional View)': analysis.html,
-          _raw: pick.row,
-          _score: pick.score,
-          _pro_label: analysis.label,
-          _pro_color: analysis.color,
-          _pro_score: analysis.scoreOutOf5,
-          _legs: { bestCallsTop3, bestPutsTop3 },
-          _rr: levels.rr,
-          _strength: analysis.scoreOutOf5,
-          _dir: pick.direction
-        });
-      });
-
-      return picks;
+    function renderSummary(items){
+      const el=document.getElementById('summary'); el.innerHTML=''; if(!items.length) return;
+      const bulls=items.filter(x=>x.Sentiment==='Bullish').length; const bears=items.filter(x=>x.Sentiment==='Bearish').length; const neutrals=items.filter(x=>x.Sentiment==='Neutral').length;
+      const blocks=[ {title:'Symbols analyzed', value:items.length}, {title:'Bullish', value:bulls}, {title:'Bearish', value:bears}, {title:'Neutral', value:neutrals} ];
+      for(const b of blocks){ const d=document.createElement('div'); d.className='p-4 bg-white rounded-2xl shadow'; d.innerHTML=`<div class="text-sm text-slate-500">${b.title}</div><div class="text-2xl font-bold mt-1">${b.value}</div>`; el.appendChild(d); }
     }
 
-    // ---- Rendering ----
-    let lastReport = [];
-    let tableMode = true;
-
-    function renderSummary(items) {
-      const el = document.getElementById('summary');
-      el.innerHTML = '';
-      if (!items.length) return;
-
-      // Deduplicate by symbol for counts
-      const symbolMap = new Map();
-      items.forEach(it => {
-        if (!symbolMap.has(it.Symbol)) symbolMap.set(it.Symbol, it.Sentiment);
-      });
-      const uniqueCount = symbolMap.size;
-      let bulls = 0, bears = 0, neutrals = 0;
-      for (const s of symbolMap.values()) {
-        if (s === 'Bullish') bulls++; else if (s === 'Bearish') bears++; else neutrals++;
-      }
-
-      const blocks = [
-        { title: 'Symbols analyzed', value: uniqueCount },
-        { title: 'Bullish', value: bulls },
-        { title: 'Bearish', value: bears },
-        { title: 'Neutral', value: neutrals }
-      ];
-      for (const b of blocks) {
-        const d = document.createElement('div');
-        d.className = 'p-4 bg-white rounded-2xl shadow';
-        d.innerHTML = `<div class="text-sm text-slate-500">${b.title}</div><div class="text-2xl font-bold mt-1">${b.value}</div>`;
-        el.appendChild(d);
-      }
+    function renderTable(items){
+      const container=document.getElementById('results'); container.innerHTML=''; document.getElementById('viewTitle').textContent='Per-Symbol Trade Outlook — Table View'; if(!items.length){ container.innerHTML='<div class="p-4 text-sm text-slate-500">No results</div>'; return; }
+      const table=document.createElement('table'); table.className='min-w-full text-sm';
+      const headers=['Symbol','Sentiment','Trend','Strike price to trade','Entry price','Stop Loss','Target 1','Target 2','R:R Multiple','Risk % (Long)','Target % (override)','Trade Analysis (Professional View)'];
+      const thead=document.createElement('thead'); thead.innerHTML='<tr>'+headers.map(h=>`<th class="text-left px-3 py-2 bg-slate-100 sticky top-0">${h}</th>`).join('')+'</tr>';
+      const tbody=document.createElement('tbody');
+      for(const it of items){ const tr=document.createElement('tr'); tr.className='border-b align-top hover:bg-slate-50'; tr.innerHTML=`
+        <td class="px-3 py-2 font-medium">${it.Symbol}</td>
+        <td class="px-3 py-2">${renderPill(it.Sentiment)}</td>
+        <td class="px-3 py-2">${renderPill(it.Trend,'gray')}</td>
+        <td class="px-3 py-2 mono">${it['Strike price to trade']}</td>
+        <td class="px-3 py-2 mono">${it['Entry price']}</td>
+        <td class="px-3 py-2 mono">${it['Stop Loss']}</td>
+        <td class="px-3 py-2 mono">${it['Target 1']}</td>
+        <td class="px-3 py-2 mono">${it['Target 2']}</td>
+        <td class="px-3 py-2 mono">${it['R:R Multiple']}</td>
+        <td class="px-3 py-2 mono">${it['Risk % (Long)']}</td>
+        <td class="px-3 py-2 mono">${it['Target % (override)']}</td>
+        <td class="px-3 py-2">${it['Trade Analysis (Professional View)']}</td>`; tbody.appendChild(tr); }
+      table.appendChild(thead); table.appendChild(tbody); container.appendChild(table);
     }
 
-    function renderTable(items) {
-      const container = document.getElementById('results');
-      container.innerHTML = '';
-      document.getElementById('viewTitle').textContent = 'Per-Symbol Trade Outlook — Table View';
-      if (!items.length) { container.innerHTML = '<div class="p-4 text-sm text-slate-500">No results</div>'; return; }
-      const table = document.createElement('table');
-      table.className = 'min-w-full text-sm';
-      const headers = ['Symbol','Rank','Sentiment','Trend','Strike price to trade','Entry price','Stop Loss','Target 1','Target 2','R:R Multiple','Risk % (Long)','Target % (override)','Trade Analysis (Professional View)'];
-      const thead = document.createElement('thead');
-      thead.innerHTML = '<tr>' + headers.map(h=>`<th class="text-left px-3 py-2 bg-slate-100 sticky top-0">${h}</th>`).join('') + '</tr>';
-      const tbody = document.createElement('tbody');
-      for (const it of items) {
-        const tr = document.createElement('tr');
-        tr.className = 'border-b align-top hover:bg-slate-50';
-        tr.innerHTML = `
-          <td class="px-3 py-2 font-medium">${it.Symbol}</td>
-          <td class="px-3 py-2"><span class="rank-badge">#${it.Rank}</span></td>
-          <td class="px-3 py-2">${renderPill(it.Sentiment)}</td>
-          <td class="px-3 py-2">${renderPill(it.Trend,'gray')}</td>
-          <td class="px-3 py-2 mono">${it['Strike price to trade']}</td>
-          <td class="px-3 py-2 mono">${it['Entry price']}</td>
-          <td class="px-3 py-2 mono">${it['Stop Loss']}</td>
-          <td class="px-3 py-2 mono">${it['Target 1']}</td>
-          <td class="px-3 py-2 mono">${it['Target 2']}</td>
-          <td class="px-3 py-2 mono">${it['R:R Multiple']}</td>
-          <td class="px-3 py-2 mono">${it['Risk % (Long)']}</td>
-          <td class="px-3 py-2 mono">${it['Target % (override)']}</td>
-          <td class="px-3 py-2">${it['Trade Analysis (Professional View)']}</td>
-        `;
-        tbody.appendChild(tr);
-      }
-      table.appendChild(thead);
-      table.appendChild(tbody);
-      container.appendChild(table);
-    }
-
-    function renderCards(items) {
-      const container = document.getElementById('results');
-      container.innerHTML = '';
-      document.getElementById('viewTitle').textContent = 'Per-Symbol Trade Outlook — Cards View';
-      if (!items.length) { 
-        container.innerHTML = '<div class="p-4 text-sm text-slate-500">No results</div>'; 
-        return; 
-      }
-      const grid = document.createElement('div');
-      grid.className = 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4';
-
-      for (const it of items) {
-        let gradient = 'from-yellow-100 to-yellow-200';
-        if (it._pro_color === 'green') gradient = 'from-green-100 to-green-200';
-        else if (it._pro_color === 'red') gradient = 'from-red-100 to-red-200';
-
-        const d = num(it._raw['Delta']);
-        const g = num(it._raw['Gamma']);
-        const t = num(it._raw['Theta']);
-        const v = num(it._raw['Vega']);
-        const r = num(it._raw['Rho']);
-        const greeksBlock = `
-          <div class="mt-4">
-            <div class="text-slate-500 text-xs mb-1">Greeks (selected leg)</div>
-            <div class="flex flex-wrap gap-2 mono text-xs">
-              <span class="pill pill-gray">Δ ${fmt(d,2)}</span>
-              <span class="pill pill-gray">Γ ${fmt(g,4)}</span>
-              <span class="pill pill-gray">Θ ${fmt(t,2)}</span>
-              <span class="pill pill-gray">V ${fmt(v,2)}</span>
-              <span class="pill pill-gray">ρ ${fmt(r,2)}</span>
+    function renderCards(items){
+      const container=document.getElementById('results'); container.innerHTML=''; document.getElementById('viewTitle').textContent='Per-Symbol Trade Outlook — Cards View'; if(!items.length){ container.innerHTML='<div class="p-4 text-sm text-slate-500">No results</div>'; return; }
+      const grid=document.createElement('div'); grid.className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4';
+      for(const it of items){ let subset=(it._ranked||[it]).slice(); if(cardViewMode==='1') subset=subset.slice(0,1); else if(cardViewMode==='3') subset=subset.slice(0,3);
+        for(const pick of subset){ let gradient='from-yellow-100 to-yellow-200'; if(pick._pro_color==='green') gradient='from-green-100 to-green-200'; else if(pick._pro_color==='red') gradient='from-red-100 to-red-200';
+          const d=num(pick._raw['Delta']); const g=num(pick._raw['Gamma']); const t=num(pick._raw['Theta']); const v=num(pick._raw['Vega']); const r=num(pick._raw['Rho']);
+          const greeksBlock=`<div class="mt-4"><div class="text-slate-500 text-xs mb-1">Greeks (selected leg)</div><div class="flex flex-wrap gap-2 mono text-xs"><span class="pill pill-gray">Δ ${fmt(d,2)}</span><span class="pill pill-gray">Γ ${fmt(g,4)}</span><span class="pill pill-gray">Θ ${fmt(t,2)}</span><span class="pill pill-gray">V ${fmt(v,2)}</span><span class="pill pill-gray">ρ ${fmt(r,2)}</span></div></div>`;
+          const reasonHtml=buildWhyTakeThisTrade(pick._raw, pick._dir);
+          const card=document.createElement('div'); card.className=`group card p-4 rounded-2xl bg-gradient-to-r ${gradient} shadow border border-white/60`;
+          const shareTxt = () => [ `${pick.Symbol} — ${pick['Strike price to trade']}`, `Entry: ${pick['Entry price']} | SL: ${pick['Stop Loss']}`, `T1: ${pick['Target 1']} | T2: ${pick['Target 2']}`, `R:R ${pick['R:R Multiple']} | Strength ${fmt(pick._pro_score,1)}/5` ].join('\n');
+          card.innerHTML=`
+            <div class="flex items-start justify-between">
+              <div>
+                <div class="text-lg font-semibold">${pick.Symbol}</div>
+                <div class="text-xs text-slate-700 mt-1">${pick.Sentiment} • ${pick.Trend}</div>
+              </div>
+              <div class="mono">${pick._pro_label} — ${fmt(pick._pro_score,1)}/5</div>
             </div>
-          </div>
-        `;
-        const reasonHtml = buildWhyTakeThisTrade(it._raw, it._dir);
-
-        const card = document.createElement('div');
-        card.className = `card p-4 rounded-2xl bg-gradient-to-r ${gradient} shadow`;
-        card.innerHTML = `
-          <div class="flex items-start justify-between">
-            <div>
-              <div class="text-lg font-semibold">${it.Symbol}</div>
-              <div class="text-xs text-slate-700 mt-1">${it.Sentiment} • ${it.Trend}</div>
-            </div>
-            <div class="text-right">
-              <div class="rank-badge inline-block">#${it.Rank}</div>
-              <div class="mono mt-1">${it._pro_label} — ${fmt(it._pro_score,1)}/5</div>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-x-4 gap-y-1 mt-3 text-sm">
-            <div class="text-slate-700">Strike price to trade</div><div class="mono">${it['Strike price to trade']}</div>
-            <div class="text-slate-700">Entry price</div><div class="mono">${it['Entry price']}</div>
-            <div class="text-slate-700">Stop Loss</div><div class="mono">${it['Stop Loss']}</div>
-            <div class="text-slate-700">Target 1</div><div class="mono">${it['Target 1']}</div>
-            <div class="text-slate-700">Target 2</div><div class="mono">${it['Target 2']}</div>
-            <div class="text-slate-700">R:R Multiple</div><div class="mono">${it['R:R Multiple']}</div>
-            <div class="text-slate-700">Risk % (Long)</div><div class="mono">${it['Risk % (Long)']}</div>
-            <div class="text-slate-700">Target % (override)</div><div class="mono">${it['Target % (override)']}</div>
-          </div>
-          ${greeksBlock}
-          ${reasonHtml}
-          <div class="mt-4 text-sm">${it['Trade Analysis (Professional View)']}</div>
-        `;
-        grid.appendChild(card);
+            <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                  <div class="text-slate-700">Strike price to trade</div><div class="mono">${pick['Strike price to trade']}</div>
+                  <div class="text-slate-700">Entry price</div><div class="mono">${pick['Entry price']}</div>
+                  <div class="text-slate-700">Stop Loss</div><div class="mono">${pick['Stop Loss']}</div>
+                  <div class="text-slate-700">Target 1</div><div class="mono">${pick['Target 1']}</div>
+                  <div class="text-slate-700">Target 2</div><div class="mono">${pick['Target 2']}</div>
+                  <div class="text-slate-700">R:R Multiple</div><div class="mono">${pick['R:R Multiple']}</div>
+                  <div class="text-slate-700">Risk % (Long)</div><div class="mono">${pick['Risk % (Long)']}</div>
+                  <div class="text-slate-700">Target % (override)</div><div class="mono">${pick['Target % (override)']}</div>
+                </div>
+                <div class="flex gap-2 mt-3">
+                  <button class="btnCopy px-2 py-1 text-xs rounded bg-slate-900 text-white">Copy Trade Plan</button>
+                  <button class="md:hidden text-xs underline text-slate-700 card-expander" aria-label="Toggle details">Tap to expand</button>
+                </div>
+              </div>
+              <div class="relative">
+                <div class="hidden md:flex items-center justify-center text-slate-700/80 text-xs h-full md:group-hover:hidden select-none">Hover for full details →</div>
+                <div class="hover-details md:block md:opacity-0 md:max-h-0">${greeksBlock}${reasonHtml}<div class="mt-4 text-sm">${pick['Trade Analysis (Professional View)']}</div></div>
+              </div>
+            </div>`;
+          const expander=card.querySelector('.card-expander'); if(expander){ expander.addEventListener('click', (e)=>{ e.stopPropagation(); card.classList.toggle('expanded'); expander.textContent = card.classList.contains('expanded') ? 'Tap to collapse' : 'Tap to expand'; }); }
+          const copyBtn=card.querySelector('.btnCopy'); copyBtn.addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(shareTxt()); copyBtn.textContent='Copied!'; setTimeout(()=>copyBtn.textContent='Copy Trade Plan',1200); } catch(e){ alert('Copy failed'); } });
+          grid.appendChild(card);
+        }
       }
       container.appendChild(grid);
     }
 
-    function renderLegs(items) {
-      const container = document.getElementById('legs');
-      container.innerHTML = '';
-      if (!items.length) { container.innerHTML = '<div class="p-4 text-sm text-slate-500">No results</div>'; return; }
-
-      // Aggregate unique symbols -> take legs info from the highest-ranked row for that symbol
-      const bySymbol = new Map();
-      for (const it of items) {
-        if (!bySymbol.has(it.Symbol) || it.Rank < bySymbol.get(it.Symbol).Rank) {
-          bySymbol.set(it.Symbol, it);
-        }
-      }
-
-      const table = document.createElement('table');
-      table.className = 'min-w-full text-sm';
-      const thead = document.createElement('thead');
-      thead.innerHTML = '<tr><th class="px-3 py-2 bg-slate-100 text-left">Symbol</th><th class="px-3 py-2 bg-slate-100 text-left">Top 3 Calls</th><th class="px-3 py-2 bg-slate-100 text-left">Top 3 Puts</th></tr>';
-      const tbody = document.createElement('tbody');
-
-      for (const [sym, it] of bySymbol.entries()) {
-        const calls = (it._legs?.bestCallsTop3 || []).map(x=>`${fmt(x.strike,0)} / ${fmt(x.ltp,2)} / ${fmt(x.score,2)}`).join(' | ') || '—';
-        const puts  = (it._legs?.bestPutsTop3  || []).map(x=>`${fmt(x.strike,0)} / ${fmt(x.ltp,2)} / ${fmt(x.score,2)}`).join(' | ') || '—';
-        const tr = document.createElement('tr');
-        tr.className = 'border-b hover:bg-slate-50';
-        tr.innerHTML = `<td class="px-3 py-2 font-medium">${sym}</td><td class="px-3 py-2 mono">${calls}</td><td class="px-3 py-2 mono">${puts}</td>`;
-        tbody.appendChild(tr);
-      }
-      table.appendChild(thead); table.appendChild(tbody);
-      container.appendChild(table);
+    function renderLegs(items){
+      const container=document.getElementById('legs'); container.innerHTML=''; if(!items.length){ container.innerHTML='<div class="p-4 text-sm text-slate-500">No results</div>'; return; }
+      const table=document.createElement('table'); table.className='min-w-full text-sm';
+      const thead=document.createElement('thead'); thead.innerHTML='<tr><th class="px-3 py-2 bg-slate-100 text-left">Symbol</th><th class="px-3 py-2 bg-slate-100 text-left">Top Call</th><th class="px-3 py-2 bg-slate-100 text-left">Top Put</th></tr>';
+      const tbody=document.createElement('tbody');
+      for(const it of items){ const c=it._legs?.bestCall?`${fmt(it._legs.bestCall.strike,0)} / ${fmt(it._legs.bestCall.ltp,2)} / ${fmt(it._legs.bestCall.score,2)}`:'—'; const p=it._legs?.bestPut?`${fmt(it._legs.bestPut.strike,0)} / ${fmt(it._legs.bestPut.ltp,2)} / ${fmt(it._legs.bestPut.score,2)}`:'—'; const tr=document.createElement('tr'); tr.className='border-b hover:bg-slate-50'; tr.innerHTML=`<td class="px-3 py-2 font-medium">${it.Symbol}</td><td class="px-3 py-2 mono">${c}</td><td class="px-3 py-2 mono">${p}</td>`; tbody.appendChild(tr); }
+      table.appendChild(thead); table.appendChild(tbody); container.appendChild(table);
     }
 
-    function renderPill(text, alt='') {
-      const t = (text||'').toLowerCase();
-      if (t.includes('bull')) return `<span class="pill pill-green">${text}</span>`;
-      if (t.includes('bear')) return `<span class="pill pill-red">${text}</span>`;
-      return `<span class="pill pill-gray">${text}</span>`;
-    }
+    function renderPill(text){ const t=(text||'').toLowerCase(); if(t.includes('bull')) return `<span class="pill pill-green">${text}</span>`; if(t.includes('bear')) return `<span class="pill pill-red">${text}</span>`; return `<span class="pill pill-gray">${text}</span>`; }
 
-    // ---- Search / sort util ----
-    function applySearchSort(items) {
-      const q = (document.getElementById('search').value || '').toLowerCase().trim();
-      const sort = document.getElementById('sortBy').value;
-      let arr = items.slice();
-      if (q) arr = arr.filter(x => x.Symbol.toLowerCase().includes(q));
-      if (sort === 'rr') arr.sort((a,b)=> (b._rr||0) - (a._rr||0));
-      else if (sort === 'strength') arr.sort((a,b)=> (b._strength||0) - (a._strength||0));
-      else if (sort === 'entry') arr.sort((a,b)=> parseFloat(b['Entry price']||0) - parseFloat(a['Entry price']||0));
+    // ---------- Search / sort / filter ----------
+    function applySearchSort(items){
+      const q=(document.getElementById('search').value||'').toLowerCase().trim(); const sort=document.getElementById('sortBy').value;
+      let arr=items.slice(); if(q) arr=arr.filter(x=>x.Symbol.toLowerCase().includes(q));
+      // strength filter
+      if(strengthFilter!=='all'){ arr=arr.filter(x=>{ const s=(x._strength||0); if(strengthFilter==='strong') return s>=3.3; if(strengthFilter==='moderate') return s<3.3 && s>=1.7; if(strengthFilter==='weak') return s<1.7; }); }
+      if(sort==='rr') arr.sort((a,b)=>(b._rr||0)-(a._rr||0)); else if(sort==='strength') arr.sort((a,b)=>(b._strength||0)-(a._strength||0)); else if(sort==='entry') arr.sort((a,b)=>parseFloat(b['Entry price']||0)-parseFloat(a['Entry price']||0));
       return arr;
     }
 
-    // ---- File parsing ----
-    async function parseFile(file) {
-      const name = file.name.toLowerCase();
-      if (name.endsWith('.csv')) {
-        return new Promise((res,rej)=>{
-          Papa.parse(file,{ header:true, skipEmptyLines:true, complete:(r)=>res(r.data), error:(e)=>rej(e) });
-        });
-      } else if (name.endsWith('.xls') || name.endsWith('.xlsx')) {
-        const ab = await file.arrayBuffer();
-        const wb = XLSX.read(ab,{type:'array'});
-        const ws = wb.Sheets[wb.SheetNames[0]];
-        return XLSX.utils.sheet_to_json(ws, { defval: null });
-      } else throw new Error('Unsupported file type');
-    }
+    // ---------- File parsing ----------
+    async function parseFile(file){ const name=file.name.toLowerCase(); if(name.endsWith('.csv')){ return new Promise((res,rej)=>{ Papa.parse(file,{header:true, skipEmptyLines:true, complete:(r)=>res(r.data), error:(e)=>rej(e)}); }); } else if (name.endsWith('.xls')||name.endsWith('.xlsx')){ const ab=await file.arrayBuffer(); const wb=XLSX.read(ab,{type:'array'}); const ws=wb.Sheets[wb.SheetNames[0]]; return XLSX.utils.sheet_to_json(ws,{defval:null}); } else throw new Error('Unsupported file type'); }
 
-    // ---- Main workflow ----
+    // ---------- Main workflow ----------
     document.getElementById('fileInput').addEventListener('change', async (e)=>{
-      const f = e.target.files?.[0]; if (!f) return;
-      try {
-        const settings = { riskLongPct: num(document.getElementById('riskLongPct').value) ?? 35, rrMultiple: num(document.getElementById('rrMultiple').value) ?? 2, targetPct: num(document.getElementById('targetPct').value) ?? 0 };
-        const raw = await parseFile(f);
-        const headers = raw.length ? Object.keys(raw[0]).map(normalizeKey) : [];
-        const fmtType = detectFormat(headers);
-        const base = f.name.split(/[\\/]/).pop().replace(/\.[^.]+$/,'').toUpperCase();
-        let rows = [];
-        if (fmtType === 'STANDARD') rows = normalizeStandard(raw);
-        else if (fmtType === 'SPLIT') rows = normalizeSplit(raw, base);
-        else { alert('Unrecognized file format. Ensure it matches one of the three supported formats.'); return; }
-
-        const groups = new Map();
-        for (const r of rows) {
-          const sym = clean(r.Symbol) || base;
-          if (!groups.has(sym)) groups.set(sym, []);
-          groups.get(sym).push(r);
-        }
-
-        const picks = [];
-        for (const [sym, arr] of groups.entries()) {
-          const top3 = pickTopTradesForSymbol(arr, settings, 3);
-          picks.push(...top3);
-        }
-
-        lastReport = picks;
-        document.getElementById('btnDownload').disabled = picks.length === 0;
-        const items = applySearchSort(picks);
-        renderSummary(items);
-        if (tableMode) renderTable(items); else renderCards(items);
-        renderLegs(items);
-      } catch (err) {
-        alert('Error: ' + err.message);
-      }
+      const f=e.target.files?.[0]; if(!f) return; try{
+        const settings={ riskLongPct: num(document.getElementById('riskLongPct').value) ?? 35, rrMultiple: num(document.getElementById('rrMultiple').value) ?? 2, targetPct: num(document.getElementById('targetPct').value) ?? 0 };
+        const raw=await parseFile(f); const headers=raw.length?Object.keys(raw[0]).map(normalizeKey):[]; const fmtType=detectFormat(headers); const base=f.name.split(/[\\/]/).pop().replace(/\.[^.]+$/,'').toUpperCase();
+        let rows=[]; if(fmtType==='STANDARD') rows=normalizeStandard(raw); else if(fmtType==='SPLIT') rows=normalizeSplit(raw, base); else { alert('Unrecognized file format.'); return; }
+        const groups=new Map(); for(const r of rows){ const sym=clean(r.Symbol)||base; if(!groups.has(sym)) groups.set(sym,[]); groups.get(sym).push(r); }
+        const picks=[]; for(const [sym, arr] of groups.entries()){ const p=pickTradeForSymbol(arr, settings); if(p) picks.push(p); }
+        lastReport=picks; document.getElementById('btnDownload').disabled=picks.length===0;
+        const items=applySearchSort(picks); renderSummary(items); if(tableMode) renderTable(items); else renderCards(items); renderLegs(items);
+      } catch(err){ alert('Error: '+err.message); }
     });
 
-    // ---- Buttons & events ----
-    document.getElementById('toggleViewBtn').addEventListener('click', ()=>{
-      tableMode = !tableMode;
-      document.getElementById('toggleViewBtn').textContent = tableMode ? 'Switch to Cards View' : 'Switch to Table View';
-      const items = applySearchSort(lastReport);
-      if (tableMode) renderTable(items); else renderCards(items);
-    });
+    document.getElementById('toggleViewBtn').addEventListener('click', ()=>{ tableMode=!tableMode; document.getElementById('toggleViewBtn').textContent=tableMode?'Switch to Cards View':'Switch to Table View'; const items=applySearchSort(lastReport); if(tableMode) renderTable(items); else renderCards(items); });
+    document.getElementById('cardViewMode').addEventListener('change', (e)=>{ cardViewMode=e.target.value; if(!tableMode){ const items=applySearchSort(lastReport); renderCards(items); } });
+    document.getElementById('btnMethod').addEventListener('click', ()=> modal.showModal());
+    document.getElementById('btnClear').addEventListener('click', ()=>{ lastReport=[]; document.getElementById('results').innerHTML=''; document.getElementById('legs').innerHTML=''; document.getElementById('summary').innerHTML=''; document.getElementById('fileInput').value=''; document.getElementById('btnDownload').disabled=true; });
+    document.getElementById('search').addEventListener('input', ()=>{ const items=applySearchSort(lastReport); if(tableMode) renderTable(items); else renderCards(items); });
+    document.getElementById('sortBy').addEventListener('change', ()=>{ const items=applySearchSort(lastReport); if(tableMode) renderTable(items); else renderCards(items); });
 
-    document.getElementById('btnMethod').addEventListener('click', ()=> document.getElementById('modal').showModal());
-    document.getElementById('btnClear').addEventListener('click', ()=> {
-      lastReport = [];
-      document.getElementById('results').innerHTML='';
-      document.getElementById('legs').innerHTML='';
-      document.getElementById('summary').innerHTML='';
-      document.getElementById('fileInput').value='';
-      document.getElementById('btnDownload').disabled=true;
-    });
+    // Quick strength filters
+    document.querySelectorAll('.btnFilter').forEach(btn=> btn.addEventListener('click', ()=>{ strengthFilter=btn.dataset.filter; const items=applySearchSort(lastReport); if(tableMode) renderTable(items); else renderCards(items); }));
 
-    document.getElementById('search').addEventListener('input', ()=>{
-      const items = applySearchSort(lastReport); if (tableMode) renderTable(items); else renderCards(items);
+    // Lead capture button & modal
+    const leadModal=document.getElementById('leadModal');
+    document.getElementById('btnLead').addEventListener('click', ()=> leadModal.showModal());
+    document.getElementById('btnDownload').addEventListener('click', ()=>{ if(!lastReport.length) return; // encourage lead but still allow download
+      leadModal.showModal(); // show modal first
+      // proceed with download immediately after showing modal
+      const csv = asCsv(lastReport.map(r=>{ const out={...r}; delete out._raw; delete out._legs; delete out._pro_label; delete out._pro_color; delete out._pro_score; delete out._rr; delete out._strength; delete out._dir; delete out._ranked; return out; }));
+      const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='trade_outlook_report.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
     });
-    document.getElementById('sortBy').addEventListener('change', ()=>{
-      const items = applySearchSort(lastReport); if (tableMode) renderTable(items); else renderCards(items);
-    });
-
-    document.getElementById('btnDownload').addEventListener('click', ()=>{
-      if (!lastReport.length) return;
-      const csv = asCsv(lastReport.map(r => {
-        const out = {...r};
-        delete out._raw; delete out._legs; delete out._pro_label; delete out._pro_color; delete out._pro_score; delete out._rr; delete out._strength; delete out._dir;
-        return out;
-      }));
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'trade_outlook_report.csv'; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1000);
-    });
-
     // CSV helper
-    function asCsv(rows) {
-      const headers = Object.keys(rows[0] || {});
-      const esc = v => {
-        if (v === null || v === undefined) return '';
-        const s = String(v);
-        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-      };
-      return [headers.join(','), ...rows.map(r => headers.map(h => esc(r[h])).join(','))].join('\n');
-    }
+    function asCsv(rows){ const headers=Object.keys(rows[0]||{}); const esc=v=>{ if(v===null||v===undefined) return ''; const s=String(v); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }; return [headers.join(','), ...rows.map(r=> headers.map(h=>esc(r[h])).join(','))].join('\n'); }
 
-    // ---- Sample data ----
-    const sampleCSV = `Symbol,Type,Strike,LTP,Day Chg%,Volume,Volume Chg%,TTV (Cr),OI,OI Chg,OI Chg%,IV,IV Chg%,Spot,Delta,Gamma,Rho,Theta,Vega,Buildup
+    // Sample data
+    const sampleCSV=`Symbol,Type,Strike,LTP,Day Chg%,Volume,Volume Chg%,TTV (Cr),OI,OI Chg,OI Chg%,IV,IV Chg%,Spot,Delta,Gamma,Rho,Theta,Vega,Buildup
 NIFTY,Call,24000,120,4.5,12500,20,3.1,240000,36000,17.6,12.2,6.5,23850,0.34,0.002,0.05,-4.1,10.1,Long Build Up
 NIFTY,Put,23800,95,-2.1,9800,-10,2.0,210000,-25000,-10.6,13.1,-3.5,23850,-0.32,0.003,0.05,-3.9,9.8,Short Covering
 RELIANCE,Call,2700,32,1.2,45000,8,1.2,550000,20000,3.8,22,1.1,2678,0.28,0.004,0.03,-2.1,6.2,Short Covering
@@ -712,38 +437,14 @@ RELIANCE,Put,2600,24,5.1,52000,15,1.0,470000,80000,20.5,23,2.5,2678,-0.38,0.005,
 APOLLOHOSP,Call,8000,72.2,3.3,42169,12,2.7,303875,152375,100.0,22.3,6.1,7808.5,0.35,0.002,-0.01,-5.6,9.1,Long Build Up
 APOLLOHOSP,Put,7700,66.5,-1.0,26000,-5,1.5,250100,-12100,-4.6,21.0,-1.3,7808.5,-0.01,0.002,-0.01,-5.1,8.7,Short Covering
 `;
-    document.getElementById('btnSample').addEventListener('click', ()=>{
-      const file = new File([sampleCSV], 'sample.csv', { type: 'text/csv' });
-      const evt = { target: { files: [file] } };
-      document.getElementById('fileInput').dispatchEvent(new Event('change'));
-      (async ()=>{
-        try {
-          const f = file;
-          const settings = { riskLongPct: num(document.getElementById('riskLongPct').value) ?? 35, rrMultiple: num(document.getElementById('rrMultiple').value) ?? 2, targetPct: num(document.getElementById('targetPct').value) ?? 0 };
-          const raw = await parseFile(f);
-          const headers = raw.length ? Object.keys(raw[0]).map(normalizeKey) : [];
-          const fmtType = detectFormat(headers);
-          const base = f.name.split(/[\\/]/).pop().replace(/\.[^.]+$/,'').toUpperCase();
-          let rows = [];
-          if (fmtType === 'STANDARD') rows = normalizeStandard(raw);
-          else if (fmtType === 'SPLIT') rows = normalizeSplit(raw, base);
-
-          const groups = new Map();
-          for (const r of rows) { const sym = clean(r.Symbol) || base; if (!groups.has(sym)) groups.set(sym, []); groups.get(sym).push(r); }
-
-          const picks = [];
-          for (const [sym, arr] of groups.entries()) { const top3 = pickTopTradesForSymbol(arr, settings, 3); picks.push(...top3); }
-
-          lastReport = picks;
-          document.getElementById('btnDownload').disabled = picks.length === 0;
-          const items = applySearchSort(picks);
-          renderSummary(items);
-          if (tableMode) renderTable(items); else renderCards(items);
-          renderLegs(items);
-        } catch(e) { alert('Error: '+e.message); }
-      })();
+    document.getElementById('btnSample').addEventListener('click', async ()=>{
+      const file=new File([sampleCSV],'sample.csv',{type:'text/csv'});
+      const settings={ riskLongPct: num(document.getElementById('riskLongPct').value) ?? 35, rrMultiple: num(document.getElementById('rrMultiple').value) ?? 2, targetPct: num(document.getElementById('targetPct').value) ?? 0 };
+      const raw=await parseFile(file); const headers=raw.length?Object.keys(raw[0]).map(normalizeKey):[]; const fmtType=detectFormat(headers); const base=file.name.replace(/\.[^.]+$/,'').toUpperCase(); let rows=[]; if(fmtType==='STANDARD') rows=normalizeStandard(raw); else if(fmtType==='SPLIT') rows=normalizeSplit(raw, base);
+      const groups=new Map(); for(const r of rows){ const sym=clean(r.Symbol)||base; if(!groups.has(sym)) groups.set(sym,[]); groups.get(sym).push(r); }
+      const picks=[]; for(const [sym,arr] of groups.entries()){ const p=pickTradeForSymbol(arr, settings); if(p) picks.push(p); }
+      lastReport=picks; document.getElementById('btnDownload').disabled=picks.length===0; const items=applySearchSort(picks); renderSummary(items); if(tableMode) renderTable(items); else renderCards(items); renderLegs(items);
     });
   </script>
 </body>
 </html>
-
