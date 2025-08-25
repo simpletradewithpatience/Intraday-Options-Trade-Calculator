@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Options OI Trade Outlook — Professional View + Reasons (Top 3 per symbol)</title>
+  <title>Options OI Trade Outlook — Professional View + Reasons</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -16,13 +16,12 @@
     .pill-red { background:#fff1f2; color:#9f1239; }
     .pill-gray { background:#f1f5f9; color:#334155; }
     .mono { font-variant-numeric: tabular-nums; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-    .rank-badge { font-size:11px; padding:2px 8px; border-radius:9999px; background:#0ea5e9; color:white; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
   <div class="max-w-7xl mx-auto p-6">
     <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-      <h1 class="text-2xl font-bold">🧠 Options OI Trade Outlook — Professional View (Top 3 per Symbol)</h1>
+      <h1 class="text-2xl font-bold">🧠 Options OI Trade Outlook — Professional View</h1>
       <div class="flex gap-2">
         <button id="btnSample" class="px-3 py-2 rounded bg-slate-900 text-white text-sm">Load Sample</button>
         <button id="btnDownload" class="px-3 py-2 rounded bg-indigo-600 text-white text-sm disabled:opacity-50" disabled>Download CSV</button>
@@ -34,7 +33,7 @@
         <div>
           <label class="block text-sm font-medium mb-1">Upload CSV or XLS/XLSX</label>
           <input id="fileInput" type="file" accept=".csv,.xls,.xlsx" class="block w-full text-sm"/>
-          <p class="text-xs text-slate-500 mt-2">Supports your three formats (CALLS/STRIKE/PUTS split; standard OI table). Headers are auto-detected & normalized.</p>
+          <p class="text-xs text-slate-500 mt-2">Supports the three formats you provided (CALLS/STRIKE/PUTS split; standard OI table). Headers are auto-detected & normalized.</p>
         </div>
         <div>
           <label class="block text-sm font-medium mb-1">Settings</label>
@@ -56,8 +55,16 @@
       </div>
 
       <div class="mt-4 grid md:grid-cols-2 gap-3 items-center">
-        <div class="flex gap-2 items-center">
+        <div class="flex flex-wrap gap-2 items-center">
           <button id="toggleViewBtn" class="px-3 py-2 rounded bg-blue-600 text-white text-sm">Switch to Cards View</button>
+          <div class="flex items-center gap-2">
+            <label for="cardViewMode" class="text-sm text-slate-700">Show</label>
+            <select id="cardViewMode" class="px-2 py-1 rounded border text-sm">
+              <option value="1">Top 1</option>
+              <option value="3">Top 3</option>
+              <option value="all">All</option>
+            </select>
+          </div>
           <button id="btnMethod" class="px-3 py-2 rounded bg-slate-200 text-slate-800 text-sm">Methodology</button>
           <button id="btnClear" class="px-3 py-2 rounded bg-slate-200 text-slate-800 text-sm">Clear</button>
         </div>
@@ -71,6 +78,7 @@
           </select>
         </div>
       </div>
+      <p class="text-xs text-slate-500 mt-2">Card toggle applies to the <strong>Cards View</strong> only. Table view still shows the top pick per symbol.</p>
     </section>
 
     <section id="summary" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6"></section>
@@ -78,13 +86,13 @@
     <section class="bg-white rounded-2xl p-4 shadow mb-6">
       <div class="flex items-center justify-between mb-3">
         <h2 id="viewTitle" class="text-lg font-semibold">Per-Symbol Trade Outlook — Table View</h2>
-        <div class="text-sm text-slate-500">Each symbol shows its Top 3 trades by score.</div>
+        <div class="text-sm text-slate-500">Toggle to view cards with professional trade analysis.</div>
       </div>
       <div id="results" class="table-wrap"></div>
     </section>
 
     <section class="bg-white rounded-2xl p-4 shadow">
-      <h3 class="font-semibold mb-2">Top 3 Calls & Top 3 Puts (reference)</h3>
+      <h3 class="font-semibold mb-2">Top Call & Top Put (reference)</h3>
       <div id="legs" class="table-wrap"></div>
     </section>
 
@@ -236,12 +244,13 @@
       const lines = [];
       const overall = `${label} trade — composite strength ${scoreOutOf5}/5 (${color.toUpperCase()}).`;
       lines.push(overall);
-
       const dp = `Buildup: ${clean(row.Buildup) || '—'}`;
       const oiLine = `OI: ${oi !== null ? fmt(oi,0) : '—'}${oiChgP !== null ? ' (OI Δ%: ' + fmt(oiChgP,1) + '%)' : (oiChg !== null ? ' (OI Δ: ' + fmt(oiChg,0) + ')' : '')}`;
       const priceLine = `Option Price Δ%: ${dayChgP !== null ? fmt(dayChgP,1) + '%' : '—'} (LTP: ${ltp !== null ? fmt(ltp,2) : '—'})`;
       const ivLine = `IV Δ%: ${ivChgP !== null ? fmt(ivChgP,1) + '%' : '—'}`;
       const deltaLine = `Delta: ${delta !== null ? fmt(delta,2) : '—'}`;
+      lines.push(dp, oiLine, priceLine, ivLine, deltaLine);
+
       const interp = [];
       if (label === 'Strong') interp.push('Aggressive participation with supportive OI and momentum — higher probability trade.');
       else if (label === 'Moderate') interp.push('Mixed signals — consider reduced size or wait for confirmation.');
@@ -265,10 +274,11 @@
           </div>
         </div>
       `;
+
       return { html, label, color, scoreOutOf5 };
     }
 
-    // ---- Reasoning block ----
+    // ---- NEW: Simple, data-backed explanation builder ----
     function buildWhyTakeThisTrade(row, direction) {
       const type = clean(row.Type).toLowerCase();
       const strike = num(row.Strike);
@@ -285,6 +295,7 @@
       const buildup = clean(row.Buildup);
 
       const points = [];
+
       if (buildup) {
         if (/long build/i.test(buildup)) points.push(`Long Build-up at ${fmt(strike,0)} ${type === 'call' ? 'CE' : 'PE'} — participants adding longs.`);
         else if (/short covering/i.test(buildup)) points.push(`Short Covering at ${fmt(strike,0)} — shorts exiting supports a bounce/continuation.`);
@@ -355,8 +366,8 @@
       return { entry, sl, t1, t2, rr, riskPct, targetPct };
     }
 
-    // ---- NEW: Top 3 picks per symbol ----
-    function pickTopTradesForSymbol(rows, settings, topN = 3) {
+    // ---- Aggregation & pick ----
+    function pickTradeForSymbol(rows, settings) {
       const calls = rows.filter(r => up(r.Type) === 'CALL');
       const puts  = rows.filter(r => up(r.Type) === 'PUT');
       const scoredCalls = calls.map(r => ({ row:r, ...scoreRow(r) }));
@@ -371,73 +382,95 @@
       if (bullPower - bearPower > 1.5) { sentiment = 'Bullish'; trend = 'Up'; }
       else if (bearPower - bullPower > 1.5) { sentiment = 'Bearish'; trend = 'Down'; }
 
-      const combined = [...scoredCalls, ...scoredPuts].sort((a,b)=>b.score - a.score);
-      const top = combined.slice(0, topN);
+      const bestCall = scoredCalls.sort((a,b)=>b.score - a.score)[0] || null;
+      const bestPut  = scoredPuts.sort((a,b)=>b.score - a.score)[0] || null;
+      let pick = null;
+      if (bestCall && bestPut) pick = bestCall.score >= bestPut.score ? bestCall : bestPut;
+      else pick = bestCall || bestPut;
+      if (!pick) return null;
 
-      const bestCallsTop3 = scoredCalls.slice().sort((a,b)=>b.score-a.score).slice(0,3)
-        .map(x => ({ strike: num(x.row.Strike), ltp: num(x.row.LTP), score: x.score }));
-      const bestPutsTop3  = scoredPuts.slice().sort((a,b)=>b.score-a.score).slice(0,3)
-        .map(x => ({ strike: num(x.row.Strike), ltp: num(x.row.LTP), score: x.score }));
+      const side = clean(pick.row.Type);
+      const strike = num(pick.row.Strike);
+      const ltp = num(pick.row.LTP);
+      const symbol = clean(pick.row.Symbol) || 'UNKNOWN';
+      const levels = computeLevels(ltp, settings.riskLongPct, settings.rrMultiple, settings.targetPct);
+      const analysis = buildTradeAnalysis(pick.row, pick.score);
 
-      const picks = [];
-      top.forEach((pick, idx) => {
-        const side = clean(pick.row.Type);
-        const strike = num(pick.row.Strike);
-        const ltp = num(pick.row.LTP);
-        const symbol = clean(pick.row.Symbol) || 'UNKNOWN';
-        const levels = computeLevels(ltp, settings.riskLongPct, settings.rrMultiple, settings.targetPct);
-        const analysis = buildTradeAnalysis(pick.row, pick.score);
-        picks.push({
-          Rank: idx+1,
+      const legsInfo = {
+        bestCall: bestCall ? { strike: num(bestCall.row.Strike), ltp: num(bestCall.row.LTP), score: bestCall.score } : null,
+        bestPut: bestPut ? { strike: num(bestPut.row.Strike), ltp: num(bestPut.row.LTP), score: bestPut.score } : null
+      };
+
+      // ---- NEW: Build ranked list (Top-N cards per symbol for Cards View) ----
+      const rankedCandidates = [...scoredCalls, ...scoredPuts].sort((a,b)=>b.score - a.score);
+      const rankedCards = rankedCandidates.map(c => {
+        const lv = computeLevels(num(c.row.LTP), settings.riskLongPct, settings.rrMultiple, settings.targetPct);
+        const an = buildTradeAnalysis(c.row, c.score);
+        return {
           Symbol: symbol,
           Sentiment: sentiment,
           Trend: trend,
-          'Strike price to trade': `${fmt(strike,0)} ${side.toUpperCase()}`,
-          'Entry price': fmt(levels.entry,2),
-          'Stop Loss': fmt(levels.sl,2),
-          'Target 1': fmt(levels.t1,2),
-          'Target 2': fmt(levels.t2,2),
-          'R:R Multiple': fmt(levels.rr,2),
-          'Risk % (Long)': fmt(levels.riskPct,1) + '%',
-          'Target % (override)': levels.targetPct > 0 ? fmt(levels.targetPct,2) + '%' : '—',
-          'Trade Analysis (Professional View)': analysis.html,
-          _raw: pick.row,
-          _score: pick.score,
-          _pro_label: analysis.label,
-          _pro_color: analysis.color,
-          _pro_score: analysis.scoreOutOf5,
-          _legs: { bestCallsTop3, bestPutsTop3 },
-          _rr: levels.rr,
-          _strength: analysis.scoreOutOf5,
-          _dir: pick.direction
-        });
+          'Strike price to trade': `${fmt(num(c.row.Strike),0)} ${clean(c.row.Type).toUpperCase()}`,
+          'Entry price': fmt(lv.entry,2),
+          'Stop Loss': fmt(lv.sl,2),
+          'Target 1': fmt(lv.t1,2),
+          'Target 2': fmt(lv.t2,2),
+          'R:R Multiple': fmt(lv.rr,2),
+          'Risk % (Long)': fmt(lv.riskPct,1) + '%',
+          'Target % (override)': lv.targetPct > 0 ? fmt(lv.targetPct,2) + '%' : '—',
+          'Trade Analysis (Professional View)': an.html,
+          _raw: c.row,
+          _score: c.score,
+          _pro_label: an.label,
+          _pro_color: an.color,
+          _pro_score: an.scoreOutOf5,
+          _dir: c.direction,
+          _rr: lv.rr,
+          _strength: an.scoreOutOf5
+        };
       });
 
-      return picks;
+      return {
+        Symbol: symbol,
+        Sentiment: sentiment,
+        Trend: trend,
+        'Strike price to trade': `${fmt(strike,0)} ${side.toUpperCase()}`,
+        'Entry price': fmt(levels.entry,2),
+        'Stop Loss': fmt(levels.sl,2),
+        'Target 1': fmt(levels.t1,2),
+        'Target 2': fmt(levels.t2,2),
+        'R:R Multiple': fmt(levels.rr,2),
+        'Risk % (Long)': fmt(levels.riskPct,1) + '%',
+        'Target % (override)': levels.targetPct > 0 ? fmt(levels.targetPct,2) + '%' : '—',
+        'Trade Analysis (Professional View)': analysis.html,
+        _raw: pick.row,
+        _score: pick.score,
+        _pro_label: analysis.label,
+        _pro_color: analysis.color,
+        _pro_score: analysis.scoreOutOf5,
+        _legs: legsInfo,
+        _rr: levels.rr,
+        _strength: analysis.scoreOutOf5,
+        _dir: pick.direction,
+        // NEW: hold full ranked list for Cards View
+        _ranked: rankedCards
+      };
     }
 
     // ---- Rendering ----
     let lastReport = [];
     let tableMode = true;
+    let cardViewMode = '1'; // '1' | '3' | 'all'
 
     function renderSummary(items) {
       const el = document.getElementById('summary');
       el.innerHTML = '';
       if (!items.length) return;
-
-      // Deduplicate by symbol for counts
-      const symbolMap = new Map();
-      items.forEach(it => {
-        if (!symbolMap.has(it.Symbol)) symbolMap.set(it.Symbol, it.Sentiment);
-      });
-      const uniqueCount = symbolMap.size;
-      let bulls = 0, bears = 0, neutrals = 0;
-      for (const s of symbolMap.values()) {
-        if (s === 'Bullish') bulls++; else if (s === 'Bearish') bears++; else neutrals++;
-      }
-
+      const bulls = items.filter(x=>x.Sentiment==='Bullish').length;
+      const bears = items.filter(x=>x.Sentiment==='Bearish').length;
+      const neutrals = items.filter(x=>x.Sentiment==='Neutral').length;
       const blocks = [
-        { title: 'Symbols analyzed', value: uniqueCount },
+        { title: 'Symbols analyzed', value: items.length },
         { title: 'Bullish', value: bulls },
         { title: 'Bearish', value: bears },
         { title: 'Neutral', value: neutrals }
@@ -457,7 +490,7 @@
       if (!items.length) { container.innerHTML = '<div class="p-4 text-sm text-slate-500">No results</div>'; return; }
       const table = document.createElement('table');
       table.className = 'min-w-full text-sm';
-      const headers = ['Symbol','Rank','Sentiment','Trend','Strike price to trade','Entry price','Stop Loss','Target 1','Target 2','R:R Multiple','Risk % (Long)','Target % (override)','Trade Analysis (Professional View)'];
+      const headers = ['Symbol','Sentiment','Trend','Strike price to trade','Entry price','Stop Loss','Target 1','Target 2','R:R Multiple','Risk % (Long)','Target % (override)','Trade Analysis (Professional View)'];
       const thead = document.createElement('thead');
       thead.innerHTML = '<tr>' + headers.map(h=>`<th class="text-left px-3 py-2 bg-slate-100 sticky top-0">${h}</th>`).join('') + '</tr>';
       const tbody = document.createElement('tbody');
@@ -466,7 +499,6 @@
         tr.className = 'border-b align-top hover:bg-slate-50';
         tr.innerHTML = `
           <td class="px-3 py-2 font-medium">${it.Symbol}</td>
-          <td class="px-3 py-2"><span class="rank-badge">#${it.Rank}</span></td>
           <td class="px-3 py-2">${renderPill(it.Sentiment)}</td>
           <td class="px-3 py-2">${renderPill(it.Trend,'gray')}</td>
           <td class="px-3 py-2 mono">${it['Strike price to trade']}</td>
@@ -498,57 +530,64 @@
       grid.className = 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4';
 
       for (const it of items) {
-        let gradient = 'from-yellow-100 to-yellow-200';
-        if (it._pro_color === 'green') gradient = 'from-green-100 to-green-200';
-        else if (it._pro_color === 'red') gradient = 'from-red-100 to-red-200';
+        // pick subset based on toggle
+        let subset = (it._ranked || [it]).slice();
+        if (cardViewMode === '1') subset = subset.slice(0,1);
+        else if (cardViewMode === '3') subset = subset.slice(0,3);
+        // else 'all' -> keep all
 
-        const d = num(it._raw['Delta']);
-        const g = num(it._raw['Gamma']);
-        const t = num(it._raw['Theta']);
-        const v = num(it._raw['Vega']);
-        const r = num(it._raw['Rho']);
-        const greeksBlock = `
-          <div class="mt-4">
-            <div class="text-slate-500 text-xs mb-1">Greeks (selected leg)</div>
-            <div class="flex flex-wrap gap-2 mono text-xs">
-              <span class="pill pill-gray">Δ ${fmt(d,2)}</span>
-              <span class="pill pill-gray">Γ ${fmt(g,4)}</span>
-              <span class="pill pill-gray">Θ ${fmt(t,2)}</span>
-              <span class="pill pill-gray">V ${fmt(v,2)}</span>
-              <span class="pill pill-gray">ρ ${fmt(r,2)}</span>
-            </div>
-          </div>
-        `;
-        const reasonHtml = buildWhyTakeThisTrade(it._raw, it._dir);
+        for (const pick of subset) {
+          // Determine gradient based on professional color label
+          let gradient = 'from-yellow-100 to-yellow-200';
+          if (pick._pro_color === 'green') gradient = 'from-green-100 to-green-200';
+          else if (pick._pro_color === 'red') gradient = 'from-red-100 to-red-200';
 
-        const card = document.createElement('div');
-        card.className = `card p-4 rounded-2xl bg-gradient-to-r ${gradient} shadow`;
-        card.innerHTML = `
-          <div class="flex items-start justify-between">
-            <div>
-              <div class="text-lg font-semibold">${it.Symbol}</div>
-              <div class="text-xs text-slate-700 mt-1">${it.Sentiment} • ${it.Trend}</div>
+          // Greeks block
+          const d = num(pick._raw['Delta']);
+          const g = num(pick._raw['Gamma']);
+          const t = num(pick._raw['Theta']);
+          const v = num(pick._raw['Vega']);
+          const r = num(pick._raw['Rho']);
+          const greeksBlock = `
+            <div class="mt-4">
+              <div class="text-slate-500 text-xs mb-1">Greeks (selected leg)</div>
+              <div class="flex flex-wrap gap-2 mono text-xs">
+                <span class="pill pill-gray">Δ ${fmt(d,2)}</span>
+                <span class="pill pill-gray">Γ ${fmt(g,4)}</span>
+                <span class="pill pill-gray">Θ ${fmt(t,2)}</span>
+                <span class="pill pill-gray">V ${fmt(v,2)}</span>
+                <span class="pill pill-gray">ρ ${fmt(r,2)}</span>
+              </div>
             </div>
-            <div class="text-right">
-              <div class="rank-badge inline-block">#${it.Rank}</div>
-              <div class="mono mt-1">${it._pro_label} — ${fmt(it._pro_score,1)}/5</div>
+          `;
+          const reasonHtml = buildWhyTakeThisTrade(pick._raw, pick._dir);
+
+          const card = document.createElement('div');
+          card.className = `card p-4 rounded-2xl bg-gradient-to-r ${gradient} shadow`;
+          card.innerHTML = `
+            <div class="flex items-start justify-between">
+              <div>
+                <div class="text-lg font-semibold">${pick.Symbol}</div>
+                <div class="text-xs text-slate-700 mt-1">${pick.Sentiment} • ${pick.Trend}</div>
+              </div>
+              <div class="mono">${pick._pro_label} — ${fmt(pick._pro_score,1)}/5</div>
             </div>
-          </div>
-          <div class="grid grid-cols-2 gap-x-4 gap-y-1 mt-3 text-sm">
-            <div class="text-slate-700">Strike price to trade</div><div class="mono">${it['Strike price to trade']}</div>
-            <div class="text-slate-700">Entry price</div><div class="mono">${it['Entry price']}</div>
-            <div class="text-slate-700">Stop Loss</div><div class="mono">${it['Stop Loss']}</div>
-            <div class="text-slate-700">Target 1</div><div class="mono">${it['Target 1']}</div>
-            <div class="text-slate-700">Target 2</div><div class="mono">${it['Target 2']}</div>
-            <div class="text-slate-700">R:R Multiple</div><div class="mono">${it['R:R Multiple']}</div>
-            <div class="text-slate-700">Risk % (Long)</div><div class="mono">${it['Risk % (Long)']}</div>
-            <div class="text-slate-700">Target % (override)</div><div class="mono">${it['Target % (override)']}</div>
-          </div>
-          ${greeksBlock}
-          ${reasonHtml}
-          <div class="mt-4 text-sm">${it['Trade Analysis (Professional View)']}</div>
-        `;
-        grid.appendChild(card);
+            <div class="grid grid-cols-2 gap-x-4 gap-y-1 mt-3 text-sm">
+              <div class="text-slate-700">Strike price to trade</div><div class="mono">${pick['Strike price to trade']}</div>
+              <div class="text-slate-700">Entry price</div><div class="mono">${pick['Entry price']}</div>
+              <div class="text-slate-700">Stop Loss</div><div class="mono">${pick['Stop Loss']}</div>
+              <div class="text-slate-700">Target 1</div><div class="mono">${pick['Target 1']}</div>
+              <div class="text-slate-700">Target 2</div><div class="mono">${pick['Target 2']}</div>
+              <div class="text-slate-700">R:R Multiple</div><div class="mono">${pick['R:R Multiple']}</div>
+              <div class="text-slate-700">Risk % (Long)</div><div class="mono">${pick['Risk % (Long)']}</div>
+              <div class="text-slate-700">Target % (override)</div><div class="mono">${pick['Target % (override)']}</div>
+            </div>
+            ${greeksBlock}
+            ${reasonHtml}
+            <div class="mt-4 text-sm">${pick['Trade Analysis (Professional View)']}</div>
+          `;
+          grid.appendChild(card);
+        }
       }
       container.appendChild(grid);
     }
@@ -557,27 +596,17 @@
       const container = document.getElementById('legs');
       container.innerHTML = '';
       if (!items.length) { container.innerHTML = '<div class="p-4 text-sm text-slate-500">No results</div>'; return; }
-
-      // Aggregate unique symbols -> take legs info from the highest-ranked row for that symbol
-      const bySymbol = new Map();
-      for (const it of items) {
-        if (!bySymbol.has(it.Symbol) || it.Rank < bySymbol.get(it.Symbol).Rank) {
-          bySymbol.set(it.Symbol, it);
-        }
-      }
-
       const table = document.createElement('table');
       table.className = 'min-w-full text-sm';
       const thead = document.createElement('thead');
-      thead.innerHTML = '<tr><th class="px-3 py-2 bg-slate-100 text-left">Symbol</th><th class="px-3 py-2 bg-slate-100 text-left">Top 3 Calls</th><th class="px-3 py-2 bg-slate-100 text-left">Top 3 Puts</th></tr>';
+      thead.innerHTML = '<tr><th class="px-3 py-2 bg-slate-100 text-left">Symbol</th><th class="px-3 py-2 bg-slate-100 text-left">Top Call</th><th class="px-3 py-2 bg-slate-100 text-left">Top Put</th></tr>';
       const tbody = document.createElement('tbody');
-
-      for (const [sym, it] of bySymbol.entries()) {
-        const calls = (it._legs?.bestCallsTop3 || []).map(x=>`${fmt(x.strike,0)} / ${fmt(x.ltp,2)} / ${fmt(x.score,2)}`).join(' | ') || '—';
-        const puts  = (it._legs?.bestPutsTop3  || []).map(x=>`${fmt(x.strike,0)} / ${fmt(x.ltp,2)} / ${fmt(x.score,2)}`).join(' | ') || '—';
+      for (const it of items) {
+        const c = it._legs?.bestCall ? `${fmt(it._legs.bestCall.strike,0)} / ${fmt(it._legs.bestCall.ltp,2)} / ${fmt(it._legs.bestCall.score,2)}` : '—';
+        const p = it._legs?.bestPut  ? `${fmt(it._legs.bestPut.strike,0)} / ${fmt(it._legs.bestPut.ltp,2)} / ${fmt(it._legs.bestPut.score,2)}` : '—';
         const tr = document.createElement('tr');
         tr.className = 'border-b hover:bg-slate-50';
-        tr.innerHTML = `<td class="px-3 py-2 font-medium">${sym}</td><td class="px-3 py-2 mono">${calls}</td><td class="px-3 py-2 mono">${puts}</td>`;
+        tr.innerHTML = `<td class="px-3 py-2 font-medium">${it.Symbol}</td><td class="px-3 py-2 mono">${c}</td><td class="px-3 py-2 mono">${p}</td>`;
         tbody.appendChild(tr);
       }
       table.appendChild(thead); table.appendChild(tbody);
@@ -641,8 +670,8 @@
 
         const picks = [];
         for (const [sym, arr] of groups.entries()) {
-          const top3 = pickTopTradesForSymbol(arr, settings, 3);
-          picks.push(...top3);
+          const p = pickTradeForSymbol(arr, settings);
+          if (p) picks.push(p);
         }
 
         lastReport = picks;
@@ -664,14 +693,17 @@
       if (tableMode) renderTable(items); else renderCards(items);
     });
 
+    document.getElementById('cardViewMode').addEventListener('change', (e)=>{
+      cardViewMode = e.target.value;
+      if (!tableMode) {
+        const items = applySearchSort(lastReport);
+        renderCards(items);
+      }
+    });
+
     document.getElementById('btnMethod').addEventListener('click', ()=> document.getElementById('modal').showModal());
     document.getElementById('btnClear').addEventListener('click', ()=> {
-      lastReport = [];
-      document.getElementById('results').innerHTML='';
-      document.getElementById('legs').innerHTML='';
-      document.getElementById('summary').innerHTML='';
-      document.getElementById('fileInput').value='';
-      document.getElementById('btnDownload').disabled=true;
+      lastReport = []; document.getElementById('results').innerHTML=''; document.getElementById('legs').innerHTML=''; document.getElementById('summary').innerHTML=''; document.getElementById('fileInput').value=''; document.getElementById('btnDownload').disabled=true;
     });
 
     document.getElementById('search').addEventListener('input', ()=>{
@@ -685,7 +717,7 @@
       if (!lastReport.length) return;
       const csv = asCsv(lastReport.map(r => {
         const out = {...r};
-        delete out._raw; delete out._legs; delete out._pro_label; delete out._pro_color; delete out._pro_score; delete out._rr; delete out._strength; delete out._dir;
+        delete out._raw; delete out._legs; delete out._pro_label; delete out._pro_color; delete out._pro_score; delete out._rr; delete out._strength; delete out._dir; delete out._ranked;
         return out;
       }));
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
@@ -727,13 +759,10 @@ APOLLOHOSP,Put,7700,66.5,-1.0,26000,-5,1.5,250100,-12100,-4.6,21.0,-1.3,7808.5,-
           let rows = [];
           if (fmtType === 'STANDARD') rows = normalizeStandard(raw);
           else if (fmtType === 'SPLIT') rows = normalizeSplit(raw, base);
-
           const groups = new Map();
           for (const r of rows) { const sym = clean(r.Symbol) || base; if (!groups.has(sym)) groups.set(sym, []); groups.get(sym).push(r); }
-
           const picks = [];
-          for (const [sym, arr] of groups.entries()) { const top3 = pickTopTradesForSymbol(arr, settings, 3); picks.push(...top3); }
-
+          for (const [sym, arr] of groups.entries()) { const p = pickTradeForSymbol(arr, settings); if (p) picks.push(p); }
           lastReport = picks;
           document.getElementById('btnDownload').disabled = picks.length === 0;
           const items = applySearchSort(picks);
