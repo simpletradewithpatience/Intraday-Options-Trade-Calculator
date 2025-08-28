@@ -397,7 +397,7 @@
       let arr=items.slice(); if(q) arr=arr.filter(x=>x.Symbol.toLowerCase().includes(q));
       // strength filter
       if(strengthFilter!=='all'){ arr=arr.filter(x=>{ const s=(x._strength||0); if(strengthFilter==='strong') return s>=3.3; if(strengthFilter==='moderate') return s<3.3 && s>=1.7; if(strengthFilter==='weak') return s<1.7; }); }
-      if(sort==='rr') arr.sort((a,b)=>(b._rr||0)-(a._rr||0)); else if(sort==='strength') arr.sort((a,b)=>(b._strength||0)-(a._strength||0)); else if(sort==='entry') arr.sort((a,b)=>parseFloat(b['Entry price']||0)-parseFloat(a['Entry price']||0));
+      if(sort==='rr') arr.sort((a,b)=>(b._rr||0)-(a._rr||0)); else if(sort==='strength') arr.sort((a,b)=>(b._strength||0)-(a._strength||0)); else if(sort==='entry') arr.sort((a,b)=>parseFloat(b['Entry price']||0)-parseFloat(a['Entry price']||0)); else if(sort==='bullish') arr = arr.filter(x => x.Sentiment === 'Bullish'); else if(sort==='bearish') arr = arr.filter(x => x.Sentiment === 'Bearish'); else if(sort==='neutral') arr = arr.filter(x => x.Sentiment === 'Neutral');
       return arr;
     }
 
@@ -459,5 +459,6 @@ APOLLOHOSP,Put,7700,66.5,-1.0,26000,-5,1.5,250100,-12100,-4.6,21.0,-1.3,7808.5,-
   </script>
 </body>
 </html>
+
 
 
