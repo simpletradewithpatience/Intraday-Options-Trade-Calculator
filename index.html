@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Options OI Trade Outlook — Pro View (Polished v2 + Wide Format)</title>
+  <title>Options OI Trade Outlook — Pro View (Updated: Wide Format + Strong Filter + CSV)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -57,7 +57,7 @@
         <div>
           <label class="block text-sm font-medium mb-1">Upload CSV or XLS/XLSX</label>
           <input id="fileInput" type="file" accept=".csv,.xls,.xlsx" class="block w-full text-sm"/>
-          <p class="text-xs text-slate-500 mt-2">Supports: Standard (Symbol/Type/Strike...), Split CALL/PUT table, and <strong>Wide per‑row Call+Put</strong> (built_up_call, vega_call, ... built_up_put).</p>
+          <p class="text-xs text-slate-500 mt-2">Supports: <b>Standard</b> (Symbol/Type/Strike...), <b>Split</b> CALL/PUT table, and <b>Wide per‑row Call+Put</b> (e.g., <code>built_up_call</code>, <code>current_price_call</code>, <code>strike_price</code>, <code>current_price_put</code>, <code>built_up_put</code>).</p>
         </div>
         <div>
           <label class="block text-sm font-medium mb-1">Settings</label>
@@ -125,6 +125,7 @@
     <section class="bg-white rounded-2xl p-4 shadow">
       <div class="flex items-center justify-between">
         <h3 class="font-semibold mb-2">Top Call & Top Put (reference)</h3>
+        <div class="text-xs text-slate-500">Format: Strike / LTP / Score</div>
       </div>
       <div id="legs" class="table-wrap"></div>
     </section>
@@ -157,9 +158,7 @@
     function detectFormat(headers) {
       const U=headers.map(h=>up(h));
       const L=headers.map(h=>normalizeKey(h).toLowerCase());
-      // STANDARD: explicit Symbol/Type/Strike
       if (U.includes('SYMBOL') && U.includes('TYPE') && U.includes('STRIKE')) return 'STANDARD';
-      // SPLIT: left/right blocks around STRIKE
       const strikeIdx = U.indexOf('STRIKE');
       if (strikeIdx > 0) {
         const left = new Set(U.slice(0,strikeIdx));
@@ -167,7 +166,6 @@
         const both = ['OI','CHNG IN OI','VOLUME','IV','LTP','CHNG'];
         if (both.every(x=>left.has(x)) && both.every(x=>right.has(x))) return 'SPLIT';
       }
-      // WIDE (per-row Call+Put with prefixes)
       const wideMustHave = ['strike_price','current_price_call','current_price_put','open_interest_call','open_interest_put','built_up_call','built_up_put'];
       if (wideMustHave.every(k=>L.includes(k))) return 'WIDE';
       return 'UNKNOWN';
@@ -187,11 +185,9 @@
       const out=[];
       for(const row of raw){
         const strike = num(row[headers[strikeIdx]]);
-        // call
         const callLtp=num(get(row,'LTP')); const callChg=num(get(row,'CHNG')); const callIv=num(get(row,'IV')); const callVol=num(get(row,'VOLUME')); const callOi=num(get(row,'OI')); const callOiChg=num(get(row,'CHNG IN OI'));
         const callDayPct = (callLtp && callChg) ? (callChg/Math.max(callLtp-callChg,0.01))*100 : null;
         out.push({Symbol:filenameBase,Type:'Call',Strike:strike,LTP:callLtp,'Day Chg%':callDayPct,Volume:callVol,'Volume Chg%':null,'TTV (Cr)':null,OI:callOi,'OI Chg':callOiChg,'OI Chg%':null,IV:callIv,'IV Chg%':null,Spot:null,Delta:null,Gamma:null,Rho:null,Theta:null,Vega:null,Buildup:''});
-        // put (right side)
         const getRight=(obj,key)=>obj[headers[U.lastIndexOf(key)]];
         const putLtp=num(getRight(row,'LTP')); const putChg=num(getRight(row,'CHNG')); const putIv=num(getRight(row,'IV')); const putVol=num(getRight(row,'VOLUME')); const putOi=num(getRight(row,'OI')); const putOiChg=num(getRight(row,'CHNG IN OI'));
         const putDayPct = (putLtp && putChg) ? (putChg/Math.max(putLtp-putChg,0.01))*100 : null;
@@ -200,7 +196,6 @@
       return out;
     }
 
-    // NEW: Normalize wide per-row Call+Put format
     function normalizeWide(raw, filenameBase='UNKNOWN'){
       if(!raw.length) return [];
       const headers = Object.keys(raw[0]).map(normalizeKey);
@@ -211,11 +206,8 @@
       for(const row of raw){
         const symbol = clean(row['Symbol']) || filenameBase;
         const strike = num(get(row,'strike_price'));
-        // CALL leg
         const call = {
-          Symbol: symbol,
-          Type: 'Call',
-          Strike: strike,
+          Symbol: symbol, Type: 'Call', Strike: strike,
           LTP: num(get(row,'current_price_call')),
           'Day Chg%': num(get(row,'day_changeP_call')),
           Volume: num(get(row,'volume_call')),
@@ -234,11 +226,8 @@
           Vega: num(get(row,'vega_call')),
           Buildup: clean(get(row,'built_up_call'))
         };
-        // PUT leg
         const put = {
-          Symbol: symbol,
-          Type: 'Put',
-          Strike: strike,
+          Symbol: symbol, Type: 'Put', Strike: strike,
           LTP: num(get(row,'current_price_put')),
           'Day Chg%': num(get(row,'day_changeP_put')),
           Volume: num(get(row,'volume_put')),
@@ -291,8 +280,7 @@
       let composite=baseScore; if(oiChgP!==null) composite+=oiChgP/10; else if(oiChg!==null) composite+=Math.sign(oiChg)*0.5; if(dayChgP!==null) composite+=dayChgP/5; if(ivChgP!==null) composite+=ivChgP/10;
       const normalized=clamp((composite+3)/9,0,1); const scoreOutOf5=+(normalized*5).toFixed(1);
       let label='Moderate', color='yellow', pillClass='pill-yellow'; if(normalized>=0.66){ label='Strong'; color='green'; pillClass='pill-green'; } else if(normalized<0.33){ label='Weak'; color='red'; pillClass='pill-red'; }
-      const lines=[]; const overall=`${label} trade — composite strength ${scoreOutOf5}/5 (${color.toUpperCase()}).`;
-      lines.push(overall);
+      const overall=`${label} trade — composite strength ${scoreOutOf5}/5 (${color.toUpperCase()}).`;
       const dp=`Buildup: ${clean(row.Buildup)||'—'}`;
       const oiLine=`OI: ${oi!==null?fmt(oi,0):'—'}${oiChgP!==null?' (OI Δ%: '+fmt(oiChgP,1)+'%)':(oiChg!==null?' (OI Δ: '+fmt(oiChg,0)+')':'')}`;
       const priceLine=`Option Price Δ%: ${dayChgP!==null?fmt(dayChgP,1)+'%':'—'} (LTP: ${ltp!==null?fmt(ltp,2):'—'})`;
@@ -311,7 +299,7 @@
           </ul>
         </div>
         <div><strong>Interpretation:</strong>
-          <ul class="list-disc pl-5 mt-1">${interp.map(i=>`<li>${i}</li>`).join('')}</ul>  
+          <ul class="list-disc pl-5 mt-1"><li>${interp.join('</li><li>')}</li></ul>
         </div>
       </div>`;
       return { html, label, color, scoreOutOf5 };
@@ -339,7 +327,7 @@
           else if (delta>0.45) points.push(`Delta ${fmt(delta,2)} — higher ITM probability, less convexity.`); else points.push(`Delta ${fmt(delta,2)} — cheaper convexity, needs move/vol.`);
         } else { if (Math.abs(delta)>=0.25 && Math.abs(delta)<=0.45) points.push(`Delta ${fmt(delta,2)} — balanced risk on PE side.`); else if (Math.abs(delta)>0.45) points.push(`Delta ${fmt(delta,2)} — high sensitivity; quicker P&L swings.`); else points.push(`Delta ${fmt(delta,2)} — low sensitivity; patience needed.`);} }
       let verdict='Neutral setup — trade smaller or wait for confirmation.'; if(direction==='bullish') verdict='Bullish edge — buy dips or follow momentum.'; if(direction==='bearish') verdict='Bearish edge — sell rallies or follow momentum.';
-      const html=`<div class="mt-4 text-sm"><div class="text-slate-700 font-medium mb-1">Why take this trade?</div><ul class="list-disc pl-5 space-y-1">${points.map(p=>`<li>${p}</li>`).join('')}</ul><div class="mt-2 text-slate-600">${verdict}</div></div>`;
+      const html=`<div class="mt-4 text-sm"><div class="text-slate-700 font-medium mb-1">Why take this trade?</div><ul class="list-disc pl-5 space-y-1"><li>${points.join('</li><li>')}</li></ul><div class="mt-2 text-slate-600">${verdict}</div></div>`;
       return html;
     }
 
@@ -396,16 +384,10 @@
     }
 
     function renderCards(items){
+      const passStrength = (score)=>{ const s=Number(score||0); if (strengthFilter==='all') return true; if (strengthFilter==='strong') return s>=3.3; if (strengthFilter==='moderate') return s<3.3 && s>=1.7; if (strengthFilter==='weak') return s<1.7; return true; };
       const container=document.getElementById('results'); container.innerHTML=''; document.getElementById('viewTitle').textContent='Per-Symbol Trade Outlook — Cards View'; if(!items.length){ container.innerHTML='<div class="p-4 text-sm text-slate-500">No results</div>'; return; }
       const grid=document.createElement('div'); grid.className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4';
-      for(const it of items){ let subset=(it._ranked||[it]).slice(); if(cardViewMode==='1') subset=subset.slice(0,1); else if(cardViewMode==='3') subset=subset.slice(0,3);
-        for(const pick of subset){ let gradient='from-yellow-100 to-yellow-200'; if(pick._pro_color==='green') gradient='from-green-100 to-green-200'; else if(pick._pro_color==='red') gradient='from-red-100 to-red-200';
-          const d=num(pick._raw['Delta']); const g=num(pick._raw['Gamma']); const t=num(pick._raw['Theta']); const v=num(pick._raw['Vega']); const r=num(pick._raw['Rho']);
-          const greeksBlock=`<div class="mt-4"><div class="text-slate-500 text-xs mb-1">Greeks (selected leg)</div><div class="flex flex-wrap gap-2 mono text-xs"><span class="pill pill-gray">Δ ${fmt(d,2)}</span><span class="pill pill-gray">Γ ${fmt(g,4)}</span><span class="pill pill-gray">Θ ${fmt(t,2)}</span><span class="pill pill-gray">V ${fmt(v,2)}</span><span class="pill pill-gray">ρ ${fmt(r,2)}</span></div></div>`;
-          const reasonHtml=buildWhyTakeThisTrade(pick._raw, pick._dir);
-          const card=document.createElement('div'); card.className=`group card p-4 rounded-2xl bg-gradient-to-r ${gradient} shadow border border-white/60`;
-          const shareTxt = () => [ `${pick.Symbol} — ${pick['Strike price to trade']}`, `Entry: ${pick['Entry price']} | SL: ${pick['Stop Loss']}`, `T1: ${pick['Target 1']} | T2: ${pick['Target 2']}`, `R:R ${pick['R:R Multiple']} | Strength ${fmt(pick._pro_score,1)}/5` ].join('\n');
-          card.innerHTML=`
+      for(const it of items){ const all=(it._ranked||[it]).slice(); let subset=all.filter(p=> passStrength(p._strength)); if(cardViewMode==='1') subset=subset.slice(0,1); else if(cardViewMode==='3') subset=subset.slice(0,3); if(!subset.length) continue; for(const pick of subset){ let gradient='from-yellow-100 to-yellow-200'; if(pick._pro_color==='green') gradient='from-green-100 to-green-200'; else if(pick._pro_color==='red') gradient='from-red-100 to-red-200'; const d=num(pick._raw['Delta']); const g=num(pick._raw['Gamma']); const t=num(pick._raw['Theta']); const v=num(pick._raw['Vega']); const r=num(pick._raw['Rho']); const greeksBlock=`<div class="mt-4"><div class="text-slate-500 text-xs mb-1">Greeks (selected leg)</div><div class="flex flex-wrap gap-2 mono text-xs"><span class="pill pill-gray">Δ ${fmt(d,2)}</span><span class="pill pill-gray">Γ ${fmt(g,4)}</span><span class="pill pill-gray">Θ ${fmt(t,2)}</span><span class="pill pill-gray">V ${fmt(v,2)}</span><span class="pill pill-gray">ρ ${fmt(r,2)}</span></div></div>`; const reasonHtml=buildWhyTakeThisTrade(pick._raw, pick._dir); const card=document.createElement('div'); card.className=`group card p-4 rounded-2xl bg-gradient-to-r ${gradient} shadow border border-white/60`; const shareTxt = () => [ `${pick.Symbol} — ${pick['Strike price to trade']}`, `Entry: ${pick['Entry price']} | SL: ${pick['Stop Loss']}`, `T1: ${pick['Target 1']} | T2: ${pick['Target 2']}`, `R:R ${pick['R:R Multiple']} | Strength ${fmt(pick._pro_score,1)}/5` ].join('\n'); card.innerHTML=`
             <div class="flex items-start justify-between">
               <div>
                 <div class="text-lg font-semibold">${pick.Symbol}</div>
@@ -434,11 +416,7 @@
                 <div class="hidden md:flex items-center justify-center text-slate-700/80 text-xs h-full md:group-hover:hidden select-none">Hover for full details →</div>
                 <div class="hover-details md:block md:opacity-0 md:max-h-0">${greeksBlock}${reasonHtml}<div class="mt-4 text-sm">${pick['Trade Analysis (Professional View)']}</div></div>
               </div>
-            </div>`;
-          const expander=card.querySelector('.card-expander'); if(expander){ expander.addEventListener('click', (e)=>{ e.stopPropagation(); card.classList.toggle('expanded'); expander.textContent = card.classList.contains('expanded') ? 'Tap to collapse' : 'Tap to expand'; }); }
-          const copyBtn=card.querySelector('.btnCopy'); copyBtn.addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(shareTxt()); copyBtn.textContent='Copied!'; setTimeout(()=>copyBtn.textContent='Copy Trade Plan',1200); } catch(e){ alert('Copy failed'); } });
-          grid.appendChild(card);
-        }
+            </div>`; const expander=card.querySelector('.card-expander'); if(expander){ expander.addEventListener('click', (e)=>{ e.stopPropagation(); card.classList.toggle('expanded'); expander.textContent = card.classList.contains('expanded') ? 'Tap to collapse' : 'Tap to expand'; }); } const copyBtn=card.querySelector('.btnCopy'); copyBtn.addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(shareTxt()); copyBtn.textContent='Copied!'; setTimeout(()=>copyBtn.textContent='Copy Trade Plan',1200); } catch(e){ alert('Copy failed'); } }); grid.appendChild(card); }
       }
       container.appendChild(grid);
     }
@@ -458,8 +436,10 @@
     function applySearchSort(items){
       const q=(document.getElementById('search').value||'').toLowerCase().trim(); const sort=document.getElementById('sortBy').value;
       let arr=items.slice(); if(q) arr=arr.filter(x=>x.Symbol.toLowerCase().includes(q));
-      // strength filter
-      if(strengthFilter!=='all'){ arr=arr.filter(x=>{ const s=(x._strength||0); if(strengthFilter==='strong') return s>=3.3; if(strengthFilter==='moderate') return s<3.3 && s>=1.7; if(strengthFilter==='weak') return s<1.7; }); }
+      // apply strength filter to per-symbol ranked candidates
+      if(strengthFilter!=='all'){
+        arr=arr.map(report=>{ const filteredRanked=(report._ranked||[]).filter(p=>{ const s=p._strength||0; if(strengthFilter==='strong') return s>=3.3; if(strengthFilter==='moderate') return s<3.3 && s>=1.7; if(strengthFilter==='weak') return s<1.7; return true; }); if(!filteredRanked.length) return null; return {...report, _ranked: filteredRanked}; }).filter(Boolean);
+      }
       if(sort==='rr') arr.sort((a,b)=>(b._rr||0)-(a._rr||0)); else if(sort==='strength') arr.sort((a,b)=>(b._strength||0)-(a._strength||0)); else if(sort==='entry') arr.sort((a,b)=>parseFloat(b['Entry price']||0)-parseFloat(a['Entry price']||0));
       return arr;
     }
@@ -481,13 +461,12 @@
     });
 
     document.getElementById('toggleViewBtn').addEventListener('click', ()=>{ tableMode=!tableMode; document.getElementById('toggleViewBtn').textContent=tableMode?'Switch to Cards View':'Switch to Table View'; const items=applySearchSort(lastReport); if(tableMode) renderTable(items); else renderCards(items); });
-    document.getElementById('cardViewMode').addEventListener('change', (e)=>{ cardViewMode=e.target.value; if(!tableMode){ const items=applySearchSort(lastReport); renderCards(items); } });
+    document.getElementById('cardViewMode').addEventListener('change', (e)=>{ cardViewMode=e.target.value; const items=applySearchSort(lastReport); if(tableMode) renderTable(items); else renderCards(items); });
     document.getElementById('btnMethod').addEventListener('click', ()=> modal.showModal());
     document.getElementById('btnClear').addEventListener('click', ()=>{ lastReport=[]; document.getElementById('results').innerHTML=''; document.getElementById('legs').innerHTML=''; document.getElementById('summary').innerHTML=''; document.getElementById('fileInput').value=''; document.getElementById('btnDownload').disabled=true; });
     document.getElementById('search').addEventListener('input', ()=>{ const items=applySearchSort(lastReport); if(tableMode) renderTable(items); else renderCards(items); });
     document.getElementById('sortBy').addEventListener('change', ()=>{ const items=applySearchSort(lastReport); if(tableMode) renderTable(items); else renderCards(items); });
 
-    // Quick strength filters
     document.querySelectorAll('.btnFilter').forEach(btn=> btn.addEventListener('click', ()=>{ strengthFilter=btn.dataset.filter; const items=applySearchSort(lastReport); if(tableMode) renderTable(items); else renderCards(items); }));
 
     // Download CSV with only the specified fields
