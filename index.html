@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Options OI Trade Outlook — Pro View (Polished v2)</title>
+  <title>Options OI Trade Outlook — Pro View (Polished v2 + Wide Format)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -38,8 +38,7 @@
           <div class="text-xs text-slate-500">Options OI Trade Outlook — Professional View</div>
         </div>
       </div>
-      <div class="hidden md:flex items-center gap-2">
-      </div>
+      <div class="hidden md:flex items-center gap-2"></div>
     </div>
   </div>
 
@@ -58,7 +57,7 @@
         <div>
           <label class="block text-sm font-medium mb-1">Upload CSV or XLS/XLSX</label>
           <input id="fileInput" type="file" accept=".csv,.xls,.xlsx" class="block w-full text-sm"/>
-          <p class="text-xs text-slate-500 mt-2">Supports both standard OI tables and split CALL/STRIKE/PUTS files. Headers are auto‑detected.</p>
+          <p class="text-xs text-slate-500 mt-2">Supports: Standard (Symbol/Type/Strike...), Split CALL/PUT table, and <strong>Wide per‑row Call+Put</strong> (built_up_call, vega_call, ... built_up_put).</p>
         </div>
         <div>
           <label class="block text-sm font-medium mb-1">Settings</label>
@@ -157,7 +156,10 @@
     const normalizeKey = k => k.replace(/\s+/g,' ').trim();
     function detectFormat(headers) {
       const U=headers.map(h=>up(h));
+      const L=headers.map(h=>normalizeKey(h).toLowerCase());
+      // STANDARD: explicit Symbol/Type/Strike
       if (U.includes('SYMBOL') && U.includes('TYPE') && U.includes('STRIKE')) return 'STANDARD';
+      // SPLIT: left/right blocks around STRIKE
       const strikeIdx = U.indexOf('STRIKE');
       if (strikeIdx > 0) {
         const left = new Set(U.slice(0,strikeIdx));
@@ -165,6 +167,9 @@
         const both = ['OI','CHNG IN OI','VOLUME','IV','LTP','CHNG'];
         if (both.every(x=>left.has(x)) && both.every(x=>right.has(x))) return 'SPLIT';
       }
+      // WIDE (per-row Call+Put with prefixes)
+      const wideMustHave = ['strike_price','current_price_call','current_price_put','open_interest_call','open_interest_put','built_up_call','built_up_put'];
+      if (wideMustHave.every(k=>L.includes(k))) return 'WIDE';
       return 'UNKNOWN';
     }
 
@@ -191,6 +196,68 @@
         const putLtp=num(getRight(row,'LTP')); const putChg=num(getRight(row,'CHNG')); const putIv=num(getRight(row,'IV')); const putVol=num(getRight(row,'VOLUME')); const putOi=num(getRight(row,'OI')); const putOiChg=num(getRight(row,'CHNG IN OI'));
         const putDayPct = (putLtp && putChg) ? (putChg/Math.max(putLtp-putChg,0.01))*100 : null;
         out.push({Symbol:filenameBase,Type:'Put',Strike:strike,LTP:putLtp,'Day Chg%':putDayPct,Volume:putVol,'Volume Chg%':null,'TTV (Cr)':null,OI:putOi,'OI Chg':putOiChg,'OI Chg%':null,IV:putIv,'IV Chg%':null,Spot:null,Delta:null,Gamma:null,Rho:null,Theta:null,Vega:null,Buildup:''});
+      }
+      return out;
+    }
+
+    // NEW: Normalize wide per-row Call+Put format
+    function normalizeWide(raw, filenameBase='UNKNOWN'){
+      if(!raw.length) return [];
+      const headers = Object.keys(raw[0]).map(normalizeKey);
+      const L = headers.map(h=>h.toLowerCase());
+      const idx = k => headers[L.indexOf(k.toLowerCase())];
+      const get = (obj, key) => obj[idx(key)];
+      const out = [];
+      for(const row of raw){
+        const symbol = clean(row['Symbol']) || filenameBase;
+        const strike = num(get(row,'strike_price'));
+        // CALL leg
+        const call = {
+          Symbol: symbol,
+          Type: 'Call',
+          Strike: strike,
+          LTP: num(get(row,'current_price_call')),
+          'Day Chg%': num(get(row,'day_changeP_call')),
+          Volume: num(get(row,'volume_call')),
+          'Volume Chg%': num(get(row,'volume_changeP_call')),
+          'TTV (Cr)': num(get(row,'ttv_call')),
+          OI: num(get(row,'open_interest_call')),
+          'OI Chg': (num(get(row,'open_interest_call'))!==null && num(get(row,'prev_day_open_interest_call'))!==null) ? (num(get(row,'open_interest_call'))-num(get(row,'prev_day_open_interest_call'))) : null,
+          'OI Chg%': num(get(row,'oi_changeP_call')),
+          IV: num(get(row,'iv_call')),
+          'IV Chg%': null,
+          Spot: null,
+          Delta: num(get(row,'delta_call')),
+          Gamma: num(get(row,'gamma_call')),
+          Rho: num(get(row,'rho_call')),
+          Theta: num(get(row,'theta_call')),
+          Vega: num(get(row,'vega_call')),
+          Buildup: clean(get(row,'built_up_call'))
+        };
+        // PUT leg
+        const put = {
+          Symbol: symbol,
+          Type: 'Put',
+          Strike: strike,
+          LTP: num(get(row,'current_price_put')),
+          'Day Chg%': num(get(row,'day_changeP_put')),
+          Volume: num(get(row,'volume_put')),
+          'Volume Chg%': num(get(row,'volume_changeP_put')),
+          'TTV (Cr)': num(get(row,'ttv_put')),
+          OI: num(get(row,'open_interest_put')),
+          'OI Chg': (num(get(row,'open_interest_put'))!==null && num(get(row,'prev_day_open_interest_put'))!==null) ? (num(get(row,'open_interest_put'))-num(get(row,'prev_day_open_interest_put'))) : null,
+          'OI Chg%': num(get(row,'oi_changeP_put')),
+          IV: num(get(row,'iv_put')),
+          'IV Chg%': null,
+          Spot: null,
+          Delta: num(get(row,'delta_put')),
+          Gamma: num(get(row,'gamma_put')),
+          Rho: num(get(row,'rho_put')),
+          Theta: num(get(row,'theta_put')),
+          Vega: num(get(row,'vega_put')),
+          Buildup: clean(get(row,'built_up_put'))
+        };
+        out.push(call, put);
       }
       return out;
     }
@@ -235,7 +302,6 @@
       if (label === 'Strong') interp.push('Aggressive participation with supportive OI and momentum — higher probability trade.');
       else if (label === 'Moderate') interp.push('Mixed signals — consider reduced size or wait for confirmation.');
       else interp.push('Weak setup — avoid or treat as speculative with limited size.');
-      
       const html=`<div class="text-sm space-y-2">
         <div><strong>Trade Analysis (Professional View):</strong> <span class="${pillClass}">${label} — ${scoreOutOf5}/5</span></div>
         <div><strong>Summary:</strong> ${overall}</div>
@@ -406,7 +472,7 @@
       const f=e.target.files?.[0]; if(!f) return; try{
         const settings={ riskLongPct: num(document.getElementById('riskLongPct').value) ?? 35, rrMultiple: num(document.getElementById('rrMultiple').value) ?? 2, targetPct: num(document.getElementById('targetPct').value) ?? 0 };
         const raw=await parseFile(f); const headers=raw.length?Object.keys(raw[0]).map(normalizeKey):[]; const fmtType=detectFormat(headers); const base=f.name.split(/[\\/]/).pop().replace(/\.[^.]+$/,'').toUpperCase();
-        let rows=[]; if(fmtType==='STANDARD') rows=normalizeStandard(raw); else if(fmtType==='SPLIT') rows=normalizeSplit(raw, base); else { alert('Unrecognized file format.'); return; }
+        let rows=[]; if(fmtType==='STANDARD') rows=normalizeStandard(raw); else if(fmtType==='SPLIT') rows=normalizeSplit(raw, base); else if(fmtType==='WIDE') rows=normalizeWide(raw, base); else { alert('Unrecognized file format.'); return; }
         const groups=new Map(); for(const r of rows){ const sym=clean(r.Symbol)||base; if(!groups.has(sym)) groups.set(sym,[]); groups.get(sym).push(r); }
         const picks=[]; for(const [sym, arr] of groups.entries()){ const p=pickTradeForSymbol(arr, settings); if(p) picks.push(p); }
         lastReport=picks; document.getElementById('btnDownload').disabled=picks.length===0;
@@ -425,82 +491,89 @@
     document.querySelectorAll('.btnFilter').forEach(btn=> btn.addEventListener('click', ()=>{ strengthFilter=btn.dataset.filter; const items=applySearchSort(lastReport); if(tableMode) renderTable(items); else renderCards(items); }));
 
     // Download CSV with only the specified fields
-document.getElementById('btnDownload').addEventListener('click', () => {
-  if (!lastReport.length) return;
+  document.getElementById('btnDownload').addEventListener('click', () => {
+    try {
+      if (!lastReport.length) {
+        alert('No trades to export yet. Upload a file or click "Load Sample" first.');
+        return;
+      }
 
-  let rows = [];
+      let rows = [];
 
-  lastReport.forEach(report => {
-    let subset = (report._ranked || []).slice();
+      lastReport.forEach(report => {
+        // Prefer ranked candidates; if missing, fall back to the single pick object
+        let subset = (report._ranked && report._ranked.length ? report._ranked.slice() : [report]);
 
-    // Respect "Show" dropdown
-    if (cardViewMode === '1') subset = subset.slice(0, 1);
-    else if (cardViewMode === '3') subset = subset.slice(0, 3);
-    // else "all" → keep all strikes
+        // Respect the "Show" dropdown
+        if (cardViewMode === '1') subset = subset.slice(0, 1);
+        else if (cardViewMode === '3') subset = subset.slice(0, 3);
+        // else "all" → keep all strikes
 
-    subset.forEach(r => {
-      // Convert "Why take this trade?" (HTML → plain text)
-      let whyText = '';
-      try {
-        const html = buildWhyTakeThisTrade(r._raw, r._dir) || '';
-        const tmp = document.createElement('div');
-        tmp.innerHTML = html;
-        whyText = (tmp.textContent || tmp.innerText || '').replace(/\s+/g, ' ').trim();
-      } catch (e) { /* ignore */ }
+        subset.forEach(r => {
+          // Convert "Why take this trade?" (HTML → plain text)
+          let whyText = '';
+          try {
+            const html = buildWhyTakeThisTrade((r._raw || report._raw), (r._dir || report._dir)) || '';
+            const tmp = document.createElement('div');
+            tmp.innerHTML = html;
+            whyText = (tmp.textContent || tmp.innerText || '').replace(/\s+/g, ' ').trim();
+          } catch (e) { /* ignore */ }
 
-      const raw = r._raw || {};
+          const raw = (r._raw || report._raw || {});
 
-      // Build row with exactly the requested fields
-      rows.push({
-        Symbol: r.Symbol,
-        Strike: raw.Strike,
-        Type: raw.Type,
-        LTP: raw.LTP,
-        Sentiment: r.Sentiment,
-        Trend: r.Trend,
-        'Strike price to trade': r['Strike price to trade'],
-        'Entry price': r['Entry price'],
-        'Stop Loss': r['Stop Loss'],
-        'Target 1': r['Target 1'],
-        'Target 2': r['Target 2'],
-        'R:R Multiple': r['R:R Multiple'],
-        'Risk % (Long)': r['Risk % (Long)'],
-        'Strength Score (0-5)': r._pro_score,
-        'Strength Label': r._pro_label,
-        Direction: r._dir,
-        IV: raw.IV,
-        Delta: raw.Delta,
-        Gamma: raw.Gamma,
-        Theta: raw.Theta,
-        Vega: raw.Vega,
-        Buildup: raw.Buildup,
-        'Why take this trade?': whyText
+          rows.push({
+            Symbol: r.Symbol || report.Symbol,
+            Strike: raw.Strike,
+            Type: raw.Type,
+            LTP: raw.LTP,
+            Sentiment: r.Sentiment || report.Sentiment,
+            Trend: r.Trend || report.Trend,
+            'Strike price to trade': r['Strike price to trade'] || report['Strike price to trade'],
+            'Entry price': r['Entry price'] || report['Entry price'],
+            'Stop Loss': r['Stop Loss'] || report['Stop Loss'],
+            'Target 1': r['Target 1'] || report['Target 1'],
+            'Target 2': r['Target 2'] || report['Target 2'],
+            'R:R Multiple': r['R:R Multiple'] || report['R:R Multiple'],
+            'Risk % (Long)': r['Risk % (Long)'] || report['Risk % (Long)'],
+            'Strength Score (0-5)': (r._pro_score ?? report._pro_score),
+            'Strength Label': r._pro_label || report._pro_label,
+            Direction: r._dir || report._dir,
+            IV: raw.IV,
+            Delta: raw.Delta,
+            Gamma: raw.Gamma,
+            Theta: raw.Theta,
+            Vega: raw.Vega,
+            Buildup: raw.Buildup,
+            'Why take this trade?': whyText
+          });
+        });
       });
-    });
+
+      if (!rows.length) {
+        alert('No rows matched your current view. Try changing the "Show" dropdown or removing filters.');
+        return;
+      }
+
+      const csv = asCsv(rows);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'trade_outlook.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch (err) {
+      alert('Export failed: ' + (err && err.message ? err.message : err));
+    }
   });
 
-  if (!rows.length) return;
+    // CSV helper
+    function asCsv(rows){ const headers=Object.keys(rows[0]||{}); const esc=v=>{ if(v===null||v===undefined) return ''; const s=String(v); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }; return [headers.join(','), ...rows.map(r=> headers.map(h=>esc(r[h])).join(','))].join('\n'); }
 
-  // Convert to CSV and download
-  const csv = asCsv(rows);
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'trade_outlook.csv';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-});
-
-// CSV helper
-function asCsv(rows){ const headers=Object.keys(rows[0]||{}); const esc=v=>{ if(v===null||v===undefined) return ''; const s=String(v); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; }; return [headers.join(','), ...rows.map(r=> headers.map(h=>esc(r[h])).join(','))].join('\n'); }
-
-// Sample data
-const sampleCSV=`Symbol,Type,Strike,LTP,Day Chg%,Volume,Volume Chg%,TTV (Cr),OI,OI Chg,OI Chg%,IV,IV Chg%,Spot,Delta,Gamma,Rho,Theta,Vega,Buildup
+    // Sample data (STANDARD)
+    const sampleCSV=`Symbol,Type,Strike,LTP,Day Chg%,Volume,Volume Chg%,TTV (Cr),OI,OI Chg,OI Chg%,IV,IV Chg%,Spot,Delta,Gamma,Rho,Theta,Vega,Buildup
 NIFTY,Call,24000,120,4.5,12500,20,3.1,240000,36000,17.6,12.2,6.5,23850,0.34,0.002,0.05,-4.1,10.1,Long Build Up
 NIFTY,Put,23800,95,-2.1,9800,-10,2.0,210000,-25000,-10.6,13.1,-3.5,23850,-0.32,0.003,0.05,-3.9,9.8,Short Covering
 RELIANCE,Call,2700,32,1.2,45000,8,1.2,550000,20000,3.8,22,1.1,2678,0.28,0.004,0.03,-2.1,6.2,Short Covering
@@ -508,10 +581,11 @@ RELIANCE,Put,2600,24,5.1,52000,15,1.0,470000,80000,20.5,23,2.5,2678,-0.38,0.005,
 APOLLOHOSP,Call,8000,72.2,3.3,42169,12,2.7,303875,152375,100.0,22.3,6.1,7808.5,0.35,0.002,-0.01,-5.6,9.1,Long Build Up
 APOLLOHOSP,Put,7700,66.5,-1.0,26000,-5,1.5,250100,-12100,-4.6,21.0,-1.3,7808.5,-0.01,0.002,-0.01,-5.1,8.7,Short Covering
 `;
+
     document.getElementById('btnSample').addEventListener('click', async ()=>{
       const file=new File([sampleCSV],'sample.csv',{type:'text/csv'});
       const settings={ riskLongPct: num(document.getElementById('riskLongPct').value) ?? 35, rrMultiple: num(document.getElementById('rrMultiple').value) ?? 2, targetPct: num(document.getElementById('targetPct').value) ?? 0 };
-      const raw=await parseFile(file); const headers=raw.length?Object.keys(raw[0]).map(normalizeKey):[]; const fmtType=detectFormat(headers); const base=file.name.replace(/\.[^.]+$/,'').toUpperCase(); let rows=[]; if(fmtType==='STANDARD') rows=normalizeStandard(raw); else if(fmtType==='SPLIT') rows=normalizeSplit(raw, base);
+      const raw=await parseFile(file); const headers=raw.length?Object.keys(raw[0]).map(normalizeKey):[]; const fmtType=detectFormat(headers); const base=file.name.replace(/\.[^.]+$/,'').toUpperCase(); let rows=[]; if(fmtType==='STANDARD') rows=normalizeStandard(raw); else if(fmtType==='SPLIT') rows=normalizeSplit(raw, base); else if(fmtType==='WIDE') rows=normalizeWide(raw, base);
       const groups=new Map(); for(const r of rows){ const sym=clean(r.Symbol)||base; if(!groups.has(sym)) groups.set(sym,[]); groups.get(sym).push(r); }
       const picks=[]; for(const [sym,arr] of groups.entries()){ const p=pickTradeForSymbol(arr, settings); if(p) picks.push(p); }
       lastReport=picks; document.getElementById('btnDownload').disabled=picks.length===0; const items=applySearchSort(picks); renderSummary(items); if(tableMode) renderTable(items); else renderCards(items); renderLegs(items);
@@ -519,9 +593,3 @@ APOLLOHOSP,Put,7700,66.5,-1.0,26000,-5,1.5,250100,-12100,-4.6,21.0,-1.3,7808.5,-
   </script>
 </body>
 </html>
-
-
-
-
-
-
