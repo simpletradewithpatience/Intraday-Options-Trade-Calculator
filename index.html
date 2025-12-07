@@ -1,270 +1,272 @@
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>STWP Options Loader – Premium Dashboard</title>
+<meta charset="utf-8" />
+<title>STWP Options Loader – Premium Dashboard</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-  <style>
-    body {
-      font-family: Arial;
-      background:#f4f5f7;
-      padding:20px;
-    }
+<style>
+body {
+font-family: Arial;
+background:#f4f5f7;
+padding:20px;
+}
 
-    h1 { margin-bottom:10px; }
+h1 { margin-bottom:10px; }
 
-    /* Summary Box */
-    #summaryBox {
-      padding:12px;
-      background:#fff;
-      border:1px solid #ccc;
-      margin:15px 0;
-      border-radius:6px;
-      font-size:14px;
-      transition: opacity .4s ease;
-    }
+/* Summary Box */
+#summaryBox {
+padding:12px;
+background:#fff;
+border:1px solid #ccc;
+margin:15px 0;
+border-radius:6px;
+font-size:14px;
+transition: opacity .4s ease;
+}
 
-    /* Scroll wrapper for the table (this enables header freeze) */
-    .table-wrapper {
-      max-height: 350px;
-      overflow-y: auto;
-      overflow-x: auto;
-      border-radius: 6px;
-      border: 1px solid #d1d5db;
-      background: #fff;
-      position: relative;
-    }
+/* Scroll wrapper for the table (this enables header freeze) */
+.table-wrapper {
+max-height: 350px;
+overflow-y: auto;
+overflow-x: auto;
+border-radius: 6px;
+border: 1px solid #d1d5db;
+background: #fff;
+position: relative;
+}
 
-    table {
-      width: 100%;
-      border-collapse: separate !important;
-      border-spacing: 0;
-      background:#fff;
-    }
+table {
+width: 100%;
+border-collapse: separate !important;
+border-spacing: 0;
+background:#fff;
+}
 
-    th, td {
-      border:1px solid #d1d5db;
-      padding:8px 10px;
-      font-size:13px;
-      white-space:nowrap;
-    }
+th, td {
+border:1px solid #d1d5db;
+padding:8px 10px;
+font-size:13px;
+white-space:nowrap;
+}
 
-    /* FINAL STICKY HEADER */
-    th {
-      background:#1f2937 !important;
-      color:#fff;
-      position: sticky;
-      top: 0;
-      z-index: 50 !important;
-      text-align: center;
-    }
+/* FINAL STICKY HEADER */
+th {
+background:#1f2937 !important;
+color:#fff;
+position: sticky;
+top: 0;
+z-index: 50 !important;
+text-align: center;
+}
 
-    tbody tr:hover {
-      background:#f1f5f9;
-      cursor:pointer;
-    }
+tbody tr:hover {
+background:#f1f5f9;
+cursor:pointer;
+}
 
-    tr.atm-row {
-      background:#fff7c2 !important;
-      font-weight:bold;
-    }
+tr.atm-row {
+background:#fff7c2 !important;
+font-weight:bold;
+}
 
-    tr.call-row {
-      background:#e8f3ff;
-    }
+tr.call-row {
+background:#e8f3ff;
+}
 
-    tr.put-row {
-      background:#ffe9ee;
-    }
+tr.put-row {
+background:#ffe9ee;
+}
 
-    td.numeric {
-      text-align:right;
-    }
+td.numeric {
+text-align:right;
+}
 
-    /* Fade Animations */
-    .fade-out { opacity: 0; transition: opacity 0.4s ease; }
-    .hidden { display: none; }
-    .fade-in { opacity: 0; animation: fadeInAnim 0.45s ease forwards; }
+/* Fade Animations */
+.fade-out { opacity: 0; transition: opacity 0.4s ease; }
+.hidden { display: none; }
+.fade-in { opacity: 0; animation: fadeInAnim 0.45s ease forwards; }
 
-    @keyframes fadeInAnim {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+@keyframes fadeInAnim {
+from { opacity: 0; }
+to { opacity: 1; }
+}
 
-    /* Buttons */
-    #resetBtn {
-      padding:7px 14px;
-      margin-left:10px;
-      background:#d9534f;
-      color:white;
-      border:none;
-      border-radius:4px;
-      cursor:pointer;
-    }
+/* Buttons */
+#resetBtn {
+padding:7px 14px;
+margin-left:10px;
+background:#d9534f;
+color:white;
+border:none;
+border-radius:4px;
+cursor:pointer;
+}
 
-    /* Settings panel */
-    #settingsPanel {
-      margin-top: 15px;
-      margin-bottom: 10px;
-      padding: 10px;
-      background:#ffffff;
-      border:1px solid #d1d5db;
-      border-radius:6px;
-      font-size:13px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:15px;
-      align-items:flex-end;
-    }
+/* Settings panel */
+#settingsPanel {
+margin-top: 15px;
+margin-bottom: 10px;
+padding: 10px;
+background:#ffffff;
+border:1px solid #d1d5db;
+border-radius:6px;
+font-size:13px;
+display:flex;
+flex-wrap:wrap;
+gap:15px;
+align-items:flex-end;
+}
 
-    #settingsPanel label { display:block; font-size:12px; margin-bottom:3px; color:#374151; }
-    #settingsPanel input { width:80px; padding:4px 6px; font-size:13px; border:1px solid #d1d5db; border-radius:4px; }
+#settingsPanel label { display:block; font-size:12px; margin-bottom:3px; color:#374151; }
+#settingsPanel input { width:80px; padding:4px 6px; font-size:13px; border:1px solid #d1d5db; border-radius:4px; }
 
-    /* Trade panel */
-    #tradePanel {
-      margin-top:15px;
-      padding:14px;
-      background:#ffffff;
-      border-radius:8px;
-      border:1px solid #d1d5db;
-      font-size:13px;
-    }
+/* Trade panel */
+#tradePanel {
+margin-top:15px;
+padding:14px;
+background:#ffffff;
+border-radius:8px;
+border:1px solid #d1d5db;
+font-size:13px;
+}
 
-    #tradePanel h2 { margin:0 0 6px 0; font-size:15px; }
+#tradePanel h2 { margin:0 0 6px 0; font-size:15px; }
 
-    #tradePanel .tag {
-      display:inline-block;
-      padding:2px 8px;
-      border-radius:9999px;
-      font-size:11px;
-      font-weight:bold;
-      margin-right:6px;
-    }
+#tradePanel .tag {
+display:inline-block;
+padding:2px 8px;
+border-radius:9999px;
+font-size:11px;
+font-weight:bold;
+margin-right:6px;
+}
 
-    .tag-bullish { background:#ecfdf5; color:#065f46; }
-    .tag-bearish { background:#fef2f2; color:#b91c1c; }
-    .tag-neutral { background:#f3f4f6; color:#374151; }
+.tag-bullish { background:#ecfdf5; color:#065f46; }
+.tag-bearish { background:#fef2f2; color:#b91c1c; }
+.tag-neutral { background:#f3f4f6; color:#374151; }
 
-    .tag-trend-up { background:#e0f2fe; color:#1d4ed8; }
-    .tag-trend-down { background:#fee2e2; color:#b91c1c; }
-    .tag-trend-range { background:#f3f4f6; color:#374151; }
+.tag-trend-up { background:#e0f2fe; color:#1d4ed8; }
+.tag-trend-down { background:#fee2e2; color:#b91c1c; }
+.tag-trend-range { background:#f3f4f6; color:#374151; }
 
-    .tag-gray { background:#f3f4f6; color:#374151; }
+.tag-gray { background:#f3f4f6; color:#374151; }
 
-    #tradePanel .section-title { font-weight:bold; margin-top:8px; margin-bottom:3px; }
+#tradePanel .section-title { font-weight:bold; margin-top:8px; margin-bottom:3px; }
 
-    #tradePanel ul { margin:4px 0 8px 16px; padding:0; }
-    #tradePanel li { margin-bottom:2px; }
+#tradePanel ul { margin:4px 0 8px 16px; padding:0; }
+#tradePanel li { margin-bottom:2px; }
 
-    /* Tabs */
-    .tab-buttons {
-      display:flex;
-      gap:6px;
-      margin-bottom:8px;
-      margin-top:4px;
-      flex-wrap:wrap;
-    }
+/* Tabs */
+.tab-buttons {
+display:flex;
+gap:6px;
+margin-bottom:8px;
+margin-top:4px;
+flex-wrap:wrap;
+}
 
-    .tab-button {
-      padding:4px 10px;
-      border-radius:9999px;
-      border:none;
-      background:#e5e7eb;
-      font-size:12px;
-      cursor:pointer;
-    }
+.tab-button {
+padding:4px 10px;
+border-radius:9999px;
+border:none;
+background:#e5e7eb;
+font-size:12px;
+cursor:pointer;
+}
 
-    .tab-button.active {
-      background:#111827;
-      color:#ffffff;
-    }
+.tab-button.active {
+background:#111827;
+color:#ffffff;
+}
 
-    .tab-content { display:none; margin-top:4px; }
-    .tab-content.active { display:block; }
+.tab-content { display:none; margin-top:4px; }
+.tab-content.active { display:block; }
 
-    /* Hottest CE/PE glowing highlight */
-    .hot-ce { animation: glowCE 1.3s infinite alternate; }
-    .hot-pe { animation: glowPE 1.3s infinite alternate; }
+/* Hottest CE/PE glowing highlight */
+.hot-ce { animation: glowCE 1.3s infinite alternate; }
+.hot-pe { animation: glowPE 1.3s infinite alternate; }
 
-    @keyframes glowCE { from { background:#e8f3ff; } to { background:#d7e9ff; } }
-    @keyframes glowPE { from { background:#ffe9ee; } to { background:#ffd7df; } }
+@keyframes glowCE { from { background:#e8f3ff; } to { background:#d7e9ff; } }
+@keyframes glowPE { from { background:#ffe9ee; } to { background:#ffd7df; } }
 </style>
 
 </head>
 
 <body>
 
-  <h1>STWP Options Loader (CSV / XLSX)</h1>
+<h1>STWP Options Loader (CSV / XLSX)</h1>
 
-  <input type="file" id="fileInput" accept=".csv,.xls,.xlsx" />
+<input type="file" id="fileInput" accept=".csv,.xls,.xlsx" />
 
-  <!-- Settings panel -->
-  <div id="settingsPanel">
-    <div>
-      <label for="riskLongPct">Risk % (for SL)</label>
-      <input id="riskLongPct" type="number" step="0.1" value="35" />
-    </div>
-    <div>
-      <label for="rrMultiple">R:R Multiple</label>
-      <input id="rrMultiple" type="number" step="0.1" value="2" />
-    </div>
-    <div>
-      <label for="targetPct">Target % (override)</label>
-      <input id="targetPct" type="number" step="0.1" value="0" />
-    </div>
-    <div style="font-size:11px;color:#6b7280;">
-      Adjust Risk %, Reward multiple and optional Target%.<br/>
-      Target% > 0 overrides R:R for targets.
-    </div>
-  </div>
+<!-- Settings panel -->
+<div id="settingsPanel">
+<div>
+<label for="riskLongPct">Risk % (for SL)</label>
+<input id="riskLongPct" type="number" step="0.1" value="35" />
+</div>
+<div>
+<label for="rrMultiple">R:R Multiple</label>
+<input id="rrMultiple" type="number" step="0.1" value="2" />
+</div>
+<div>
+<label for="targetPct">Target % (override)</label>
+<input id="targetPct" type="number" step="0.1" value="0" />
+</div>
+<div style="font-size:11px;color:#6b7280;">
+Adjust Risk %, Reward multiple and optional Target%.<br/>
+Target% > 0 overrides R:R for targets.
+</div>
+</div>
 
-  <br>
-  <label><b>Select Stock:</b></label>
-  <select id="stockDropdown">
-    <option value="">-- Upload file to load symbols --</option>
-  </select>
+<br>
+<label><b>Select Stock:</b></label>
+<select id="stockDropdown">
+<option value="">-- Upload file to load symbols --</option>
+</select>
 
-  <button id="resetBtn">Reset</button>
+<button id="resetBtn">Reset</button>
 
-  <div id="summaryBox"></div>
+<div id="summaryBox"></div>
 
-  <div class="table-wrapper">
-    <table>
-      <thead>
-        <tr>
-          <th>Symbol</th>
-          <th>Type</th>
-          <th>Strike</th>
-          <th>LTP</th>
-          <th>Chg %</th>
-          <th>Volume</th>
-          <th>Vol Chg</th>
-          <th>TTV</th>
-          <th>OI</th>
-          <th>OI Chg</th>
-          <th>OI Chg%</th>
-          <th>IV</th>
-          <th>IV Chg%</th>
-          <th>Spot</th>
-          <th>Delta</th>
-          <th>Gamma</th>
-          <th>Rho</th>
-          <th>Theta</th>
-          <th>Vega</th>
-          <th>Buildup</th>
-        </tr>
-      </thead>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Type</th>
+<th>Strike</th>
+<th>LTP</th>
+<th>Chg %</th>
+<th>Volume</th>
+<th>Vol Chg</th>
+<th>TTV</th>
+<th>OI</th>
+<th>OI Chg</th>
+<th>OI Chg%</th>
+<th>IV</th>
+<th>IV Chg%</th>
+<th>Spot</th>
+<th>Delta</th>
+<th>Gamma</th>
+<th>Rho</th>
+<th>Theta</th>
+<th>Vega</th>
+<th>Buildup</th>
+</tr>
+</thead>
 
-      <tbody id="tableBody"></tbody>
-    </table>
-  </div>
+<tbody id="tableBody"></tbody>
+</table>
+</div>
 
-  <!-- Full professional trade panel with tabs -->
-  <div id="tradePanel"></div>
+<!-- Full professional trade panel with tabs -->
+<div id="tradePanel"></div>
 
 <script>
 
@@ -284,185 +286,185 @@ function num(v){ return v ?? ""; }
 
 // helper to convert to number safely
 function toNumber(v){
-  if (v === null || v === undefined) return null;
-  const s = String(v).replace(/,/g,'').trim();
-  if (!s) return null;
-  const n = parseFloat(s);
-  return isNaN(n) ? null : n;
+if (v === null || v === undefined) return null;
+const s = String(v).replace(/,/g,'').trim();
+if (!s) return null;
+const n = parseFloat(s);
+return isNaN(n) ? null : n;
 }
 
 // PCR classification
 function classifyPCR(pcr){
-  if (pcr === null || !isFinite(pcr)) return 'N/A';
-  if (pcr > 1.3) return 'Strong Bullish';
-  if (pcr >= 1.0) return 'Bullish';
-  if (pcr >= 0.8) return 'Mildly Bearish';
-  return 'Bearish';
+if (pcr === null || !isFinite(pcr)) return 'N/A';
+if (pcr > 1.3) return 'Strong Bullish';
+if (pcr >= 1.0) return 'Bullish';
+if (pcr >= 0.8) return 'Mildly Bearish';
+return 'Bearish';
 }
 
 // MAPPING CSV KEYS → DISPLAY NAMES
 const COLUMNS = [
-  { header: "Symbol",   key: "Symbol" },
-  { header: "Type",     key: "Type" },
-  { header: "Strike",   key: "Strike", numeric: true },
+{ header: "Symbol",   key: "Symbol" },
+{ header: "Type",     key: "Type" },
+{ header: "Strike",   key: "Strike", numeric: true },
 
-  { header: "LTP",      key: "LTP", numeric: true },
+{ header: "LTP",      key: "LTP", numeric: true },
 
-  { header: "Chg %",    key: "Day Chg%", numeric: true, isChange: true },
+{ header: "Chg %",    key: "Day Chg%", numeric: true, isChange: true },
 
-  { header: "Volume",   key: "Volume", numeric: true },
-  { header: "Vol Chg",  key: "Volume Chg%", numeric: true, isChange: true },
+{ header: "Volume",   key: "Volume", numeric: true },
+{ header: "Vol Chg",  key: "Volume Chg%", numeric: true, isChange: true },
 
-  { header: "TTV",      key: "TTV (Cr)", numeric: true },
+{ header: "TTV",      key: "TTV (Cr)", numeric: true },
 
-  { header: "OI",       key: "OI", numeric: true },
-  { header: "OI Chg",   key: "OI Chg", numeric: true, isChange: true },
-  { header: "OI Chg%",  key: "OI Chg%", numeric: true, isChange: true },
+{ header: "OI",       key: "OI", numeric: true },
+{ header: "OI Chg",   key: "OI Chg", numeric: true, isChange: true },
+{ header: "OI Chg%",  key: "OI Chg%", numeric: true, isChange: true },
 
-  { header: "IV",       key: "IV", numeric: true },
-  { header: "IV Chg%",  key: "IV Chg%", numeric: true, isChange: true },
+{ header: "IV",       key: "IV", numeric: true },
+{ header: "IV Chg%",  key: "IV Chg%", numeric: true, isChange: true },
 
-  { header: "Spot",     key: "Spot", numeric: true },
+{ header: "Spot",     key: "Spot", numeric: true },
 
-  { header: "Delta",    key: "Delta", numeric: true },
-  { header: "Gamma",    key: "Gamma", numeric: true },
-  { header: "Rho",      key: "Rho", numeric: true },
-  { header: "Theta",    key: "Theta", numeric: true },
-  { header: "Vega",     key: "Vega", numeric: true },
+{ header: "Delta",    key: "Delta", numeric: true },
+{ header: "Gamma",    key: "Gamma", numeric: true },
+{ header: "Rho",      key: "Rho", numeric: true },
+{ header: "Theta",    key: "Theta", numeric: true },
+{ header: "Vega",     key: "Vega", numeric: true },
 
-  { header: "Buildup",  key: "Buildup" }
+{ header: "Buildup",  key: "Buildup" }
 ];
 
 async function handleFile(file){
-  const name = file.name.toLowerCase();
-  let rows = [];
+const name = file.name.toLowerCase();
+let rows = [];
 
-  if (name.endsWith('.csv')) {
-    rows = await new Promise(resolve => {
-      Papa.parse(file, {
-        header: true,
-        skipEmptyLines: true,
-        complete: result => resolve(result.data)
-      });
-    });
-  } else {
-    const data = await file.arrayBuffer();
-    const wb = XLSX.read(data, {type:'array'});
-    const ws = wb.Sheets[wb.SheetNames[0]];
-    rows = XLSX.utils.sheet_to_json(ws, { defval:"" });
-  }
+if (name.endsWith('.csv')) {
+rows = await new Promise(resolve => {
+Papa.parse(file, {
+header: true,
+skipEmptyLines: true,
+complete: result => resolve(result.data)
+});
+});
+} else {
+const data = await file.arrayBuffer();
+const wb = XLSX.read(data, {type:'array'});
+const ws = wb.Sheets[wb.SheetNames[0]];
+rows = XLSX.utils.sheet_to_json(ws, { defval:"" });
+}
 
-  globalRows = rows;
+globalRows = rows;
 
-  const symbols = [...new Set(rows.map(r => r.Symbol).filter(Boolean))];
-  stockDropdown.innerHTML = '<option value="">-- Upload file to load symbols --</option>';
+const symbols = [...new Set(rows.map(r => r.Symbol).filter(Boolean))];
+stockDropdown.innerHTML = '<option value="">-- Upload file to load symbols --</option>';
 
-  symbols.forEach(sym => {
-    const opt = document.createElement('option');
-    opt.value = sym;
-    opt.textContent = sym;
-    stockDropdown.appendChild(opt);
-  });
+symbols.forEach(sym => {
+const opt = document.createElement('option');
+opt.value = sym;
+opt.textContent = sym;
+stockDropdown.appendChild(opt);
+});
 
-  tableBody.innerHTML = "";
-  summaryBox.innerHTML = "";
-  tradePanel.innerHTML = "";
+tableBody.innerHTML = "";
+summaryBox.innerHTML = "";
+tradePanel.innerHTML = "";
 }
 
 /* Highlight hottest CE & PE */
 function highlightHottestStrikes(rows, atmStrike){
-  let bestCE = null, bestPE = null;
-  let bestCEScore = -Infinity, bestPEScore = -Infinity;
+let bestCE = null, bestPE = null;
+let bestCEScore = -Infinity, bestPEScore = -Infinity;
 
-  rows.forEach(r => {
-    const type = String(r.Type || '').toUpperCase();
-    const oiChg = toNumber(r["OI Chg%"]) || 0;
-    const volChg = toNumber(r["Volume Chg%"]) || 0;
-    const delta = toNumber(r["Delta"]) || 0;
-    const dayChg = toNumber(r["Day Chg%"]) || 0;
-    const strike = toNumber(r.Strike) || 0;
+rows.forEach(r => {
+const type = String(r.Type || '').toUpperCase();
+const oiChg = toNumber(r["OI Chg%"]) || 0;
+const volChg = toNumber(r["Volume Chg%"]) || 0;
+const delta = toNumber(r["Delta"]) || 0;
+const dayChg = toNumber(r["Day Chg%"]) || 0;
+const strike = toNumber(r.Strike) || 0;
 
-    const deltaScore = 1 - Math.min(Math.abs(Math.abs(delta) - 0.35), 0.35) / 0.35; // 0–1 around 0.35
-    const distPenalty = Math.abs(strike - atmStrike) * 0.01;
+const deltaScore = 1 - Math.min(Math.abs(Math.abs(delta) - 0.35), 0.35) / 0.35; // 0–1 around 0.35
+const distPenalty = Math.abs(strike - atmStrike) * 0.01;
 
-    const score =
-      oiChg * 0.8 +
-      volChg * 0.5 +
-      dayChg * 0.6 +
-      deltaScore * 3 -
-      distPenalty;
+const score =
+oiChg * 0.8 +
+volChg * 0.5 +
+dayChg * 0.6 +
+deltaScore * 3 -
+distPenalty;
 
-    if ((type === "CE" || type === "CALL") && score > bestCEScore) {
-      bestCEScore = score;
-      bestCE = r;
-    }
+if ((type === "CE" || type === "CALL") && score > bestCEScore) {
+bestCEScore = score;
+bestCE = r;
+}
 
-    if ((type === "PE" || type === "PUT") && score > bestPEScore) {
-      bestPEScore = score;
-      bestPE = r;
-    }
-  });
+if ((type === "PE" || type === "PUT") && score > bestPEScore) {
+bestPEScore = score;
+bestPE = r;
+}
+});
 
-  const trs = document.querySelectorAll("#tableBody tr");
+const trs = document.querySelectorAll("#tableBody tr");
 
-  trs.forEach(tr => {
-    tr.classList.remove("hot-ce", "hot-pe");
+trs.forEach(tr => {
+tr.classList.remove("hot-ce", "hot-pe");
 
-    const strike = Number(tr.children[2].textContent);
-    const type = tr.children[1].textContent.trim().toUpperCase();
+const strike = Number(tr.children[2].textContent);
+const type = tr.children[1].textContent.trim().toUpperCase();
 
-    if (bestCE && strike === Number(bestCE.Strike) && (type === "CE" || type === "CALL")) {
-      tr.classList.add("hot-ce");
-    }
+if (bestCE && strike === Number(bestCE.Strike) && (type === "CE" || type === "CALL")) {
+tr.classList.add("hot-ce");
+}
 
-    if (bestPE && strike === Number(bestPE.Strike) && (type === "PE" || type === "PUT")) {
-      tr.classList.add("hot-pe");
-    }
-  });
+if (bestPE && strike === Number(bestPE.Strike) && (type === "PE" || type === "PUT")) {
+tr.classList.add("hot-pe");
+}
+});
 }
 
 function loadStockData(symbol){
-  tableBody.innerHTML = "";
-  summaryBox.innerHTML = "";
-  tradePanel.innerHTML = "";
+tableBody.innerHTML = "";
+summaryBox.innerHTML = "";
+tradePanel.innerHTML = "";
 
-  if (!symbol) return;
+if (!symbol) return;
 
-  let filtered = globalRows.filter(r => r.Symbol === symbol);
-  filtered = filtered.filter(r =>
-    toNumber(r.Volume) > 5000 &&
-    toNumber(r.OI) > 50000
-  );
+let filtered = globalRows.filter(r => r.Symbol === symbol);
+filtered = filtered.filter(r =>
+toNumber(r.Volume) > 5000 &&
+toNumber(r.OI) > 50000
+);
 
-  if (filtered.length === 0) return;
+if (filtered.length === 0) return;
 
-  let spot = toNumber(filtered[0].Spot);
+let spot = toNumber(filtered[0].Spot);
 
-  filtered.sort((a, b) => toNumber(a.Strike) - toNumber(b.Strike));
+filtered.sort((a, b) => toNumber(a.Strike) - toNumber(b.Strike));
 
-  let atmStrike = filtered.reduce((prev, curr) =>
-    Math.abs(toNumber(curr.Strike) - spot) < Math.abs(toNumber(prev.Strike) - spot)
-      ? curr : prev
-  ).Strike;
+let atmStrike = filtered.reduce((prev, curr) =>
+Math.abs(toNumber(curr.Strike) - spot) < Math.abs(toNumber(prev.Strike) - spot)
+? curr : prev
+).Strike;
 
-  atmStrike = toNumber(atmStrike);
-  // -------------------- IV RANK CALCULATION --------------------
+atmStrike = toNumber(atmStrike);
+// -------------------- IV RANK CALCULATION --------------------
 const ivValues = filtered
-  .map(r => toNumber(r.IV))
-  .filter(x => x !== null && isFinite(x));
+.map(r => toNumber(r.IV))
+.filter(x => x !== null && isFinite(x));
 
 let ivRank = null;
 
 if (ivValues.length > 1) {
-  const minIV = Math.min(...ivValues);
-  const maxIV = Math.max(...ivValues);
+const minIV = Math.min(...ivValues);
+const maxIV = Math.max(...ivValues);
 
-  const atmRow = filtered.find(r => toNumber(r.Strike) === atmStrike);
-  const currentIV = atmRow ? toNumber(atmRow.IV) : null;
+const atmRow = filtered.find(r => toNumber(r.Strike) === atmStrike);
+const currentIV = atmRow ? toNumber(atmRow.IV) : null;
 
-  if (currentIV !== null && maxIV !== minIV) {
-    ivRank = ((currentIV - minIV) / (maxIV - minIV)) * 100;
-  }
+if (currentIV !== null && maxIV !== minIV) {
+ivRank = ((currentIV - minIV) / (maxIV - minIV)) * 100;
+}
 }
 // --------------------------------------------------------------
 
@@ -471,764 +473,799 @@ let cheapestStrike = null;
 let cheapestIV = Infinity;
 
 filtered.forEach(r => {
-  const iv = toNumber(r.IV);
-  if (iv !== null && iv < cheapestIV) {
-    cheapestIV = iv;
-    cheapestStrike = r;
-  }
+const iv = toNumber(r.IV);
+if (iv !== null && iv < cheapestIV) {
+cheapestIV = iv;
+cheapestStrike = r;
+}
 });
 
 
-  // PCR from all rows for this symbol
-  let totalCallOI = 0, totalPutOI = 0;
-  filtered.forEach(r => {
-    const oi = toNumber(r.OI);
-    if (!oi) return;
-    const t = String(r.Type || '').toUpperCase();
-    if (t === 'CE' || t === 'CALL') totalCallOI += oi;
-    else if (t === 'PE' || t === 'PUT') totalPutOI += oi;
-  });
-  let pcr = null;
-  if (totalCallOI > 0) pcr = totalPutOI / totalCallOI;
-  const pcrText = pcr !== null && isFinite(pcr) ? pcr.toFixed(2) : 'N/A';
-  const pcrView = classifyPCR(pcr);
+// PCR from all rows for this symbol
+let totalCallOI = 0, totalPutOI = 0;
+filtered.forEach(r => {
+const oi = toNumber(r.OI);
+if (!oi) return;
+const t = String(r.Type || '').toUpperCase();
+if (t === 'CE' || t === 'CALL') totalCallOI += oi;
+else if (t === 'PE' || t === 'PUT') totalPutOI += oi;
+});
+let pcr = null;
+if (totalCallOI > 0) pcr = totalPutOI / totalCallOI;
+const pcrText = pcr !== null && isFinite(pcr) ? pcr.toFixed(2) : 'N/A';
+const pcrView = classifyPCR(pcr);
 
-  let ranked = filtered.slice().sort((a, b) =>
-    masterStrikeScore(b, atmStrike) - masterStrikeScore(a, atmStrike)
-  );
+let ranked = filtered.slice().sort((a, b) =>
+masterStrikeScore(b, atmStrike) - masterStrikeScore(a, atmStrike)
+);
 
-  let best10 = ranked;
-  
-  // Summary (TOP line)
-  summaryBox.innerHTML = `
-  <b>Spot:</b> ${spot ?? '—'} &nbsp;&nbsp;
-  <b>ATM:</b> ${atmStrike ?? '—'} &nbsp;&nbsp;
-  <b>PCR:</b> ${pcrText} ${pcrView !== 'N/A' ? `(${pcrView})` : ''} &nbsp;&nbsp;
-  <b>IV Rank:</b> ${ivRank !== null ? ivRank.toFixed(1) + '%' : '—'} &nbsp;&nbsp;
-  <b>Cheap Strike:</b> ${
-    cheapestStrike
-      ? `${cheapestStrike.Strike} ${String(cheapestStrike.Type).toUpperCase()} (IV ${cheapestIV.toFixed(2)})`
-      : '—'
-  }
+let best10 = ranked;
+
+// Summary (TOP line)
+summaryBox.innerHTML = `
+<b>Spot:</b> ${spot ?? '—'} &nbsp;&nbsp;
+<b>ATM:</b> ${atmStrike ?? '—'} &nbsp;&nbsp;
+<b>PCR:</b> ${pcrText} ${pcrView !== 'N/A' ? `(${pcrView})` : ''} &nbsp;&nbsp;
+<b>IV Rank:</b> ${ivRank !== null ? ivRank.toFixed(1) + '%' : '—'} &nbsp;&nbsp;
+<b>Cheap Strike:</b> ${
+cheapestStrike
+? `${cheapestStrike.Strike} ${String(cheapestStrike.Type).toUpperCase()} (IV ${cheapestIV.toFixed(2)})`
+: '—'
+}
 `;
 
 
-  // Populate table
-  best10.forEach(row => {
-    const tr = document.createElement('tr');
+// Populate table
+best10.forEach(row => {
+const tr = document.createElement('tr');
 
-    if (row.Type === "CE" || row.Type === "Call") tr.classList.add("call-row");
-    if (row.Type === "PE" || row.Type === "Put") tr.classList.add("put-row");
-    if (toNumber(row.Strike) === atmStrike) tr.classList.add("atm-row");
+if (row.Type === "CE" || row.Type === "Call") tr.classList.add("call-row");
+if (row.Type === "PE" || row.Type === "Put") tr.classList.add("put-row");
+if (toNumber(row.Strike) === atmStrike) tr.classList.add("atm-row");
 
-    COLUMNS.forEach(col => {
-      const td = document.createElement('td');
-      const v = num(row[col.key]);
+COLUMNS.forEach(col => {
+const td = document.createElement('td');
+const v = num(row[col.key]);
 
-      td.textContent = v;
+td.textContent = v;
 
-      if (col.numeric && v !== "" && !isNaN(v))
-        td.classList.add("numeric");
+if (col.numeric && v !== "" && !isNaN(v))
+td.classList.add("numeric");
 
-      if (col.isChange && v !== "" && !isNaN(v)) {
-        if (Number(v) > 0) td.style.color = "green";
-        if (Number(v) < 0) td.style.color = "red";
-      }
+if (col.isChange && v !== "" && !isNaN(v)) {
+if (Number(v) > 0) td.style.color = "green";
+if (Number(v) < 0) td.style.color = "red";
+}
 
-      tr.appendChild(td);
-    });
+tr.appendChild(td);
+});
 
-    tableBody.appendChild(tr);
-  });
+tableBody.appendChild(tr);
+});
 
-  // FADE-IN ANIMATION FOR TABLE
-  tableBody.classList.add("fade-in");
-  setTimeout(() => tableBody.classList.remove("fade-in"), 500);
+// FADE-IN ANIMATION FOR TABLE
+tableBody.classList.add("fade-in");
+setTimeout(() => tableBody.classList.remove("fade-in"), 500);
 
-  // Highlight hottest CE & PE
-  highlightHottestStrikes(best10, atmStrike);
+// Highlight hottest CE & PE
+highlightHottestStrikes(best10, atmStrike);
 
-  // Generate full professional trade analysis panel with tabs
-  generateTradePanel(best10, atmStrike, spot, symbol, filtered, pcr, pcrView);
+// Generate full professional trade analysis panel with tabs
+generateTradePanel(best10, atmStrike, spot, symbol, filtered, pcr, pcrView);
 }
 
 /* -------- Trade analysis logic ---------- */
 
 function scoreRow(row){
-  const type = String(row.Type || '').toLowerCase();
-  const buildup = String(row.Buildup || '').toLowerCase();
+const type = String(row.Type || '').toLowerCase();
+const buildup = String(row.Buildup || '').toLowerCase();
 
-  const dayChg  = toNumber(row['Day Chg%']);
-  const oiChgP  = toNumber(row['OI Chg%']);
-  const oiChg   = toNumber(row['OI Chg']);
-  const ivChgP  = toNumber(row['IV Chg%']);
-  const delta   = toNumber(row['Delta']);
+const dayChg  = toNumber(row['Day Chg%']);
+const oiChgP  = toNumber(row['OI Chg%']);
+const oiChg   = toNumber(row['OI Chg']);
+const ivChgP  = toNumber(row['IV Chg%']);
+const delta   = toNumber(row['Delta']);
 
-  let s = 0;
+let s = 0;
 
-  // buildup based
-  if (buildup.includes('long build')) s += 2;
-  if (buildup.includes('short covering')) s += 1;
-  if (buildup.includes('short build')) s -= 2;
-  if (buildup.includes('long unwinding')) s -= 1;
+// buildup based
+if (buildup.includes('long build')) s += 2;
+if (buildup.includes('short covering')) s += 1;
+if (buildup.includes('short build')) s -= 2;
+if (buildup.includes('long unwinding')) s -= 1;
 
-  // OI change
-  if (oiChgP !== null) {
-    if (oiChgP > 15) s += 2;
-    else if (oiChgP > 0) s += 1;
-    else if (oiChgP < -15) s -= 2;
-    else if (oiChgP < 0) s -= 1;
-  } else if (oiChg !== null) {
-    s += Math.sign(oiChg) * 0.5;
-  }
+// OI change
+if (oiChgP !== null) {
+if (oiChgP > 15) s += 2;
+else if (oiChgP > 0) s += 1;
+else if (oiChgP < -15) s -= 2;
+else if (oiChgP < 0) s -= 1;
+} else if (oiChg !== null) {
+s += Math.sign(oiChg) * 0.5;
+}
 
-  // Price change
-  if (dayChg !== null) {
-    if (dayChg > 3) s += 2;
-    else if (dayChg > 0) s += 1;
-    else if (dayChg < -3) s -= 2;
-    else if (dayChg < 0) s -= 1;
-  }
+// Price change
+if (dayChg !== null) {
+if (dayChg > 3) s += 2;
+else if (dayChg > 0) s += 1;
+else if (dayChg < -3) s -= 2;
+else if (dayChg < 0) s -= 1;
+}
 
-  // IV change (smaller weight)
-  if (ivChgP !== null) {
-    if (ivChgP > 5) s += 1;
-    else if (ivChgP > 0) s += 0.5;
-    else if (ivChgP < -5) s -= 1;
-    else if (ivChgP < 0) s -= 0.5;
-  }
+// IV change (smaller weight)
+if (ivChgP !== null) {
+if (ivChgP > 5) s += 1;
+else if (ivChgP > 0) s += 0.5;
+else if (ivChgP < -5) s -= 1;
+else if (ivChgP < 0) s -= 0.5;
+}
 
-  // Delta sweet spot (around 0.3–0.4)
-  if (delta !== null && !isNaN(delta)) {
-    const dAbs = Math.abs(delta);
-    const bonus = 1 - Math.min(Math.abs(dAbs - 0.35), 0.35) / 0.35; // 0–1
-    s += Math.max(0, Math.min(1, bonus));
-  }
+// Delta sweet spot (around 0.3–0.4)
+if (delta !== null && !isNaN(delta)) {
+const dAbs = Math.abs(delta);
+const bonus = 1 - Math.min(Math.abs(dAbs - 0.35), 0.35) / 0.35; // 0–1
+s += Math.max(0, Math.min(1, bonus));
+}
 
-  // Direction from type + score
-  let direction = 'neutral';
-  if (type.includes('call')) {
-    if (s > 0.5) direction = 'bullish';
-    if (s < -0.5) direction = 'bearish';
-  } else if (type.includes('put')) {
-    if (s > 0.5) direction = 'bearish';
-    if (s < -0.5) direction = 'bullish';
-  }
+// Direction from type + score
+let direction = 'neutral';
+if (type.includes('call')) {
+if (s > 0.5) direction = 'bullish';
+if (s < -0.5) direction = 'bearish';
+} else if (type.includes('put')) {
+if (s > 0.5) direction = 'bearish';
+if (s < -0.5) direction = 'bullish';
+}
 
-  return { score: s, direction };
+return { score: s, direction };
 }
 
 function masterStrikeScore(row, atmStrike) {
-    const base = scoreRow(row).score;
+const base = scoreRow(row).score;
 
-    const oiChg = toNumber(row["OI Chg%"]) || 0;
-    const volChg = toNumber(row["Volume Chg%"]) || 0;
-    const ivChg = toNumber(row["IV Chg%"]) || 0;
-    const delta = Math.abs(toNumber(row["Delta"]) || 0);
-    const strike = toNumber(row.Strike);
+const oiChg = toNumber(row["OI Chg%"]) || 0;
+const volChg = toNumber(row["Volume Chg%"]) || 0;
+const ivChg = toNumber(row["IV Chg%"]) || 0;
+const delta = Math.abs(toNumber(row["Delta"]) || 0);
+const strike = toNumber(row.Strike);
 
-    let score = base;
+let score = base;
 
-    // OI, Volume, IV momentum
-    score += oiChg * 0.4;
-    score += volChg * 0.3;
-    score += ivChg * 0.2;
+// OI, Volume, IV momentum
+score += oiChg * 0.4;
+score += volChg * 0.3;
+score += ivChg * 0.2;
 
-    // Proximity to ATM is rewarded
-    score -= Math.abs(strike - atmStrike) * 0.01;
+// Proximity to ATM is rewarded
+score -= Math.abs(strike - atmStrike) * 0.01;
 
-    // Delta sweet spot around 0.30–0.45
-    score += (1 - Math.abs(delta - 0.35) * 2);
+// Delta sweet spot around 0.30–0.45
+score += (1 - Math.abs(delta - 0.35) * 2);
 
-    return score;
+return score;
 }
 
 // Intraday scoring – more weight to today’s move and momentum
 function computeIntradayScore(row, base, atmStrike){
-  let score = base;
+let score = base;
 
-  const dayChg = toNumber(row['Day Chg%']);
-  const oiChgP = toNumber(row['OI Chg%']);
-  const volChg = toNumber(row['Volume Chg%']);
-  const ivChgP = toNumber(row['IV Chg%']);
-  const strike = toNumber(row.Strike);
+const dayChg = toNumber(row['Day Chg%']);
+const oiChgP = toNumber(row['OI Chg%']);
+const volChg = toNumber(row['Volume Chg%']);
+const ivChgP = toNumber(row['IV Chg%']);
+const strike = toNumber(row.Strike);
 
-  if (dayChg !== null) score += dayChg * 0.15;
-  if (oiChgP !== null) score += oiChgP * 0.10;
-  if (volChg !== null) score += volChg * 0.05;
-  if (ivChgP !== null) score += ivChgP * 0.05;
+if (dayChg !== null) score += dayChg * 0.15;
+if (oiChgP !== null) score += oiChgP * 0.10;
+if (volChg !== null) score += volChg * 0.05;
+if (ivChgP !== null) score += ivChgP * 0.05;
 
-  if (strike !== null && atmStrike !== null) {
-    const dist = Math.abs(strike - atmStrike);
-    score -= dist * 0.01;
-  }
+if (strike !== null && atmStrike !== null) {
+const dist = Math.abs(strike - atmStrike);
+score -= dist * 0.01;
+}
 
-  return score;
+return score;
 }
 
 // Swing scoring – more weight to stability, delta & IV
 function computeSwingScore(row, base, atmStrike){
-  let score = base;
+let score = base;
 
-  const delta = Math.abs(toNumber(row['Delta']));
-  const iv    = toNumber(row['IV']);
-  const strike= toNumber(row.Strike);
+const delta = Math.abs(toNumber(row['Delta']));
+const iv    = toNumber(row['IV']);
+const strike= toNumber(row.Strike);
 
-  if (delta !== null) {
-    const bonus = 1 - Math.min(Math.abs(delta - 0.5), 0.5) / 0.5; // aim near 0.5
-    score += bonus * 2;
-  }
+if (delta !== null) {
+const bonus = 1 - Math.min(Math.abs(delta - 0.5), 0.5) / 0.5; // aim near 0.5
+score += bonus * 2;
+}
 
-  if (iv !== null) {
-    if (iv < 15) score += 1.5;
-    else if (iv < 25) score += 1;
-    else if (iv > 35) score -= 1;
-  }
+if (iv !== null) {
+if (iv < 15) score += 1.5;
+else if (iv < 25) score += 1;
+else if (iv > 35) score -= 1;
+}
 
-  if (strike !== null && atmStrike !== null) {
-    const dist = Math.abs(strike - atmStrike);
-    score -= dist * 0.02;
-  }
+if (strike !== null && atmStrike !== null) {
+const dist = Math.abs(strike - atmStrike);
+score -= dist * 0.02;
+}
 
-  return score;
+return score;
 }
 
 function computeLevels(ltp, riskPct, rrMultiple, targetPct){
-  const entry = ltp || 0;
-  const risk  = entry * (riskPct/100);
-  const sl    = Math.max(0, entry - risk);
+const entry = ltp || 0;
+const risk  = entry * (riskPct/100);
+const sl    = Math.max(0, entry - risk);
 
-  let t1, t2;
-  if (targetPct && targetPct > 0) {
-    t2 = entry * (1 + targetPct/100);
-    t1 = entry * (1 + (targetPct/100)*0.75);
-  } else {
-    t2 = entry + risk * rrMultiple;
-    t1 = entry + risk * rrMultiple * 0.75;
-  }
-  return { entry, sl, t1, t2 };
+let t1, t2;
+if (targetPct && targetPct > 0) {
+t2 = entry * (1 + targetPct/100);
+t1 = entry * (1 + (targetPct/100)*0.75);
+} else {
+t2 = entry + risk * rrMultiple;
+t1 = entry + risk * rrMultiple * 0.75;
+}
+return { entry, sl, t1, t2 };
 }
 
 function buildNarrative(row, direction, levels, sentiment, trend, strengthScore){
-  const type   = String(row.Type || '').toUpperCase();
-  const strike = toNumber(row.Strike);
-  const ltp    = toNumber(row.LTP);
-  const dayChg = toNumber(row['Day Chg%']);
-  const oi     = toNumber(row['OI']);
-  const oiChg  = toNumber(row['OI Chg']);
-  const oiChgP = toNumber(row['OI Chg%']);
-  const iv     = toNumber(row['IV']);
-  const ivChgP = toNumber(row['IV Chg%']);
-  const vol    = toNumber(row['Volume']);
-  const volChg = toNumber(row['Volume Chg%']);
-  const delta  = toNumber(row['Delta']);
-  const gamma  = toNumber(row['Gamma']);
-  const theta  = toNumber(row['Theta']);
-  const vega   = toNumber(row['Vega']);
-  const buildup = String(row.Buildup || '');
+const type   = String(row.Type || '').toUpperCase();
+const strike = toNumber(row.Strike);
+const ltp    = toNumber(row.LTP);
+const dayChg = toNumber(row['Day Chg%']);
+const oi     = toNumber(row['OI']);
+const oiChg  = toNumber(row['OI Chg']);
+const oiChgP = toNumber(row['OI Chg%']);
+const iv     = toNumber(row['IV']);
+const ivChgP = toNumber(row['IV Chg%']);
+const vol    = toNumber(row['Volume']);
+const volChg = toNumber(row['Volume Chg%']);
+const delta  = toNumber(row['Delta']);
+const gamma  = toNumber(row['Gamma']);
+const theta  = toNumber(row['Theta']);
+const vega   = toNumber(row['Vega']);
+const buildup = String(row.Buildup || '');
 
-  const summary = [];
-  summary.push(`Setup aligns with a ${sentiment.toLowerCase()} bias and a ${trend.toLowerCase()} structure.`);
-  if (buildup) {
-    summary.push(`Buildup tag: ${buildup}.`);
-  }
-  if (dayChg !== null && oiChgP !== null) {
-    if (dayChg > 0 && oiChgP > 0) {
-      summary.push(`Price and OI are both rising — classic continuation behaviour.`);
-    } else if (dayChg > 0 && oiChgP < 0) {
-      summary.push(`Price up with falling OI — short covering dominated move.`);
-    } else if (dayChg < 0 && oiChgP > 0) {
-      summary.push(`Price down with rising OI — fresh counter-trend positioning.`);
-    }
-  }
+const summary = [];
+summary.push(`Setup aligns with a ${sentiment.toLowerCase()} bias and a ${trend.toLowerCase()} structure.`);
+if (buildup) {
+summary.push(`Buildup tag: ${buildup}.`);
+}
+if (dayChg !== null && oiChgP !== null) {
+if (dayChg > 0 && oiChgP > 0) {
+summary.push(`Price and OI are both rising — classic continuation behaviour.`);
+} else if (dayChg > 0 && oiChgP < 0) {
+summary.push(`Price up with falling OI — short covering dominated move.`);
+} else if (dayChg < 0 && oiChgP > 0) {
+summary.push(`Price down with rising OI — fresh counter-trend positioning.`);
+}
+}
 
-  const keyData = [];
-  keyData.push(`Strike: ${strike ?? '—'} ${type}`);
-  keyData.push(`LTP: ${ltp !== null ? ltp.toFixed(2) : '—'} | Day Chg%: ${dayChg !== null ? dayChg.toFixed(2) + '%' : '—'}`);
-  keyData.push(`OI: ${oi !== null ? oi.toFixed(0) : '—'} | OI Chg: ${oiChg !== null ? oiChg.toFixed(0) : '—'} | OI Chg%: ${oiChgP !== null ? oiChgP.toFixed(1) + '%' : '—'}`);
-  keyData.push(`IV: ${iv !== null ? iv.toFixed(1) : '—'} | IV Chg%: ${ivChgP !== null ? ivChgP.toFixed(1)+'%' : '—'}`);
-  keyData.push(`Volume: ${vol !== null ? vol.toFixed(0) : '—'} | Vol Chg%: ${volChg !== null ? volChg.toFixed(1)+'%' : '—'}`);
-  keyData.push(`Delta: ${delta !== null ? delta.toFixed(2) : '—'} | Gamma: ${gamma !== null ? gamma.toFixed(4) : '—'} | Theta: ${theta !== null ? theta.toFixed(2) : '—'} | Vega: ${vega !== null ? vega.toFixed(2) : '—'}`);
+const keyData = [];
+keyData.push(`Strike: ${strike ?? '—'} ${type}`);
+keyData.push(`LTP: ${ltp !== null ? ltp.toFixed(2) : '—'} | Day Chg%: ${dayChg !== null ? dayChg.toFixed(2) + '%' : '—'}`);
+keyData.push(`OI: ${oi !== null ? oi.toFixed(0) : '—'} | OI Chg: ${oiChg !== null ? oiChg.toFixed(0) : '—'} | OI Chg%: ${oiChgP !== null ? oiChgP.toFixed(1) + '%' : '—'}`);
+keyData.push(`IV: ${iv !== null ? iv.toFixed(1) : '—'} | IV Chg%: ${ivChgP !== null ? ivChgP.toFixed(1)+'%' : '—'}`);
+keyData.push(`Volume: ${vol !== null ? vol.toFixed(0) : '—'} | Vol Chg%: ${volChg !== null ? volChg.toFixed(1)+'%' : '—'}`);
+keyData.push(`Delta: ${delta !== null ? delta.toFixed(2) : '—'} | Gamma: ${gamma !== null ? gamma.toFixed(4) : '—'} | Theta: ${theta !== null ? theta.toFixed(2) : '—'} | Vega: ${vega !== null ? vega.toFixed(2) : '—'}`);
 
-  const interp = [];
-  if (strengthScore >= 3.5) {
-    interp.push(`This stands out as a strong, institutional-quality setup — suitable for primary trade consideration.`);
-  } else if (strengthScore >= 2.0) {
-    interp.push(`Structure is mixed to moderate — good candidate with controlled risk and proper position sizing.`);
-  } else {
-    interp.push(`Signal strength is on the weaker side — treat as lower conviction or wait for further confirmation.`);
-  }
-  if (delta !== null) {
-    if (Math.abs(delta) >= 0.25 && Math.abs(delta) <= 0.45) {
-      interp.push(`Delta is in the sweet spot for options buying — balance of convexity and ITM probability.`);
-    } else if (Math.abs(delta) > 0.45) {
-      interp.push(`Higher delta — behaves closer to futures, with smoother but less explosive payoff.`);
-    } else {
-      interp.push(`Low delta — requires a cleaner move or volatility expansion to unlock edge.`);
-    }
-  }
+const interp = [];
+if (strengthScore >= 3.5) {
+interp.push(`This stands out as a strong, institutional-quality setup — suitable for primary trade consideration.`);
+} else if (strengthScore >= 2.0) {
+interp.push(`Structure is mixed to moderate — good candidate with controlled risk and proper position sizing.`);
+} else {
+interp.push(`Signal strength is on the weaker side — treat as lower conviction or wait for further confirmation.`);
+}
+if (delta !== null) {
+if (Math.abs(delta) >= 0.25 && Math.abs(delta) <= 0.45) {
+interp.push(`Delta is in the sweet spot for options buying — balance of convexity and ITM probability.`);
+} else if (Math.abs(delta) > 0.45) {
+interp.push(`Higher delta — behaves closer to futures, with smoother but less explosive payoff.`);
+} else {
+interp.push(`Low delta — requires a cleaner move or volatility expansion to unlock edge.`);
+}
+}
 
-  const why = [];
-  if (buildup.toLowerCase().includes('long build')) {
-    why.push(`Long build-up indicates fresh positions being added in the direction of the trade.`);
-  }
-  if (buildup.toLowerCase().includes('short covering')) {
-    why.push(`Short covering adds fuel to momentum as trapped positions exit.`);
-  }
-  if (dayChg !== null && dayChg > 0 && oiChgP !== null && oiChgP > 0) {
-    why.push(`Price up with OI up suggests trend-following long activity rather than random noise.`);
-  }
-  if (volChg !== null && volChg > 10) {
-    why.push(`Volume expansion supports the credibility of the move — not just a thinly traded spike.`);
-  }
-  if (ivChgP !== null && ivChgP > 5) {
-    why.push(`IV expansion supports premium growth if momentum continues.`);
-  }
+const why = [];
+if (buildup.toLowerCase().includes('long build')) {
+why.push(`Long build-up indicates fresh positions being added in the direction of the trade.`);
+}
+if (buildup.toLowerCase().includes('short covering')) {
+why.push(`Short covering adds fuel to momentum as trapped positions exit.`);
+}
+if (dayChg !== null && dayChg > 0 && oiChgP !== null && oiChgP > 0) {
+why.push(`Price up with OI up suggests trend-following long activity rather than random noise.`);
+}
+if (volChg !== null && volChg > 10) {
+why.push(`Volume expansion supports the credibility of the move — not just a thinly traded spike.`);
+}
+if (ivChgP !== null && ivChgP > 5) {
+why.push(`IV expansion supports premium growth if momentum continues.`);
+}
 
-  if (!why.length) {
-    why.push(`Setup offers a balanced risk–reward profile around a liquid, actively traded strike.`);
-  }
+if (!why.length) {
+why.push(`Setup offers a balanced risk–reward profile around a liquid, actively traded strike.`);
+}
 
-  return { summary, keyData, interp, why };
+return { summary, keyData, interp, why };
 }
 
 function buildTradeObject(row, direction, sentiment, trend, atmStrike, modeLabel){
-  const ltp = toNumber(row.LTP);
-  const riskLongPct = toNumber(riskInput.value) ?? 35;
-  const rrMultiple  = toNumber(rrInput.value)   ?? 2;
-  const targetPct   = toNumber(targetInput.value) ?? 0;
+const ltp = toNumber(row.LTP);
+const riskLongPct = toNumber(riskInput.value) ?? 35;
+const rrMultiple  = toNumber(rrInput.value)   ?? 2;
+const targetPct   = toNumber(targetInput.value) ?? 0;
 
-  const levels = computeLevels(ltp, riskLongPct, rrMultiple, targetPct);
+const levels = computeLevels(ltp, riskLongPct, rrMultiple, targetPct);
 
-  const baseScoreObj = scoreRow(row);
-  const strengthNorm = Math.max(0, Math.min(5, ((baseScoreObj.score + 5) / 10) * 5));
+const baseScoreObj = scoreRow(row);
+const strengthNorm = Math.max(0, Math.min(5, ((baseScoreObj.score + 5) / 10) * 5));
 
-  const narrative = buildNarrative(row, direction, levels, sentiment, trend, strengthNorm);
+const narrative = buildNarrative(row, direction, levels, sentiment, trend, strengthNorm);
 
-  const type   = String(row.Type || '').toUpperCase();
-  const strike = toNumber(row.Strike);
+const type   = String(row.Type || '').toUpperCase();
+const strike = toNumber(row.Strike);
 
-  return {
-    modeLabel,
-    sentiment,
-    trend,
-    strength: strengthNorm,
-    strike,
-    type,
-    levels,
-    riskLongPct,
-    rrMultiple,
-    targetPct,
-    narrative
-  };
+return {
+modeLabel,
+sentiment,
+trend,
+strength: strengthNorm,
+strike,
+type,
+levels,
+riskLongPct,
+rrMultiple,
+targetPct,
+narrative
+};
+}
+
+function strengthColor(strength) {
+if (strength >= 4.0) return "tag-bullish";   // green
+if (strength >= 2.5) return "tag-neutral";   // yellow/grey
+return "tag-bearish";                        // red
 }
 
 function renderTradeHtml(trade, symbol){
-  const sentimentClass =
-    trade.sentiment === 'Bullish' ? 'tag-bullish' :
-    trade.sentiment === 'Bearish' ? 'tag-bearish' : 'tag-neutral';
+const sentimentClass =
+trade.sentiment === 'Bullish' ? 'tag-bullish' :
+trade.sentiment === 'Bearish' ? 'tag-bearish' : 'tag-neutral';
 
-  const trendClass =
-    trade.trend === 'Up' ? 'tag-trend-up' :
-    trade.trend === 'Down' ? 'tag-trend-down' : 'tag-trend-range';
+const trendClass =
+trade.trend === 'Up' ? 'tag-trend-up' :
+trade.trend === 'Down' ? 'tag-trend-down' : 'tag-trend-range';
 
-  return `
-    <h2>STWP ${trade.modeLabel} Trade – ${symbol}</h2>
-    <div style="margin-bottom:6px;">
-      <span class="tag ${sentimentClass}">Sentiment: ${trade.sentiment}</span>
-      <span class="tag ${trendClass}">Trend: ${trade.trend}</span>
-      <span class="tag tag-gray">Strength: ${trade.strength.toFixed(1)}/5</span>
-    </div>
+// NEW — find best strike near delta 0.50 based on sentiment
+const delta50 = findDelta50Strike(window.best10Global, trade.sentiment);
 
-    <div style="margin-bottom:6px;font-size:13px;">
-      <b>Strike to trade:</b> ${trade.strike ?? '—'} ${trade.type} &nbsp;|&nbsp;
-      <b>Entry:</b> ${trade.levels.entry.toFixed(2)} &nbsp;|&nbsp;
-      <b>Stop Loss:</b> ${trade.levels.sl.toFixed(2)} &nbsp;|&nbsp;
-      <b>Target 1:</b> ${trade.levels.t1.toFixed(2)} &nbsp;|&nbsp;
-      <b>Target 2:</b> ${trade.levels.t2.toFixed(2)} &nbsp;|&nbsp;
-      <b>R:R:</b> ${trade.rrMultiple?.toFixed ? trade.rrMultiple.toFixed(2) : trade.rrMultiple}
-      &nbsp;|&nbsp;
-      <b>Risk % (Long):</b> ${trade.riskLongPct?.toFixed ? trade.riskLongPct.toFixed(1) : trade.riskLongPct}%
-      ${trade.targetPct && trade.targetPct>0 ? `&nbsp;|&nbsp;<b>Target% override:</b> ${trade.targetPct.toFixed(1)}%` : ''}
-    </div>
+const delta50Label = delta50
+? `Strike ${delta50.Strike} – Δ ${toNumber(delta50.Delta).toFixed(2)}`
+: "—";
 
-    <div class="section-title">Summary (Professional View):</div>
-    <div>${trade.narrative.summary.join(' ')}</div>
+return `
+<h2>STWP ${trade.modeLabel} Trade – ${symbol}</h2>
+<div style="margin-bottom:6px;">
+<span class="tag ${sentimentClass}">Sentiment: ${trade.sentiment}</span>
+<span class="tag ${trendClass}">Trend: ${trade.trend}</span>
+<span class="tag ${strengthColor(trade.strength)}"> Strength: ${trade.strength.toFixed(1)}/5 </span>
+<span class="tag ${trade.sentiment === 'Bullish' ? 'tag-bullish' : trade.sentiment === 'Bearish' ? 'tag-bearish' : 'tag-neutral' }">Strike (Δ≈0.50): ${delta50Label}</span> 
+</div>
 
-    <div class="section-title">Key Data:</div>
-    <ul>
-      ${trade.narrative.keyData.map(x => `<li>${x}</li>`).join('')}
-    </ul>
 
-    <div class="section-title">Interpretation:</div>
-    <ul>
-      ${trade.narrative.interp.map(x => `<li>${x}</li>`).join('')}
-    </ul>
+<div style="margin-bottom:6px;font-size:13px;">
+<b>Strike to trade:</b> ${trade.strike ?? '—'} ${trade.type} &nbsp;|&nbsp;
+<b>Entry:</b> ${trade.levels.entry.toFixed(2)} &nbsp;|&nbsp;
+<b>Stop Loss:</b> ${trade.levels.sl.toFixed(2)} &nbsp;|&nbsp;
+<b>Target 1:</b> ${trade.levels.t1.toFixed(2)} &nbsp;|&nbsp;
+<b>Target 2:</b> ${trade.levels.t2.toFixed(2)} &nbsp;|&nbsp;
+<b>R:R:</b> ${trade.rrMultiple?.toFixed ? trade.rrMultiple.toFixed(2) : trade.rrMultiple}
+&nbsp;|&nbsp;
+<b>Risk % (Long):</b> ${trade.riskLongPct?.toFixed ? trade.riskLongPct.toFixed(1) : trade.riskLongPct}%
+${trade.targetPct && trade.targetPct>0 ? `&nbsp;|&nbsp;<b>Target% override:</b> ${trade.targetPct.toFixed(1)}%` : ''}
+</div>
 
-    <div class="section-title">Why take this trade?</div>
-    <ul>
-      ${trade.narrative.why.map(x => `<li>${x}</li>`).join('')}
-    </ul>
-    <div style="margin-top:6px;font-size:11px;color:#6b7280;">
-      Educational view only. Not a recommendation. Please use position sizing, SL discipline and your own trading framework.
-    </div>
-  `;
+<div class="section-title">Summary (Professional View):</div>
+<div>${trade.narrative.summary.join(' ')}</div>
+
+<div class="section-title">Key Data:</div>
+<ul>
+${trade.narrative.keyData.map(x => `<li>${x}</li>`).join('')}
+</ul>
+
+<div class="section-title">Interpretation:</div>
+<ul>
+${trade.narrative.interp.map(x => `<li>${x}</li>`).join('')}
+</ul>
+
+<div class="section-title">Why take this trade?</div>
+<ul>
+${trade.narrative.why.map(x => `<li>${x}</li>`).join('')}
+</ul>
+<div style="margin-top:6px;font-size:11px;color:#6b7280;">
+Educational view only. Not a recommendation. Please use position sizing, SL discipline and your own trading framework.
+</div>
+`;
 }
 
 /* ---------- New insight helpers for extra tabs ---------- */
 
 // Volatility Insight HTML
 function buildVolatilityInsightHTML(rows){
-  const ivRows = rows
-    .map(r => ({ iv: toNumber(r.IV), strike: toNumber(r.Strike), type: String(r.Type || '').toUpperCase() }))
-    .filter(r => r.iv !== null && isFinite(r.iv));
+const ivRows = rows
+.map(r => ({ iv: toNumber(r.IV), strike: toNumber(r.Strike), type: String(r.Type || '').toUpperCase() }))
+.filter(r => r.iv !== null && isFinite(r.iv));
 
-  if (!ivRows.length) {
-    return `<div style="font-size:13px;color:#6b7280;">No IV data available for this symbol.</div>`;
-  }
+if (!ivRows.length) {
+return `<div style="font-size:13px;color:#6b7280;">No IV data available for this symbol.</div>`;
+}
 
-  const avgIV = ivRows.reduce((a,b)=>a+b.iv,0) / ivRows.length;
-  let maxIV = ivRows[0], minIV = ivRows[0];
-  ivRows.forEach(r => {
-    if (r.iv > maxIV.iv) maxIV = r;
-    if (r.iv < minIV.iv) minIV = r;
-  });
+const avgIV = ivRows.reduce((a,b)=>a+b.iv,0) / ivRows.length;
+let maxIV = ivRows[0], minIV = ivRows[0];
+ivRows.forEach(r => {
+if (r.iv > maxIV.iv) maxIV = r;
+if (r.iv < minIV.iv) minIV = r;
+});
 
-  return `
-    <h2>Volatility Insight</h2>
-    <div class="section-title">IV Summary:</div>
-    <ul>
-      <li>Avg IV: ${avgIV.toFixed(2)}%</li>
-      <li>High IV: ${maxIV.iv.toFixed(2)}% @ ${maxIV.strike} ${maxIV.type}</li>
-      <li>Low IV: ${minIV.iv.toFixed(2)}% @ ${minIV.strike} ${minIV.type}</li>
-    </ul>
-    <div style="font-size:12px;color:#6b7280;">
-      Elevated IV supports credit strategies (spreads / iron condors), while lower IV favours directional debit structures.
-    </div>
-  `;
+return `
+<h2>Volatility Insight</h2>
+<div class="section-title">IV Summary:</div>
+<ul>
+<li>Avg IV: ${avgIV.toFixed(2)}%</li>
+<li>High IV: ${maxIV.iv.toFixed(2)}% @ ${maxIV.strike} ${maxIV.type}</li>
+<li>Low IV: ${minIV.iv.toFixed(2)}% @ ${minIV.strike} ${minIV.type}</li>
+</ul>
+<div style="font-size:12px;color:#6b7280;">
+Elevated IV supports credit strategies (spreads / iron condors), while lower IV favours directional debit structures.
+</div>
+`;
 }
 
 // Buildup Heat HTML
 function buildBuildupHeatHTML(rows){
-  let longBuild=0, shortBuild=0, shortCover=0, longUnwind=0;
-  rows.forEach(r=>{
-    const b = String(r.Buildup || '').toLowerCase();
-    if (b.includes('long build')) longBuild++;
-    if (b.includes('short build')) shortBuild++;
-    if (b.includes('short cover')) shortCover++;
-    if (b.includes('long unwind') || b.includes('long unwinding')) longUnwind++;
-  });
+let longBuild=0, shortBuild=0, shortCover=0, longUnwind=0;
+rows.forEach(r=>{
+const b = String(r.Buildup || '').toLowerCase();
+if (b.includes('long build')) longBuild++;
+if (b.includes('short build')) shortBuild++;
+if (b.includes('short cover')) shortCover++;
+if (b.includes('long unwind') || b.includes('long unwinding')) longUnwind++;
+});
 
-  if (!longBuild && !shortBuild && !shortCover && !longUnwind){
-    return `<div style="font-size:13px;color:#6b7280;">No recognizable buildup tags in this symbol's chain.</div>`;
-  }
+if (!longBuild && !shortBuild && !shortCover && !longUnwind){
+return `<div style="font-size:13px;color:#6b7280;">No recognizable buildup tags in this symbol's chain.</div>`;
+}
 
-  return `
-    <h2>Buildup Heat Overview</h2>
-    <ul>
-      <li>Long Build-up: ${longBuild}</li>
-      <li>Short Build-up: ${shortBuild}</li>
-      <li>Short Cover: ${shortCover}</li>
-      <li>Long Unwind: ${longUnwind}</li>
-    </ul>
-    <div style="font-size:12px;color:#6b7280;">
-      Long Build and Short Cover hint at strength zones. Short Build and Long Unwind highlight pressure and exhaustion pockets.
-    </div>
-  `;
+return `
+<h2>Buildup Heat Overview</h2>
+<ul>
+<li>Long Build-up: ${longBuild}</li>
+<li>Short Build-up: ${shortBuild}</li>
+<li>Short Cover: ${shortCover}</li>
+<li>Long Unwind: ${longUnwind}</li>
+</ul>
+<div style="font-size:12px;color:#6b7280;">
+Long Build and Short Cover hint at strength zones. Short Build and Long Unwind highlight pressure and exhaustion pockets.
+</div>
+`;
 }
 
 // ATM Snapshot HTML
 function buildATMSnapshotHTML(rows, atmStrike){
-  if (atmStrike === null || !isFinite(atmStrike)){
-    return `<div style="font-size:13px;color:#6b7280;">ATM could not be identified cleanly for this symbol.</div>`;
-  }
+if (atmStrike === null || !isFinite(atmStrike)){
+return `<div style="font-size:13px;color:#6b7280;">ATM could not be identified cleanly for this symbol.</div>`;
+}
 
-  const ceRows = rows.filter(r => {
-    const t = String(r.Type || '').toUpperCase();
-    return (t === 'CE' || t === 'CALL');
-  });
-  const peRows = rows.filter(r => {
-    const t = String(r.Type || '').toUpperCase();
-    return (t === 'PE' || t === 'PUT');
-  });
+const ceRows = rows.filter(r => {
+const t = String(r.Type || '').toUpperCase();
+return (t === 'CE' || t === 'CALL');
+});
+const peRows = rows.filter(r => {
+const t = String(r.Type || '').toUpperCase();
+return (t === 'PE' || t === 'PUT');
+});
 
-  function nearestATM(list){
-    if (!list.length) return null;
-    let best = list[0], bestDiff = Math.abs(toNumber(list[0].Strike)-atmStrike);
-    list.forEach(r=>{
-      const d = Math.abs(toNumber(r.Strike)-atmStrike);
-      if (d < bestDiff){ bestDiff = d; best = r; }
-    });
-    return best;
-  }
+function nearestATM(list){
+if (!list.length) return null;
+let best = list[0], bestDiff = Math.abs(toNumber(list[0].Strike)-atmStrike);
+list.forEach(r=>{
+const d = Math.abs(toNumber(r.Strike)-atmStrike);
+if (d < bestDiff){ bestDiff = d; best = r; }
+});
+return best;
+}
 
-  const ceATM = nearestATM(ceRows);
-  const peATM = nearestATM(peRows);
+const ceATM = nearestATM(ceRows);
+const peATM = nearestATM(peRows);
 
-  if (!ceATM && !peATM){
-    return `<div style="font-size:13px;color:#6b7280;">No CE/PE legs close enough to ATM for snapshot.</div>`;
-  }
+if (!ceATM && !peATM){
+return `<div style="font-size:13px;color:#6b7280;">No CE/PE legs close enough to ATM for snapshot.</div>`;
+}
 
-  function legLine(label, row){
-    if (!row) return `${label}: —`;
-    const ltp = toNumber(row.LTP);
-    const delta = toNumber(row.Delta);
-    const iv = toNumber(row.IV);
-    return `${label}: ${ltp!==null?ltp.toFixed(2):'—'} (Delta: ${delta!==null?delta.toFixed(2):'—'}, IV: ${iv!==null?iv.toFixed(2)+'%':'—'})`;
-  }
+function legLine(label, row){
+if (!row) return `${label}: —`;
+const ltp = toNumber(row.LTP);
+const delta = toNumber(row.Delta);
+const iv = toNumber(row.IV);
+return `${label}: ${ltp!==null?ltp.toFixed(2):'—'} (Delta: ${delta!==null?delta.toFixed(2):'—'}, IV: ${iv!==null?iv.toFixed(2)+'%':'—'})`;
+}
 
-  return `
-    <h2>ATM Zone Snapshot</h2>
-    <div><b>ATM Strike:</b> ${atmStrike}</div>
-    <ul>
-      <li>${legLine('CE', ceATM)}</li>
-      <li>${legLine('PE', peATM)}</li>
-    </ul>
-    <div style="font-size:12px;color:#6b7280;">
-      ATM legs drive gamma and intraday sensitivity. Monitoring CE / PE IV & Delta here helps track who is in control.
-    </div>
-  `;
+return `
+<h2>ATM Zone Snapshot</h2>
+<div><b>ATM Strike:</b> ${atmStrike}</div>
+<ul>
+<li>${legLine('CE', ceATM)}</li>
+<li>${legLine('PE', peATM)}</li>
+</ul>
+<div style="font-size:12px;color:#6b7280;">
+ATM legs drive gamma and intraday sensitivity. Monitoring CE / PE IV & Delta here helps track who is in control.
+</div>
+`;
 }
 
 // Trend & Strategy HTML
 function buildStrategySuggestionHTML(rows, sentiment, atmStrike){
-  if (!rows.length){
-    return `<div style="font-size:13px;color:#6b7280;">No data available for strategy suggestion.</div>`;
-  }
+if (!rows.length){
+return `<div style="font-size:13px;color:#6b7280;">No data available for strategy suggestion.</div>`;
+}
 
-  let callLB=0, putLB=0, callSB=0, putSB=0;
-  rows.forEach(r=>{
-    const b = String(r.Buildup || '').toLowerCase();
-    const t = String(r.Type || '').toLowerCase();
-    if (t.includes('call')){
-      if (b.includes('long build')) callLB++;
-      if (b.includes('short build')) callSB++;
-    } else if (t.includes('put')){
-      if (b.includes('long build')) putLB++;
-      if (b.includes('short build')) putSB++;
-    }
-  });
+let callLB=0, putLB=0, callSB=0, putSB=0;
+rows.forEach(r=>{
+const b = String(r.Buildup || '').toLowerCase();
+const t = String(r.Type || '').toLowerCase();
+if (t.includes('call')){
+if (b.includes('long build')) callLB++;
+if (b.includes('short build')) callSB++;
+} else if (t.includes('put')){
+if (b.includes('long build')) putLB++;
+if (b.includes('short build')) putSB++;
+}
+});
 
-  let trendStrength = 'Neutral';
-  let reason = 'Flows look mixed between calls and puts.';
-  const putDominance = putLB + callSB;
-  const callDominance = callLB + putSB;
+let trendStrength = 'Neutral';
+let reason = 'Flows look mixed between calls and puts.';
+const putDominance = putLB + callSB;
+const callDominance = callLB + putSB;
 
-  if (putDominance > callDominance + 1){
-    trendStrength = 'Moderately Bearish';
-    reason = 'Put-side buildup and call-side pressure are dominating recent strikes.';
-  } else if (callDominance > putDominance + 1) {
-    trendStrength = 'Moderately Bullish';
-    reason = 'Call-side buildup and put unwinding are supporting the upside structure.';
-  }
+if (putDominance > callDominance + 1){
+trendStrength = 'Moderately Bearish';
+reason = 'Put-side buildup and call-side pressure are dominating recent strikes.';
+} else if (callDominance > putDominance + 1) {
+trendStrength = 'Moderately Bullish';
+reason = 'Call-side buildup and put unwinding are supporting the upside structure.';
+}
 
-  let suggestionTitle = '';
-  let lines = [];
+let suggestionTitle = '';
+let lines = [];
 
-  const stepGuess = (() => {
-    const strikes = [...new Set(rows.map(r=>toNumber(r.Strike)).filter(x=>x!==null && isFinite(x)))].sort((a,b)=>a-b);
-    if (strikes.length < 2) return 0;
-    let diff = strikes[1] - strikes[0];
-    return isFinite(diff) && diff>0 ? diff : 0;
-  })();
+const stepGuess = (() => {
+const strikes = [...new Set(rows.map(r=>toNumber(r.Strike)).filter(x=>x!==null && isFinite(x)))].sort((a,b)=>a-b);
+if (strikes.length < 2) return 0;
+let diff = strikes[1] - strikes[0];
+return isFinite(diff) && diff>0 ? diff : 0;
+})();
 
-  if (sentiment === 'Bullish'){
-    suggestionTitle = 'Bullish Bias – Bull Call / Naked Call';
-    const buyStrike = atmStrike;
-    const sellStrike = stepGuess ? atmStrike + stepGuess : atmStrike + 100;
-    lines = [
-      `• Bull Call Spread: Buy CE @ ${buyStrike}, Sell CE @ ${sellStrike}.`,
-      `• Naked Call Buy: CE near ATM where buildup + delta support continuation.`,
-      `• Avoid aggressive put buying unless IV crush risk is low.`
-    ];
-  } else if (sentiment === 'Bearish'){
-    suggestionTitle = 'Bearish Bias – Bear Put / Naked Put';
-    const buyStrike = atmStrike;
-    const sellStrike = stepGuess ? atmStrike - stepGuess : atmStrike - 100;
-    lines = [
-      `• Bear Put Spread: Buy PE @ ${buyStrike}, Sell PE @ ${sellStrike}.`,
-      `• Naked Put Buy: PE near ATM aligned with short build / breakdown zones.`,
-      `• Weakness in calls confirms continuation on the downside.`
-    ];
-  } else {
-    suggestionTitle = 'Neutral / Compression – Non-directional Structures';
-    const ceStrike = stepGuess ? atmStrike + stepGuess : atmStrike + 100;
-    const peStrike = stepGuess ? atmStrike - stepGuess : atmStrike - 100;
-    lines = [
-      `• ATM Straddle: Buy CE & PE @ ${atmStrike} for breakout expectation.`,
-      `• Strangle: Buy CE @ ${ceStrike}, Buy PE @ ${peStrike} when range is narrow & IV is moderate.`,
-      `• Iron Condor: Sell CE @ ${ceStrike}, Sell PE @ ${peStrike} with further wings for hedged credit.`
-    ];
-  }
+if (sentiment === 'Bullish'){
+suggestionTitle = 'Bullish Bias – Bull Call / Naked Call';
+const buyStrike = atmStrike;
+const sellStrike = stepGuess ? atmStrike + stepGuess : atmStrike + 100;
+lines = [
+`• Bull Call Spread: Buy CE @ ${buyStrike}, Sell CE @ ${sellStrike}.`,
+`• Naked Call Buy: CE near ATM where buildup + delta support continuation.`,
+`• Avoid aggressive put buying unless IV crush risk is low.`
+];
+} else if (sentiment === 'Bearish'){
+suggestionTitle = 'Bearish Bias – Bear Put / Naked Put';
+const buyStrike = atmStrike;
+const sellStrike = stepGuess ? atmStrike - stepGuess : atmStrike - 100;
+lines = [
+`• Bear Put Spread: Buy PE @ ${buyStrike}, Sell PE @ ${sellStrike}.`,
+`• Naked Put Buy: PE near ATM aligned with short build / breakdown zones.`,
+`• Weakness in calls confirms continuation on the downside.`
+];
+} else {
+suggestionTitle = 'Neutral / Compression – Non-directional Structures';
+const ceStrike = stepGuess ? atmStrike + stepGuess : atmStrike + 100;
+const peStrike = stepGuess ? atmStrike - stepGuess : atmStrike - 100;
+lines = [
+`• ATM Straddle: Buy CE & PE @ ${atmStrike} for breakout expectation.`,
+`• Strangle: Buy CE @ ${ceStrike}, Buy PE @ ${peStrike} when range is narrow & IV is moderate.`,
+`• Iron Condor: Sell CE @ ${ceStrike}, Sell PE @ ${peStrike} with further wings for hedged credit.`
+];
+}
 
-  return `
-    <h2>Trend Strength & Strategy Suggestion</h2>
-    <div><b>Trend Strength:</b> ${trendStrength}</div>
-    <div style="margin:4px 0 8px 0;">${reason}</div>
-    <div class="section-title">Suggested Structure:</div>
-    <div style="margin-bottom:4px;font-weight:bold;">${suggestionTitle}</div>
-    <ul>
-      ${lines.map(x=>`<li>${x}</li>`).join('')}
-    </ul>
-    <div style="font-size:12px;color:#6b7280;">
-      This view is structural and educational. Always align final trades with your own risk, timing and broader market context.
-    </div>
-  `;
+return `
+<h2>Trend Strength & Strategy Suggestion</h2>
+<div><b>Trend Strength:</b> ${trendStrength}</div>
+<div style="margin:4px 0 8px 0;">${reason}</div>
+<div class="section-title">Suggested Structure:</div>
+<div style="margin-bottom:4px;font-weight:bold;">${suggestionTitle}</div>
+<ul>
+${lines.map(x=>`<li>${x}</li>`).join('')}
+</ul>
+<div style="font-size:12px;color:#6b7280;">
+This view is structural and educational. Always align final trades with your own risk, timing and broader market context.
+</div>
+`;
+}
+function findDelta50Strike(rows, sentiment) {
+let targetDelta = sentiment === "Bullish" ? 0.50 : -0.50;
+
+let best = null;
+let bestDiff = Infinity;
+
+rows.forEach(r => {
+const delta = toNumber(r.Delta);
+if (delta === null) return;
+
+const diff = Math.abs(delta - targetDelta);
+if (diff < bestDiff) {
+bestDiff = diff;
+best = r;
+}
+});
+
+return best;
 }
 
 function generateTradePanel(best10, atmStrike, spot, symbol, fullRows, pcrValue, pcrView){
-  tradePanel.innerHTML = "";
-  if (!best10 || !best10.length) return;
+tradePanel.innerHTML = "";
+window.best10Global = best10;
+if (!best10 || !best10.length) return;
 
-  const rowsForScoring = best10;
-  const allRows = fullRows && fullRows.length ? fullRows : best10;
+const rowsForScoring = best10;
+const allRows = fullRows && fullRows.length ? fullRows : best10;
 
-  const scored = rowsForScoring.map(r => {
-    const s = scoreRow(r);
-    return { row: r, baseScore: s.score, direction: s.direction };
-  });
+const scored = rowsForScoring.map(r => {
+const s = scoreRow(r);
+return { row: r, baseScore: s.score, direction: s.direction };
+});
 
-  let bullPower = 0, bearPower = 0;
-  scored.forEach(x => {
-    if (x.direction === 'bullish') bullPower += x.baseScore;
-    if (x.direction === 'bearish') bearPower += x.baseScore;
-  });
+let bullPower = 0, bearPower = 0;
+scored.forEach(x => {
+if (x.direction === 'bullish') bullPower += x.baseScore;
+if (x.direction === 'bearish') bearPower += x.baseScore;
+});
 
-  let sentiment = 'Neutral';
-  if (bullPower - bearPower > 1.5) sentiment = 'Bullish';
-  else if (bearPower - bullPower > 1.5) sentiment = 'Bearish';
+let sentiment = 'Neutral';
+if (bullPower - bearPower > 1.5) sentiment = 'Bullish';
+else if (bearPower - bullPower > 1.5) sentiment = 'Bearish';
 
-  let trend = 'Range';
-  if (sentiment === 'Bullish') trend = 'Up';
-  else if (sentiment === 'Bearish') trend = 'Down';
+let trend = 'Range';
+if (sentiment === 'Bullish') trend = 'Up';
+else if (sentiment === 'Bearish') trend = 'Down';
 
-  const directional = scored.filter(x => x.direction !== 'neutral');
-  if (!directional.length) {
-    tradePanel.innerHTML = `<div style="font-size:13px;color:#6b7280;margin-top:8px;">No strong directional edge detected from the nearest strikes.</div>`;
-    return;
-  }
+const directional = scored.filter(x => x.direction !== 'neutral');
+if (!directional.length) {
+tradePanel.innerHTML = `<div style="font-size:13px;color:#6b7280;margin-top:8px;">No strong directional edge detected from the nearest strikes.</div>`;
+return;
+}
 
-  const intradayCandidates = directional.map(x => ({
-    ...x,
-    modeScore: computeIntradayScore(x.row, x.baseScore, atmStrike)
-  }));
-  intradayCandidates.sort((a,b) => b.modeScore - a.modeScore);
-  const bestIntraday = intradayCandidates[0];
+const intradayCandidates = directional.map(x => ({
+...x,
+modeScore: computeIntradayScore(x.row, x.baseScore, atmStrike)
+}));
+intradayCandidates.sort((a,b) => b.modeScore - a.modeScore);
+const bestIntraday = intradayCandidates[0];
 
-  const swingCandidates = directional.map(x => ({
-    ...x,
-    modeScore: computeSwingScore(x.row, x.baseScore, atmStrike)
-  }));
-  swingCandidates.sort((a,b) => b.modeScore - a.modeScore);
-  const bestSwing = swingCandidates[0];
+const swingCandidates = directional.map(x => ({
+...x,
+modeScore: computeSwingScore(x.row, x.baseScore, atmStrike)
+}));
+swingCandidates.sort((a,b) => b.modeScore - a.modeScore);
+const bestSwing = swingCandidates[0];
 
-  let intradayTrade = null;
-  let swingTrade    = null;
+let intradayTrade = null;
+let swingTrade    = null;
 
-  if (bestIntraday) {
-    intradayTrade = buildTradeObject(bestIntraday.row, bestIntraday.direction, sentiment, trend, atmStrike, "Intraday / Next-Day");
-  }
-  if (bestSwing) {
-    swingTrade = buildTradeObject(bestSwing.row, bestSwing.direction, sentiment, trend, atmStrike, "Swing (2–5 Days)");
-  }
+if (bestIntraday) {
+intradayTrade = buildTradeObject(bestIntraday.row, bestIntraday.direction, sentiment, trend, atmStrike, "Intraday / Next-Day");
+}
+if (bestSwing) {
+swingTrade = buildTradeObject(bestSwing.row, bestSwing.direction, sentiment, trend, atmStrike, "Swing (2–5 Days)");
+}
 
-  const volHTML      = buildVolatilityInsightHTML(allRows);
-  const buildupHTML  = buildBuildupHeatHTML(allRows);
-  const atmHTML      = buildATMSnapshotHTML(allRows, atmStrike);
-  const strategyHTML = buildStrategySuggestionHTML(allRows, sentiment, atmStrike);
+const volHTML      = buildVolatilityInsightHTML(allRows);
+const buildupHTML  = buildBuildupHeatHTML(allRows);
+const atmHTML      = buildATMSnapshotHTML(allRows, atmStrike);
+const strategyHTML = buildStrategySuggestionHTML(allRows, sentiment, atmStrike);
 
-  let tabsHtml = `
-    <div class="tab-buttons">
-      <button class="tab-button active" data-tab="intraday">Intraday / Next-Day</button>
-      <button class="tab-button" data-tab="swing">Swing (2–5 Days)</button>
-      <button class="tab-button" data-tab="vol">Volatility Insight</button>
-      <button class="tab-button" data-tab="buildup">Buildup Heat Overview</button>
-      <button class="tab-button" data-tab="atm">ATM Zone Snapshot</button>
-      <button class="tab-button" data-tab="strategy">Strategy Suggestion</button>
-    </div>
+let tabsHtml = `
+<div class="tab-buttons">
+<button class="tab-button active" data-tab="intraday">Intraday / Next-Day</button>
+<button class="tab-button" data-tab="swing">Swing (2–5 Days)</button>
+<button class="tab-button" data-tab="vol">Volatility Insight</button>
+<button class="tab-button" data-tab="buildup">Buildup Heat Overview</button>
+<button class="tab-button" data-tab="atm">ATM Zone Snapshot</button>
+<button class="tab-button" data-tab="strategy">Strategy Suggestion</button>
+</div>
 
-    <div id="tab-intraday" class="tab-content active">
-      ${intradayTrade ? renderTradeHtml(intradayTrade, symbol) : '<div style="font-size:13px;color:#6b7280;">No clear intraday edge detected.</div>'}
-    </div>
+<div id="tab-intraday" class="tab-content active">
+${intradayTrade ? renderTradeHtml(intradayTrade, symbol) : '<div style="font-size:13px;color:#6b7280;">No clear intraday edge detected.</div>'}
+</div>
 
-    <div id="tab-swing" class="tab-content">
-      ${swingTrade ? renderTradeHtml(swingTrade, symbol) : '<div style="font-size:13px;color:#6b7280;">No clear swing edge detected.</div>'}
-    </div>
+<div id="tab-swing" class="tab-content">
+${swingTrade ? renderTradeHtml(swingTrade, symbol) : '<div style="font-size:13px;color:#6b7280;">No clear swing edge detected.</div>'}
+</div>
 
-    <div id="tab-vol" class="tab-content">
-      ${volHTML}
-    </div>
+<div id="tab-vol" class="tab-content">
+${volHTML}
+</div>
 
-    <div id="tab-buildup" class="tab-content">
-      ${buildupHTML}
-    </div>
+<div id="tab-buildup" class="tab-content">
+${buildupHTML}
+</div>
 
-    <div id="tab-atm" class="tab-content">
-      ${atmHTML}
-    </div>
+<div id="tab-atm" class="tab-content">
+${atmHTML}
+</div>
 
-    <div id="tab-strategy" class="tab-content">
-      ${strategyHTML}
-    </div>
-  `;
+<div id="tab-strategy" class="tab-content">
+${strategyHTML}
+</div>
+`;
 
-  tradePanel.innerHTML = tabsHtml;
-  tradePanel.classList.add('fade-in');
-  setTimeout(() => tradePanel.classList.remove('fade-in'), 500);
+tradePanel.innerHTML = tabsHtml;
+tradePanel.classList.add('fade-in');
+setTimeout(() => tradePanel.classList.remove('fade-in'), 500);
 
-  const tabButtons = tradePanel.querySelectorAll('.tab-button');
-  const tabContents = tradePanel.querySelectorAll('.tab-content');
+const tabButtons = tradePanel.querySelectorAll('.tab-button');
+const tabContents = tradePanel.querySelectorAll('.tab-content');
 
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tab = btn.getAttribute('data-tab');
-      tabButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+tabButtons.forEach(btn => {
+btn.addEventListener('click', () => {
+const tab = btn.getAttribute('data-tab');
+tabButtons.forEach(b => b.classList.remove('active'));
+btn.classList.add('active');
 
-      tabContents.forEach(c => c.classList.remove('active'));
-      const target = tradePanel.querySelector(`#tab-${tab}`);
-      if (target) target.classList.add('active');
-    });
-  });
+tabContents.forEach(c => c.classList.remove('active'));
+const target = tradePanel.querySelector(`#tab-${tab}`);
+if (target) target.classList.add('active');
+});
+});
 }
 
 // RESET with SMOOTH FADE-OUT
 document.getElementById("resetBtn").addEventListener("click", () => {
 
-  tableBody.classList.add("fade-out");
-  summaryBox.classList.add("fade-out");
-  tradePanel.classList.add("fade-out");
+tableBody.classList.add("fade-out");
+summaryBox.classList.add("fade-out");
+tradePanel.classList.add("fade-out");
 
-  setTimeout(() => {
+setTimeout(() => {
 
-    tableBody.classList.add("hidden");
-    summaryBox.classList.add("hidden");
-    tradePanel.classList.add("hidden");
+tableBody.classList.add("hidden");
+summaryBox.classList.add("hidden");
+tradePanel.classList.add("hidden");
 
-    tableBody.innerHTML = "";
-    summaryBox.innerHTML = "";
-    tradePanel.innerHTML = "";
+tableBody.innerHTML = "";
+summaryBox.innerHTML = "";
+tradePanel.innerHTML = "";
 
-    stockDropdown.innerHTML = '<option value="">-- Upload file to load symbols --</option>';
+stockDropdown.innerHTML = '<option value="">-- Upload file to load symbols --</option>';
 
-    fileInput.value = "";
+fileInput.value = "";
 
-    globalRows = [];
+globalRows = [];
 
-    tableBody.classList.remove("fade-out", "fade-in", "hidden");
-    summaryBox.classList.remove("fade-out", "fade-in", "hidden");
-    tradePanel.classList.remove("fade-out", "fade-in", "hidden");
+tableBody.classList.remove("fade-out", "fade-in", "hidden");
+summaryBox.classList.remove("fade-out", "fade-in", "hidden");
+tradePanel.classList.remove("fade-out", "fade-in", "hidden");
 
-  }, 400);
+}, 400);
 });
 
 fileInput.addEventListener('change', () => {
-  const file = fileInput.files[0];
-  if (file) handleFile(file);
+const file = fileInput.files[0];
+if (file) handleFile(file);
 });
 
 stockDropdown.addEventListener('change', () => {
-  loadStockData(stockDropdown.value);
+loadStockData(stockDropdown.value);
 });
 
 </script>
