@@ -1,6 +1,4 @@
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -89,12 +87,12 @@ text-align:right;
 
 /* Fade Animations */
 .fade-out { opacity: 0; transition: opacity 0.4s ease; }
-.hidden { display: none; }
+.hidden  { display: none; }
 .fade-in { opacity: 0; animation: fadeInAnim 0.45s ease forwards; }
 
 @keyframes fadeInAnim {
 from { opacity: 0; }
-to { opacity: 1; }
+to   { opacity: 1; }
 }
 
 /* Buttons */
@@ -151,8 +149,8 @@ margin-right:6px;
 .tag-bearish { background:#fef2f2; color:#b91c1c; }
 .tag-neutral { background:#f3f4f6; color:#374151; }
 
-.tag-trend-up { background:#e0f2fe; color:#1d4ed8; }
-.tag-trend-down { background:#fee2e2; color:#b91c1c; }
+.tag-trend-up    { background:#e0f2fe; color:#1d4ed8; }
+.tag-trend-down  { background:#fee2e2; color:#b91c1c; }
 .tag-trend-range { background:#f3f4f6; color:#374151; }
 
 .tag-gray { background:#f3f4f6; color:#374151; }
@@ -194,6 +192,13 @@ color:#ffffff;
 
 @keyframes glowCE { from { background:#e8f3ff; } to { background:#d7e9ff; } }
 @keyframes glowPE { from { background:#ffe9ee; } to { background:#ffd7df; } }
+
+/* Smart Money meter */
+.smart-meter-bar {
+font-family: monospace;
+font-size:12px;
+margin:4px 0;
+}
 </style>
 
 </head>
@@ -220,7 +225,7 @@ color:#ffffff;
 </div>
 <div style="font-size:11px;color:#6b7280;">
 Adjust Risk %, Reward multiple and optional Target%.<br/>
-Target% > 0 overrides R:R for targets.
+Target% &gt; 0 overrides R:R for targets.
 </div>
 </div>
 
@@ -269,12 +274,11 @@ Target% > 0 overrides R:R for targets.
 <div id="tradePanel"></div>
 
 <script>
-
-const fileInput = document.getElementById('fileInput');
-const tableBody = document.getElementById('tableBody');
-const stockDropdown = document.getElementById('stockDropdown');
-const summaryBox = document.getElementById('summaryBox');
-const tradePanel = document.getElementById('tradePanel');
+const fileInput    = document.getElementById('fileInput');
+const tableBody    = document.getElementById('tableBody');
+const stockDropdown= document.getElementById('stockDropdown');
+const summaryBox   = document.getElementById('summaryBox');
+const tradePanel   = document.getElementById('tradePanel');
 
 const riskInput   = document.getElementById('riskLongPct');
 const rrInput     = document.getElementById('rrMultiple');
@@ -293,10 +297,19 @@ const n = parseFloat(s);
 return isNaN(n) ? null : n;
 }
 
+// simple median helper
+function median(arr){
+if (!arr.length) return null;
+const sorted = arr.slice().sort((a,b)=>a-b);
+const mid = Math.floor(sorted.length/2);
+if (sorted.length % 2 === 0) return (sorted[mid-1] + sorted[mid]) / 2;
+return sorted[mid];
+}
+
 // PCR classification
 function classifyPCR(pcr){
 if (pcr === null || !isFinite(pcr)) return 'N/A';
-if (pcr > 1.3) return 'Strong Bullish';
+if (pcr > 1.3)  return 'Strong Bullish';
 if (pcr >= 1.0) return 'Bullish';
 if (pcr >= 0.8) return 'Mildly Bearish';
 return 'Bearish';
@@ -304,35 +317,35 @@ return 'Bearish';
 
 // MAPPING CSV KEYS → DISPLAY NAMES
 const COLUMNS = [
-{ header: "Symbol",   key: "Symbol" },
-{ header: "Type",     key: "Type" },
-{ header: "Strike",   key: "Strike", numeric: true },
+{ header: "Symbol", key: "Symbol" },
+{ header: "Type",   key: "Type" },
+{ header: "Strike", key: "Strike", numeric: true },
 
-{ header: "LTP",      key: "LTP", numeric: true },
+{ header: "LTP",    key: "LTP", numeric: true },
 
-{ header: "Chg %",    key: "Day Chg%", numeric: true, isChange: true },
+{ header: "Chg %",  key: "Day Chg%", numeric: true, isChange: true },
 
 { header: "Volume",   key: "Volume", numeric: true },
 { header: "Vol Chg",  key: "Volume Chg%", numeric: true, isChange: true },
 
-{ header: "TTV",      key: "TTV (Cr)", numeric: true },
+{ header: "TTV",    key: "TTV (Cr)", numeric: true },
 
-{ header: "OI",       key: "OI", numeric: true },
-{ header: "OI Chg",   key: "OI Chg", numeric: true, isChange: true },
-{ header: "OI Chg%",  key: "OI Chg%", numeric: true, isChange: true },
+{ header: "OI",     key: "OI", numeric: true },
+{ header: "OI Chg", key: "OI Chg", numeric: true, isChange: true },
+{ header: "OI Chg%",key: "OI Chg%", numeric: true, isChange: true },
 
-{ header: "IV",       key: "IV", numeric: true },
-{ header: "IV Chg%",  key: "IV Chg%", numeric: true, isChange: true },
+{ header: "IV",     key: "IV", numeric: true },
+{ header: "IV Chg%",key: "IV Chg%", numeric: true, isChange: true },
 
-{ header: "Spot",     key: "Spot", numeric: true },
+{ header: "Spot",   key: "Spot", numeric: true },
 
-{ header: "Delta",    key: "Delta", numeric: true },
-{ header: "Gamma",    key: "Gamma", numeric: true },
-{ header: "Rho",      key: "Rho", numeric: true },
-{ header: "Theta",    key: "Theta", numeric: true },
-{ header: "Vega",     key: "Vega", numeric: true },
+{ header: "Delta",  key: "Delta", numeric: true },
+{ header: "Gamma",  key: "Gamma", numeric: true },
+{ header: "Rho",    key: "Rho", numeric: true },
+{ header: "Theta",  key: "Theta", numeric: true },
+{ header: "Vega",   key: "Vega", numeric: true },
 
-{ header: "Buildup",  key: "Buildup" }
+{ header: "Buildup",key: "Buildup" }
 ];
 
 async function handleFile(file){
@@ -377,10 +390,10 @@ let bestCE = null, bestPE = null;
 let bestCEScore = -Infinity, bestPEScore = -Infinity;
 
 rows.forEach(r => {
-const type = String(r.Type || '').toUpperCase();
-const oiChg = toNumber(r["OI Chg%"]) || 0;
+const type   = String(r.Type || '').toUpperCase();
+const oiChg  = toNumber(r["OI Chg%"]) || 0;
 const volChg = toNumber(r["Volume Chg%"]) || 0;
-const delta = toNumber(r["Delta"]) || 0;
+const delta  = toNumber(r["Delta"]) || 0;
 const dayChg = toNumber(r["Day Chg%"]) || 0;
 const strike = toNumber(r.Strike) || 0;
 
@@ -423,6 +436,7 @@ tr.classList.add("hot-pe");
 });
 }
 
+/* ---------------- LOAD STOCK DATA ---------------- */
 function loadStockData(symbol){
 tableBody.innerHTML = "";
 summaryBox.innerHTML = "";
@@ -430,49 +444,73 @@ tradePanel.innerHTML = "";
 
 if (!symbol) return;
 
-let filtered = globalRows.filter(r => r.Symbol === symbol);
-filtered = filtered.filter(r =>
-toNumber(r.Volume) > 5000 &&
-toNumber(r.OI) > 50000
-);
+// FULL STRIKES → display everything in table (all strikes)
+let fullRows = globalRows
+.filter(r => r.Symbol === symbol)
+.filter(r => r.Strike !== undefined && r.Strike !== null && String(r.Strike).trim() !== "");
 
-if (filtered.length === 0) return;
+if (!fullRows.length) return;
 
-let spot = toNumber(filtered[0].Spot);
+fullRows.sort((a,b)=> (toNumber(a.Strike) || 0) - (toNumber(b.Strike) || 0));
 
-filtered.sort((a, b) => toNumber(a.Strike) - toNumber(b.Strike));
+// ---------------- LIQUIDITY AUTO-THRESHOLD ENGINE ----------------
+const volArr = fullRows
+.map(r => toNumber(r.Volume))
+.filter(x => x !== null && isFinite(x) && x > 0);
 
-let atmStrike = filtered.reduce((prev, curr) =>
-Math.abs(toNumber(curr.Strike) - spot) < Math.abs(toNumber(prev.Strike) - spot)
+const oiArr = fullRows
+.map(r => toNumber(r.OI))
+.filter(x => x !== null && isFinite(x) && x > 0);
+
+const medianVol = median(volArr) || 0;
+const medianOI  = median(oiArr) || 0;
+
+// Dynamic thresholds (you can tweak multipliers if needed)
+const volThreshold = medianVol * 0.75;
+const oiThreshold  = medianOI  * 0.75;
+
+const liquidRows = fullRows.filter(r => {
+const v = toNumber(r.Volume);
+const o = toNumber(r.OI);
+return (v !== null && v >= volThreshold) &&
+(o !== null && o >= oiThreshold);
+});
+
+// Rows used for *all calculations* (smart money style)
+const calcRows = liquidRows.length > 0 ? liquidRows : fullRows;
+
+if (!calcRows.length) return;
+
+// ---------------- CORE METRICS (based on calcRows) ----------------
+let spot = toNumber(calcRows[0].Spot);
+
+// ATM strike from calcRows
+let atmRow = calcRows.reduce((prev, curr) =>
+Math.abs(toNumber(curr.Strike) - spot) <
+Math.abs(toNumber(prev.Strike) - spot)
 ? curr : prev
-).Strike;
+);
+let atmStrike = toNumber(atmRow.Strike);
 
-atmStrike = toNumber(atmStrike);
-// -------------------- IV RANK CALCULATION --------------------
-const ivValues = filtered
+// IV Rank from calcRows
+const ivValues = calcRows
 .map(r => toNumber(r.IV))
 .filter(x => x !== null && isFinite(x));
 
 let ivRank = null;
-
 if (ivValues.length > 1) {
 const minIV = Math.min(...ivValues);
 const maxIV = Math.max(...ivValues);
-
-const atmRow = filtered.find(r => toNumber(r.Strike) === atmStrike);
-const currentIV = atmRow ? toNumber(atmRow.IV) : null;
-
+const currentIV = toNumber(atmRow.IV);
 if (currentIV !== null && maxIV !== minIV) {
 ivRank = ((currentIV - minIV) / (maxIV - minIV)) * 100;
 }
 }
-// --------------------------------------------------------------
 
-// -------- FIND CHEAPEST STRIKE BY IV --------
+// Cheapest strike by IV (within calcRows)
 let cheapestStrike = null;
 let cheapestIV = Infinity;
-
-filtered.forEach(r => {
+calcRows.forEach(r => {
 const iv = toNumber(r.IV);
 if (iv !== null && iv < cheapestIV) {
 cheapestIV = iv;
@@ -480,10 +518,9 @@ cheapestStrike = r;
 }
 });
 
-
-// PCR from all rows for this symbol
+// PCR from calcRows only (smart money style)
 let totalCallOI = 0, totalPutOI = 0;
-filtered.forEach(r => {
+calcRows.forEach(r => {
 const oi = toNumber(r.OI);
 if (!oi) return;
 const t = String(r.Type || '').toUpperCase();
@@ -495,11 +532,11 @@ if (totalCallOI > 0) pcr = totalPutOI / totalCallOI;
 const pcrText = pcr !== null && isFinite(pcr) ? pcr.toFixed(2) : 'N/A';
 const pcrView = classifyPCR(pcr);
 
-let ranked = filtered.slice().sort((a, b) =>
+// Rank liquid/calc rows for trade analysis
+let ranked = calcRows.slice().sort((a, b) =>
 masterStrikeScore(b, atmStrike) - masterStrikeScore(a, atmStrike)
 );
-
-let best10 = ranked;
+let best10 = ranked; // can slice if you want to restrict
 
 // Summary (TOP line)
 summaryBox.innerHTML = `
@@ -512,11 +549,14 @@ cheapestStrike
 ? `${cheapestStrike.Strike} ${String(cheapestStrike.Type).toUpperCase()} (IV ${cheapestIV.toFixed(2)})`
 : '—'
 }
+<br/>
+<span style="font-size:12px;color:#6b7280;">
+Liquidity engine: using ${calcRows.length} of ${fullRows.length} strikes (Volume ≥ ${volThreshold.toFixed(0)}, OI ≥ ${oiThreshold.toFixed(0)}).
+</span>
 `;
 
-
-// Populate table
-best10.forEach(row => {
+// Populate table with ALL strikes
+fullRows.forEach(row => {
 const tr = document.createElement('tr');
 
 if (row.Type === "CE" || row.Type === "Call") tr.classList.add("call-row");
@@ -547,56 +587,66 @@ tableBody.appendChild(tr);
 tableBody.classList.add("fade-in");
 setTimeout(() => tableBody.classList.remove("fade-in"), 500);
 
-// Highlight hottest CE & PE
-highlightHottestStrikes(best10, atmStrike);
+// Highlight hottest CE & PE (based on calcRows)
+highlightHottestStrikes(calcRows, atmStrike);
+
+// Liquidity metadata for Smart Money tab
+const liquidityInfo = {
+medianVolume: medianVol,
+medianOI: medianOI,
+volThreshold,
+oiThreshold,
+liquidCount: calcRows.length,
+totalCount: fullRows.length
+};
 
 // Generate full professional trade analysis panel with tabs
-generateTradePanel(best10, atmStrike, spot, symbol, filtered, pcr, pcrView);
+generateTradePanel(best10, atmStrike, spot, symbol, fullRows, pcr, pcrView, liquidityInfo, ivRank);
 }
 
 /* -------- Trade analysis logic ---------- */
 
 function scoreRow(row){
-const type = String(row.Type || '').toLowerCase();
+const type    = String(row.Type || '').toLowerCase();
 const buildup = String(row.Buildup || '').toLowerCase();
 
-const dayChg  = toNumber(row['Day Chg%']);
-const oiChgP  = toNumber(row['OI Chg%']);
-const oiChg   = toNumber(row['OI Chg']);
-const ivChgP  = toNumber(row['IV Chg%']);
-const delta   = toNumber(row['Delta']);
+const dayChg = toNumber(row['Day Chg%']);
+const oiChgP = toNumber(row['OI Chg%']);
+const oiChg  = toNumber(row['OI Chg']);
+const ivChgP = toNumber(row['IV Chg%']);
+const delta  = toNumber(row['Delta']);
 
 let s = 0;
 
 // buildup based
-if (buildup.includes('long build')) s += 2;
-if (buildup.includes('short covering')) s += 1;
-if (buildup.includes('short build')) s -= 2;
-if (buildup.includes('long unwinding')) s -= 1;
+if (buildup.includes('long build'))      s += 2;
+if (buildup.includes('short covering'))  s += 1;
+if (buildup.includes('short build'))     s -= 2;
+if (buildup.includes('long unwinding'))  s -= 1;
 
 // OI change
 if (oiChgP !== null) {
-if (oiChgP > 15) s += 2;
-else if (oiChgP > 0) s += 1;
-else if (oiChgP < -15) s -= 2;
-else if (oiChgP < 0) s -= 1;
+if (oiChgP > 15)      s += 2;
+else if (oiChgP > 0)  s += 1;
+else if (oiChgP < -15)s -= 2;
+else if (oiChgP < 0)  s -= 1;
 } else if (oiChg !== null) {
 s += Math.sign(oiChg) * 0.5;
 }
 
 // Price change
 if (dayChg !== null) {
-if (dayChg > 3) s += 2;
+if (dayChg > 3)      s += 2;
 else if (dayChg > 0) s += 1;
-else if (dayChg < -3) s -= 2;
+else if (dayChg < -3)s -= 2;
 else if (dayChg < 0) s -= 1;
 }
 
 // IV change (smaller weight)
 if (ivChgP !== null) {
-if (ivChgP > 5) s += 1;
+if (ivChgP > 5)      s += 1;
 else if (ivChgP > 0) s += 0.5;
-else if (ivChgP < -5) s -= 1;
+else if (ivChgP < -5)s -= 1;
 else if (ivChgP < 0) s -= 0.5;
 }
 
@@ -610,10 +660,10 @@ s += Math.max(0, Math.min(1, bonus));
 // Direction from type + score
 let direction = 'neutral';
 if (type.includes('call')) {
-if (s > 0.5) direction = 'bullish';
+if (s > 0.5)  direction = 'bullish';
 if (s < -0.5) direction = 'bearish';
 } else if (type.includes('put')) {
-if (s > 0.5) direction = 'bearish';
+if (s > 0.5)  direction = 'bearish';
 if (s < -0.5) direction = 'bullish';
 }
 
@@ -623,18 +673,18 @@ return { score: s, direction };
 function masterStrikeScore(row, atmStrike) {
 const base = scoreRow(row).score;
 
-const oiChg = toNumber(row["OI Chg%"]) || 0;
+const oiChg  = toNumber(row["OI Chg%"]) || 0;
 const volChg = toNumber(row["Volume Chg%"]) || 0;
-const ivChg = toNumber(row["IV Chg%"]) || 0;
-const delta = Math.abs(toNumber(row["Delta"]) || 0);
+const ivChg  = toNumber(row["IV Chg%"]) || 0;
+const delta  = Math.abs(toNumber(row["Delta"]) || 0);
 const strike = toNumber(row.Strike);
 
 let score = base;
 
 // OI, Volume, IV momentum
-score += oiChg * 0.4;
+score += oiChg  * 0.4;
 score += volChg * 0.3;
-score += ivChg * 0.2;
+score += ivChg  * 0.2;
 
 // Proximity to ATM is rewarded
 score -= Math.abs(strike - atmStrike) * 0.01;
@@ -682,7 +732,7 @@ score += bonus * 2;
 }
 
 if (iv !== null) {
-if (iv < 15) score += 1.5;
+if (iv < 15)      score += 1.5;
 else if (iv < 25) score += 1;
 else if (iv > 35) score -= 1;
 }
@@ -727,7 +777,7 @@ const delta  = toNumber(row['Delta']);
 const gamma  = toNumber(row['Gamma']);
 const theta  = toNumber(row['Theta']);
 const vega   = toNumber(row['Vega']);
-const buildup = String(row.Buildup || '');
+const buildup= String(row.Buildup || '');
 
 const summary = [];
 summary.push(`Setup aligns with a ${sentiment.toLowerCase()} bias and a ${trend.toLowerCase()} structure.`);
@@ -795,10 +845,10 @@ return { summary, keyData, interp, why };
 }
 
 function buildTradeObject(row, direction, sentiment, trend, atmStrike, modeLabel){
-const ltp = toNumber(row.LTP);
-const riskLongPct = toNumber(riskInput.value) ?? 35;
-const rrMultiple  = toNumber(rrInput.value)   ?? 2;
-const targetPct   = toNumber(targetInput.value) ?? 0;
+const ltp          = toNumber(row.LTP);
+const riskLongPct  = toNumber(riskInput.value) ?? 35;
+const rrMultiple   = toNumber(rrInput.value)   ?? 2;
+const targetPct    = toNumber(targetInput.value) ?? 0;
 
 const levels = computeLevels(ltp, riskLongPct, rrMultiple, targetPct);
 
@@ -826,9 +876,29 @@ narrative
 }
 
 function strengthColor(strength) {
-if (strength >= 4.0) return "tag-bullish";   // green
-if (strength >= 2.5) return "tag-neutral";   // yellow/grey
-return "tag-bearish";                        // red
+if (strength >= 4.0) return "tag-bullish"; // green
+if (strength >= 2.5) return "tag-neutral"; // grey
+return "tag-bearish"; // red
+}
+
+function findDelta50Strike(rows, sentiment) {
+let targetDelta = sentiment === "Bullish" ? 0.50 : -0.50;
+
+let best = null;
+let bestDiff = Infinity;
+
+rows.forEach(r => {
+const delta = toNumber(r.Delta);
+if (delta === null) return;
+
+const diff = Math.abs(delta - targetDelta);
+if (diff < bestDiff) {
+bestDiff = diff;
+best = r;
+}
+});
+
+return best;
 }
 
 function renderTradeHtml(trade, symbol){
@@ -840,8 +910,8 @@ const trendClass =
 trade.trend === 'Up' ? 'tag-trend-up' :
 trade.trend === 'Down' ? 'tag-trend-down' : 'tag-trend-range';
 
-// NEW — find best strike near delta 0.50 based on sentiment
-const delta50 = findDelta50Strike(window.best10Global, trade.sentiment);
+// best strike near delta 0.50 based on sentiment
+const delta50 = findDelta50Strike(window.best10Global || [], trade.sentiment);
 
 const delta50Label = delta50
 ? `Strike ${delta50.Strike} – Δ ${toNumber(delta50.Delta).toFixed(2)}`
@@ -853,9 +923,8 @@ return `
 <span class="tag ${sentimentClass}">Sentiment: ${trade.sentiment}</span>
 <span class="tag ${trendClass}">Trend: ${trade.trend}</span>
 <span class="tag ${strengthColor(trade.strength)}"> Strength: ${trade.strength.toFixed(1)}/5 </span>
-<span class="tag ${trade.sentiment === 'Bullish' ? 'tag-bullish' : trade.sentiment === 'Bearish' ? 'tag-bearish' : 'tag-neutral' }">Strike (Δ≈0.50): ${delta50Label}</span> 
+<span class="tag ${trade.sentiment === 'Bullish' ? 'tag-bullish' : trade.sentiment === 'Bearish' ? 'tag-bearish' : 'tag-neutral' }">Strike (Δ≈0.50): ${delta50Label}</span>
 </div>
-
 
 <div style="margin-bottom:6px;font-size:13px;">
 <b>Strike to trade:</b> ${trade.strike ?? '—'} ${trade.type} &nbsp;|&nbsp;
@@ -886,15 +955,66 @@ ${trade.narrative.interp.map(x => `<li>${x}</li>`).join('')}
 <ul>
 ${trade.narrative.why.map(x => `<li>${x}</li>`).join('')}
 </ul>
-<div style="margin-top:6px;font-size:11px;color:#6b7280;">
-Educational view only. Not a recommendation. Please use position sizing, SL discipline and your own trading framework.
+<div style="
+    font-size:14px; 
+    font-weight:bold; 
+    color:#374151; 
+    margin-top:12px; 
+    padding:10px 12px; 
+    background:#f3f4f6; 
+    border-left:4px solid #4b5563;
+    border-radius:4px;
+    line-height:1.5;
+">
+| ⚠️ This tool is strictly for educational purposes only and not for any investment advice; Options involve high risk and potential losses. |<br>
+| Please consult a SEBI-registered advisor before trading, As all decisions and outcomes remain solely your responsibility and STWP assumes no liability. |
 </div>
 `;
 }
 
-/* ---------- New insight helpers for extra tabs ---------- */
+/* ---------- Shared buildup stats helper ---------- */
+function computeBuildupStats(rows){
+const stats = {
+call: { longBuild:0, shortBuild:0, shortCover:0, longUnwind:0 },
+put:  { longBuild:0, shortBuild:0, shortCover:0, longUnwind:0 }
+};
 
-// Volatility Insight HTML
+rows.forEach(r=>{
+const b = String(r.Buildup || '').toLowerCase();
+const t = String(r.Type    || '').toLowerCase();
+
+let side = null;
+if (t.includes('call')) side = 'call';
+else if (t.includes('put')) side = 'put';
+if (!side) return;
+
+// LONG BUILD-UP (avoid double counting)
+if (b.includes('long build')) stats[side].longBuild++;
+
+
+// SHORT BUILD-UP
+if (b.includes('short build')) stats[side].shortBuild++;
+
+// SHORT COVER
+// SHORT COVER
+if (b.includes('short cover')) stats[side].shortCover++;
+
+// LONG UNWIND
+if (b.includes('long unwind') || b.includes('long unwinding'))
+stats[side].longUnwind++;
+});
+
+return stats;
+}
+
+function clusterLabel(n){
+if (n >= 7) return "Strong";
+if (n >= 3) return "Moderate";
+if (n >= 1) return "Weak";
+return "None";
+}
+
+/* ---------- Volatility Insight HTML ---------- */
 function buildVolatilityInsightHTML(rows){
 const ivRows = rows
 .map(r => ({ iv: toNumber(r.IV), strike: toNumber(r.Strike), type: String(r.Type || '').toUpperCase() }))
@@ -925,36 +1045,39 @@ Elevated IV supports credit strategies (spreads / iron condors), while lower IV 
 `;
 }
 
-// Buildup Heat HTML
+/* ---------- Buildup Heat Overview (UPGRADED) ---------- */
 function buildBuildupHeatHTML(rows){
-let longBuild=0, shortBuild=0, shortCover=0, longUnwind=0;
-rows.forEach(r=>{
-const b = String(r.Buildup || '').toLowerCase();
-if (b.includes('long build')) longBuild++;
-if (b.includes('short build')) shortBuild++;
-if (b.includes('short cover')) shortCover++;
-if (b.includes('long unwind') || b.includes('long unwinding')) longUnwind++;
-});
+const stats = computeBuildupStats(rows);
 
-if (!longBuild && !shortBuild && !shortCover && !longUnwind){
-return `<div style="font-size:13px;color:#6b7280;">No recognizable buildup tags in this symbol's chain.</div>`;
-}
+const c = stats.call;
+const p = stats.put;
 
 return `
 <h2>Buildup Heat Overview</h2>
+
+<div class="section-title">Build-up Distribution (CALL side)</div>
 <ul>
-<li>Long Build-up: ${longBuild}</li>
-<li>Short Build-up: ${shortBuild}</li>
-<li>Short Cover: ${shortCover}</li>
-<li>Long Unwind: ${longUnwind}</li>
+<li>Long Build-up: ${c.longBuild} (${clusterLabel(c.longBuild)})</li>
+<li>Short Build-up: ${c.shortBuild} (${clusterLabel(c.shortBuild)})</li>
+<li>Short Cover: ${c.shortCover} (${clusterLabel(c.shortCover)})</li>
+<li>Long Unwind: ${c.longUnwind} (${clusterLabel(c.longUnwind)})</li>
 </ul>
+
+<div class="section-title">Build-up Distribution (PUT side)</div>
+<ul>
+<li>Long Build-up: ${p.longBuild} (${clusterLabel(p.longBuild)})</li>
+<li>Short Build-up: ${p.shortBuild} (${clusterLabel(p.shortBuild)})</li>
+<li>Short Cover: ${p.shortCover} (${clusterLabel(p.shortCover)})</li>
+<li>Long Unwind: ${p.longUnwind} (${clusterLabel(p.longUnwind)})</li>
+</ul>
+
 <div style="font-size:12px;color:#6b7280;">
-Long Build and Short Cover hint at strength zones. Short Build and Long Unwind highlight pressure and exhaustion pockets.
+Long Build and Short Cover clusters highlight strength zones; Short Build and Long Unwind highlight supply and exhaustion pockets.
 </div>
 `;
 }
 
-// ATM Snapshot HTML
+/* ---------- ATM Snapshot HTML ---------- */
 function buildATMSnapshotHTML(rows, atmStrike){
 if (atmStrike === null || !isFinite(atmStrike)){
 return `<div style="font-size:13px;color:#6b7280;">ATM could not be identified cleanly for this symbol.</div>`;
@@ -988,9 +1111,9 @@ return `<div style="font-size:13px;color:#6b7280;">No CE/PE legs close enough to
 
 function legLine(label, row){
 if (!row) return `${label}: —`;
-const ltp = toNumber(row.LTP);
+const ltp   = toNumber(row.LTP);
 const delta = toNumber(row.Delta);
-const iv = toNumber(row.IV);
+const iv    = toNumber(row.IV);
 return `${label}: ${ltp!==null?ltp.toFixed(2):'—'} (Delta: ${delta!==null?delta.toFixed(2):'—'}, IV: ${iv!==null?iv.toFixed(2)+'%':'—'})`;
 }
 
@@ -1007,7 +1130,7 @@ ATM legs drive gamma and intraday sensitivity. Monitoring CE / PE IV & Delta her
 `;
 }
 
-// Trend & Strategy HTML
+/* ---------- Strategy Suggestion HTML (existing tab) ---------- */
 function buildStrategySuggestionHTML(rows, sentiment, atmStrike){
 if (!rows.length){
 return `<div style="font-size:13px;color:#6b7280;">No data available for strategy suggestion.</div>`;
@@ -1028,7 +1151,7 @@ if (b.includes('short build')) putSB++;
 
 let trendStrength = 'Neutral';
 let reason = 'Flows look mixed between calls and puts.';
-const putDominance = putLB + callSB;
+const putDominance  = putLB + callSB;
 const callDominance = callLB + putSB;
 
 if (putDominance > callDominance + 1){
@@ -1051,7 +1174,7 @@ return isFinite(diff) && diff>0 ? diff : 0;
 
 if (sentiment === 'Bullish'){
 suggestionTitle = 'Bullish Bias – Bull Call / Naked Call';
-const buyStrike = atmStrike;
+const buyStrike  = atmStrike;
 const sellStrike = stepGuess ? atmStrike + stepGuess : atmStrike + 100;
 lines = [
 `• Bull Call Spread: Buy CE @ ${buyStrike}, Sell CE @ ${sellStrike}.`,
@@ -1060,7 +1183,7 @@ lines = [
 ];
 } else if (sentiment === 'Bearish'){
 suggestionTitle = 'Bearish Bias – Bear Put / Naked Put';
-const buyStrike = atmStrike;
+const buyStrike  = atmStrike;
 const sellStrike = stepGuess ? atmStrike - stepGuess : atmStrike - 100;
 lines = [
 `• Bear Put Spread: Buy PE @ ${buyStrike}, Sell PE @ ${sellStrike}.`,
@@ -1092,27 +1215,130 @@ This view is structural and educational. Always align final trades with your own
 </div>
 `;
 }
-function findDelta50Strike(rows, sentiment) {
-let targetDelta = sentiment === "Bullish" ? 0.50 : -0.50;
 
-let best = null;
-let bestDiff = Infinity;
-
-rows.forEach(r => {
-const delta = toNumber(r.Delta);
-if (delta === null) return;
-
-const diff = Math.abs(delta - targetDelta);
-if (diff < bestDiff) {
-bestDiff = diff;
-best = r;
-}
-});
-
-return best;
+/* ---------- SMART MONEY HEAT TAB ---------- */
+function buildSmartMoneyHeatHTML(rows, atmStrike, sentiment, pcrValue, pcrView, liquidityInfo, ivRank){
+if (!rows.length){
+return `<div style="font-size:13px;color:#6b7280;">No data for Smart Money Heat.</div>`;
 }
 
-function generateTradePanel(best10, atmStrike, spot, symbol, fullRows, pcrValue, pcrView){
+const stats = computeBuildupStats(rows);
+const c = stats.call;
+const p = stats.put;
+
+// Simple smart-money scoring
+const bullScore =
+c.longBuild * 2 +
+p.shortCover * 1 +
+c.shortCover * 0.5;
+
+const bearScore =
+p.longBuild * 2 +
+c.shortBuild * 2 +
+p.shortBuild * 1 +
+c.longUnwind * 0.5 +
+p.longUnwind * 0.5;
+
+let bullPercent = 50;
+const totalAbs = Math.abs(bullScore) + Math.abs(bearScore);
+if (totalAbs > 0){
+bullPercent = Math.round((Math.max(bullScore,0) / totalAbs) * 100);
+}
+
+let biasLabel = "Neutral / Mixed";
+if (bullPercent >= 60) biasLabel = "Bullish";
+else if (bullPercent <= 40) biasLabel = "Bearish";
+
+function buildMeter(pct, label){
+const totalBlocks = 20;
+const filled = Math.round((pct/100) * totalBlocks);
+const empty  = totalBlocks - filled;
+
+// Choose color based on momentum
+let block = "■";
+let colorBlock = label === "Bearish" ? "🟥" : label === "Bullish" ? "🟩" : "🟦";
+
+return `
+<div class="smart-meter-bar">
+|${colorBlock.repeat(filled)}${"□".repeat(empty)}| ${pct}% ${label}
+</div>
+`;
+}
+
+const liquidityLine = `
+Total strikes: ${liquidityInfo.totalCount},
+Liquid (used for analytics): ${liquidityInfo.liquidCount},
+Median Vol: ${liquidityInfo.medianVolume.toFixed(0)},
+Median OI: ${liquidityInfo.medianOI.toFixed(0)},
+Vol ≥ ${liquidityInfo.volThreshold.toFixed(0)}, OI ≥ ${liquidityInfo.oiThreshold.toFixed(0)}.
+`;
+
+// Light-weight strategy flavour based on sentiment + bullPercent
+let smartStrat = "";
+if (sentiment === "Bullish" && bullPercent >= 55){
+smartStrat = "Smart money tilt is bullish. Favour bull call spreads or controlled CE buying near ATM, sized with discipline.";
+} else if (sentiment === "Bearish" && bullPercent <= 45){
+smartStrat = "Smart money tilt is bearish. Bear put spreads or PE buying closer to ATM align better with current flows.";
+} else {
+smartStrat = "Flows are mixed. Non-directional or wait-for-confirmation setups suit this tape better than aggressive naked options.";
+}
+
+const pcrText = (pcrValue !== null && isFinite(pcrValue)) ? pcrValue.toFixed(2) : "N/A";
+const ivRankText = ivRank !== null ? ivRank.toFixed(1) + "%" : "—";
+
+return `
+<h2>Smart Money Heat – Institutional Flow Snapshot</h2>
+
+<div class="section-title">Smart Money Momentum</div>
+${buildMeter(bullPercent, biasLabel)}
+
+<div style="font-size:12px;color:#6b7280;margin-bottom:8px;">
+Momentum score is derived from Long Build-up, Short Build-up, Short Cover and Long Unwind patterns on liquid strikes only.
+</div>
+
+<div class="section-title">Build-up Distribution (CALL side)</div>
+<ul>
+<li>Long Build-up: ${c.longBuild} (${clusterLabel(c.longBuild)})</li>
+<li>Short Build-up: ${c.shortBuild} (${clusterLabel(c.shortBuild)})</li>
+<li>Short Cover: ${c.shortCover} (${clusterLabel(c.shortCover)})</li>
+<li>Long Unwind: ${c.longUnwind} (${clusterLabel(c.longUnwind)})</li>
+</ul>
+
+<div class="section-title">Build-up Distribution (PUT side)</div>
+<ul>
+<li>Long Build-up: ${p.longBuild} (${clusterLabel(p.longBuild)})</li>
+<li>Short Build-up: ${p.shortBuild} (${clusterLabel(p.shortBuild)})</li>
+<li>Short Cover: ${p.shortCover} (${clusterLabel(p.shortCover)})</li>
+<li>Long Unwind: ${p.longUnwind} (${clusterLabel(p.longUnwind)})</li>
+</ul>
+
+<div class="section-title">Liquidity Engine Snapshot</div>
+<div style="font-size:13px;margin-bottom:6px;">
+${liquidityLine}
+</div>
+
+<div class="section-title">Global Derivative Context</div>
+<ul>
+<li>PCR (on liquid strikes): <b>${pcrText}</b> ${pcrView && pcrView !== 'N/A' ? `(${pcrView})` : ''}</li>
+<li>IV Rank (ATM leg): <b>${ivRankText}</b></li>
+<li>ATM Strike anchor: <b>${atmStrike ?? '—'}</b></li>
+<li>Panel Sentiment (options flow powered): <b>${sentiment}</b></li>
+</ul>
+
+<div class="section-title">Smart Money Strategy Lens</div>
+<div style="font-size:13px;margin-bottom:6px;">
+${smartStrat}
+</div>
+
+<div style="font-size:11px;color:#6b7280;">
+This Smart Money Heat view is educational and designed to show where institutional-style flows concentrate.
+It is not a direct trade call. Always integrate your own framework, timing and risk sizing before taking exposure.
+</div>
+`;
+}
+
+/* ---------- Generate Trade Panel + Tabs ---------- */
+function generateTradePanel(best10, atmStrike, spot, symbol, fullRows, pcrValue, pcrView, liquidityInfo, ivRank){
 tradePanel.innerHTML = "";
 window.best10Global = best10;
 if (!best10 || !best10.length) return;
@@ -1173,6 +1399,7 @@ const volHTML      = buildVolatilityInsightHTML(allRows);
 const buildupHTML  = buildBuildupHeatHTML(allRows);
 const atmHTML      = buildATMSnapshotHTML(allRows, atmStrike);
 const strategyHTML = buildStrategySuggestionHTML(allRows, sentiment, atmStrike);
+const smartHTML    = buildSmartMoneyHeatHTML(allRows, atmStrike, sentiment, pcrValue, pcrView, liquidityInfo, ivRank);
 
 let tabsHtml = `
 <div class="tab-buttons">
@@ -1182,14 +1409,23 @@ let tabsHtml = `
 <button class="tab-button" data-tab="buildup">Buildup Heat Overview</button>
 <button class="tab-button" data-tab="atm">ATM Zone Snapshot</button>
 <button class="tab-button" data-tab="strategy">Strategy Suggestion</button>
+<button class="tab-button" data-tab="smartmoney">Smart Money Heat</button>
 </div>
 
+<!-- EXPORT TXT -->
+<button id="exportTxtBtn"
+style="padding:6px 14px; background:#374151; color:#fff; border:none; border-radius:6px; margin:10px 0; cursor:pointer;">
+Export All Tabs (TXT)
+</button>
+
 <div id="tab-intraday" class="tab-content active">
-${intradayTrade ? renderTradeHtml(intradayTrade, symbol) : '<div style="font-size:13px;color:#6b7280;">No clear intraday edge detected.</div>'}
+${intradayTrade ? renderTradeHtml(intradayTrade, symbol)
+: '<div style="font-size:13px;color:#6b7280;">No clear intraday edge detected.</div>'}
 </div>
 
 <div id="tab-swing" class="tab-content">
-${swingTrade ? renderTradeHtml(swingTrade, symbol) : '<div style="font-size:13px;color:#6b7280;">No clear swing edge detected.</div>'}
+${swingTrade ? renderTradeHtml(swingTrade, symbol)
+: '<div style="font-size:13px;color:#6b7280;">No clear swing edge detected.</div>'}
 </div>
 
 <div id="tab-vol" class="tab-content">
@@ -1207,13 +1443,17 @@ ${atmHTML}
 <div id="tab-strategy" class="tab-content">
 ${strategyHTML}
 </div>
+
+<div id="tab-smartmoney" class="tab-content">
+${smartHTML}
+</div>
 `;
 
 tradePanel.innerHTML = tabsHtml;
 tradePanel.classList.add('fade-in');
 setTimeout(() => tradePanel.classList.remove('fade-in'), 500);
 
-const tabButtons = tradePanel.querySelectorAll('.tab-button');
+const tabButtons  = tradePanel.querySelectorAll('.tab-button');
 const tabContents = tradePanel.querySelectorAll('.tab-content');
 
 tabButtons.forEach(btn => {
@@ -1229,9 +1469,8 @@ if (target) target.classList.add('active');
 });
 }
 
-// RESET with SMOOTH FADE-OUT
+/* ------------- RESET with SMOOTH FADE-OUT ------------- */
 document.getElementById("resetBtn").addEventListener("click", () => {
-
 tableBody.classList.add("fade-out");
 summaryBox.classList.add("fade-out");
 tradePanel.classList.add("fade-out");
@@ -1268,7 +1507,52 @@ stockDropdown.addEventListener('change', () => {
 loadStockData(stockDropdown.value);
 });
 
+// -------------------------------------
+// EXPORT TABS → TXT
+// -------------------------------------
+document.addEventListener("click", function(e){
+if (e.target.id === "exportTxtBtn") {
+exportTabsAsTxt();
+}
+});
+
+// Collect all tab content
+function collectTabText(){
+const tabIds = [
+"tab-intraday",
+"tab-swing",
+"tab-vol",
+"tab-buildup",
+"tab-atm",
+"tab-strategy",
+"tab-smartmoney"
+];
+
+let output = "";
+
+tabIds.forEach(id => {
+const div = document.getElementById(id);
+if (!div) return;
+
+output += "============================\n";
+output += id.replace("tab-", "").toUpperCase() + "\n";
+output += "============================\n";
+output += div.innerText.trim() + "\n\n\n";
+});
+
+return output;
+}
+
+// TXT EXPORT
+function exportTabsAsTxt(){
+const text = collectTabText();
+const blob = new Blob([text], { type: "text/plain" });
+const link = document.createElement("a");
+link.href = URL.createObjectURL(blob);
+link.download = "STWP_Options_Insights.txt";
+link.click();
+}
 </script>
 
 </body>
-</html>
+</html> 
