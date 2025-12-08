@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,79 +9,79 @@
 
 <style>
 body {
-font-family: Arial;
-background:#f4f5f7;
-padding:20px;
+  font-family: Arial;
+  background:#f4f5f7;
+  padding:20px;
 }
 
 h1 { margin-bottom:10px; }
 
 /* Summary Box */
 #summaryBox {
-padding:12px;
-background:#fff;
-border:1px solid #ccc;
-margin:15px 0;
-border-radius:6px;
-font-size:14px;
-transition: opacity .4s ease;
+  padding:12px;
+  background:#fff;
+  border:1px solid #ccc;
+  margin:15px 0;
+  border-radius:6px;
+  font-size:14px;
+  transition: opacity .4s ease;
 }
 
 /* Scroll wrapper for the table (this enables header freeze) */
 .table-wrapper {
-max-height: 350px;
-overflow-y: auto;
-overflow-x: auto;
-border-radius: 6px;
-border: 1px solid #d1d5db;
-background: #fff;
-position: relative;
+  max-height: 350px;
+  overflow-y: auto;
+  overflow-x: auto;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  position: relative;
 }
 
 table {
-width: 100%;
-border-collapse: separate !important;
-border-spacing: 0;
-background:#fff;
+  width: 100%;
+  border-collapse: separate !important;
+  border-spacing: 0;
+  background:#fff;
 }
 
 th, td {
-border:1px solid #d1d5db;
-padding:8px 10px;
-font-size:13px;
-white-space:nowrap;
+  border:1px solid #d1d5db;
+  padding:8px 10px;
+  font-size:13px;
+  white-space:nowrap;
 }
 
 /* FINAL STICKY HEADER */
 th {
-background:#1f2937 !important;
-color:#fff;
-position: sticky;
-top: 0;
-z-index: 50 !important;
-text-align: center;
+  background:#1f2937 !important;
+  color:#fff;
+  position: sticky;
+  top: 0;
+  z-index: 50 !important;
+  text-align: center;
 }
 
 tbody tr:hover {
-background:#f1f5f9;
-cursor:pointer;
+  background:#f1f5f9;
+  cursor:pointer;
 }
 
 tr.atm-row {
-background:#fff7c2 !important;
-font-weight:bold;
+  background:#fff7c2 !important;
+  font-weight:bold;
 }
 
 tr.call-row {
-background:#e8f3ff;
+  background:#e8f3ff;
 }
 
 tr.put-row {
-background:#ffe9ee;
+  background:#ffe9ee;
 }
 
 td.numeric {
-text-align:right;
+  text-align:right;
 }
 
 /* Fade Animations */
@@ -91,34 +90,34 @@ text-align:right;
 .fade-in { opacity: 0; animation: fadeInAnim 0.45s ease forwards; }
 
 @keyframes fadeInAnim {
-from { opacity: 0; }
-to   { opacity: 1; }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* Buttons */
 #resetBtn {
-padding:7px 14px;
-margin-left:10px;
-background:#d9534f;
-color:white;
-border:none;
-border-radius:4px;
-cursor:pointer;
+  padding:7px 14px;
+  margin-left:10px;
+  background:#d9534f;
+  color:white;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
 }
 
 /* Settings panel */
 #settingsPanel {
-margin-top: 15px;
-margin-bottom: 10px;
-padding: 10px;
-background:#ffffff;
-border:1px solid #d1d5db;
-border-radius:6px;
-font-size:13px;
-display:flex;
-flex-wrap:wrap;
-gap:15px;
-align-items:flex-end;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  padding: 10px;
+  background:#ffffff;
+  border:1px solid #d1d5db;
+  border-radius:6px;
+  font-size:13px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:15px;
+  align-items:flex-end;
 }
 
 #settingsPanel label { display:block; font-size:12px; margin-bottom:3px; color:#374151; }
@@ -126,23 +125,23 @@ align-items:flex-end;
 
 /* Trade panel */
 #tradePanel {
-margin-top:15px;
-padding:14px;
-background:#ffffff;
-border-radius:8px;
-border:1px solid #d1d5db;
-font-size:13px;
+  margin-top:15px;
+  padding:14px;
+  background:#ffffff;
+  border-radius:8px;
+  border:1px solid #d1d5db;
+  font-size:13px;
 }
 
 #tradePanel h2 { margin:0 0 6px 0; font-size:15px; }
 
 #tradePanel .tag {
-display:inline-block;
-padding:2px 8px;
-border-radius:9999px;
-font-size:11px;
-font-weight:bold;
-margin-right:6px;
+  display:inline-block;
+  padding:2px 8px;
+  border-radius:9999px;
+  font-size:11px;
+  font-weight:bold;
+  margin-right:6px;
 }
 
 .tag-bullish { background:#ecfdf5; color:#065f46; }
@@ -162,25 +161,25 @@ margin-right:6px;
 
 /* Tabs */
 .tab-buttons {
-display:flex;
-gap:6px;
-margin-bottom:8px;
-margin-top:4px;
-flex-wrap:wrap;
+  display:flex;
+  gap:6px;
+  margin-bottom:8px;
+  margin-top:4px;
+  flex-wrap:wrap;
 }
 
 .tab-button {
-padding:4px 10px;
-border-radius:9999px;
-border:none;
-background:#e5e7eb;
-font-size:12px;
-cursor:pointer;
+  padding:4px 10px;
+  border-radius:9999px;
+  border:none;
+  background:#e5e7eb;
+  font-size:12px;
+  cursor:pointer;
 }
 
 .tab-button.active {
-background:#111827;
-color:#ffffff;
+  background:#111827;
+  color:#ffffff;
 }
 
 .tab-content { display:none; margin-top:4px; }
@@ -195,9 +194,9 @@ color:#ffffff;
 
 /* Smart Money meter */
 .smart-meter-bar {
-font-family: monospace;
-font-size:12px;
-margin:4px 0;
+  font-family: monospace;
+  font-size:12px;
+  margin:4px 0;
 }
 </style>
 
@@ -211,28 +210,28 @@ margin:4px 0;
 
 <!-- Settings panel -->
 <div id="settingsPanel">
-<div>
-<label for="riskLongPct">Risk % (for SL)</label>
-<input id="riskLongPct" type="number" step="0.1" value="35" />
-</div>
-<div>
-<label for="rrMultiple">R:R Multiple</label>
-<input id="rrMultiple" type="number" step="0.1" value="2" />
-</div>
-<div>
-<label for="targetPct">Target % (override)</label>
-<input id="targetPct" type="number" step="0.1" value="0" />
-</div>
-<div style="font-size:11px;color:#6b7280;">
-Adjust Risk %, Reward multiple and optional Target%.<br/>
-Target% &gt; 0 overrides R:R for targets.
-</div>
+  <div>
+    <label for="riskLongPct">Risk % (for SL)</label>
+    <input id="riskLongPct" type="number" step="0.1" value="35" />
+  </div>
+  <div>
+    <label for="rrMultiple">R:R Multiple</label>
+    <input id="rrMultiple" type="number" step="0.1" value="2" />
+  </div>
+  <div>
+    <label for="targetPct">Target % (override)</label>
+    <input id="targetPct" type="number" step="0.1" value="0" />
+  </div>
+  <div style="font-size:11px;color:#6b7280;">
+    Adjust Risk %, Reward multiple and optional Target%.<br/>
+    Target% &gt; 0 overrides R:R for targets.
+  </div>
 </div>
 
 <br>
 <label><b>Select Stock:</b></label>
 <select id="stockDropdown">
-<option value="">-- Upload file to load symbols --</option>
+  <option value="">-- Upload file to load symbols --</option>
 </select>
 
 <button id="resetBtn">Reset</button>
@@ -241,32 +240,32 @@ Target% &gt; 0 overrides R:R for targets.
 
 <div class="table-wrapper">
 <table>
-<thead>
-<tr>
-<th>Symbol</th>
-<th>Type</th>
-<th>Strike</th>
-<th>LTP</th>
-<th>Chg %</th>
-<th>Volume</th>
-<th>Vol Chg</th>
-<th>TTV</th>
-<th>OI</th>
-<th>OI Chg</th>
-<th>OI Chg%</th>
-<th>IV</th>
-<th>IV Chg%</th>
-<th>Spot</th>
-<th>Delta</th>
-<th>Gamma</th>
-<th>Rho</th>
-<th>Theta</th>
-<th>Vega</th>
-<th>Buildup</th>
-</tr>
-</thead>
+  <thead>
+    <tr>
+      <th>Symbol</th>
+      <th>Type</th>
+      <th>Strike</th>
+      <th>LTP</th>
+      <th>Chg %</th>
+      <th>Volume</th>
+      <th>Vol Chg</th>
+      <th>TTV</th>
+      <th>OI</th>
+      <th>OI Chg</th>
+      <th>OI Chg%</th>
+      <th>IV</th>
+      <th>IV Chg%</th>
+      <th>Spot</th>
+      <th>Delta</th>
+      <th>Gamma</th>
+      <th>Rho</th>
+      <th>Theta</th>
+      <th>Vega</th>
+      <th>Buildup</th>
+    </tr>
+  </thead>
 
-<tbody id="tableBody"></tbody>
+  <tbody id="tableBody"></tbody>
 </table>
 </div>
 
@@ -290,652 +289,743 @@ function num(v){ return v ?? ""; }
 
 // helper to convert to number safely
 function toNumber(v){
-if (v === null || v === undefined) return null;
-const s = String(v).replace(/,/g,'').trim();
-if (!s) return null;
-const n = parseFloat(s);
-return isNaN(n) ? null : n;
+  if (v === null || v === undefined) return null;
+  const s = String(v).replace(/,/g,'').trim();
+  if (!s) return null;
+  const n = parseFloat(s);
+  return isNaN(n) ? null : n;
 }
 
 // simple median helper
 function median(arr){
-if (!arr.length) return null;
-const sorted = arr.slice().sort((a,b)=>a-b);
-const mid = Math.floor(sorted.length/2);
-if (sorted.length % 2 === 0) return (sorted[mid-1] + sorted[mid]) / 2;
-return sorted[mid];
+  if (!arr.length) return null;
+  const sorted = arr.slice().sort((a,b)=>a-b);
+  const mid = Math.floor(sorted.length/2);
+  if (sorted.length % 2 === 0) return (sorted[mid-1] + sorted[mid]) / 2;
+  return sorted[mid];
 }
 
 // PCR classification
 function classifyPCR(pcr){
-if (pcr === null || !isFinite(pcr)) return 'N/A';
-if (pcr > 1.3)  return 'Strong Bullish';
-if (pcr >= 1.0) return 'Bullish';
-if (pcr >= 0.8) return 'Mildly Bearish';
-return 'Bearish';
+  if (pcr === null || !isFinite(pcr)) return 'N/A';
+  if (pcr > 1.3)  return 'Strong Bullish';
+  if (pcr >= 1.0) return 'Bullish';
+  if (pcr >= 0.8) return 'Mildly Bearish';
+  return 'Bearish';
 }
 
 // MAPPING CSV KEYS → DISPLAY NAMES
 const COLUMNS = [
-{ header: "Symbol", key: "Symbol" },
-{ header: "Type",   key: "Type" },
-{ header: "Strike", key: "Strike", numeric: true },
+  { header: "Symbol", key: "Symbol" },
+  { header: "Type",   key: "Type" },
+  { header: "Strike", key: "Strike", numeric: true },
 
-{ header: "LTP",    key: "LTP", numeric: true },
+  { header: "LTP",    key: "LTP", numeric: true },
 
-{ header: "Chg %",  key: "Day Chg%", numeric: true, isChange: true },
+  { header: "Chg %",  key: "Day Chg%", numeric: true, isChange: true },
 
-{ header: "Volume",   key: "Volume", numeric: true },
-{ header: "Vol Chg",  key: "Volume Chg%", numeric: true, isChange: true },
+  { header: "Volume",   key: "Volume", numeric: true },
+  { header: "Vol Chg",  key: "Volume Chg%", numeric: true, isChange: true },
 
-{ header: "TTV",    key: "TTV (Cr)", numeric: true },
+  { header: "TTV",    key: "TTV (Cr)", numeric: true },
 
-{ header: "OI",     key: "OI", numeric: true },
-{ header: "OI Chg", key: "OI Chg", numeric: true, isChange: true },
-{ header: "OI Chg%",key: "OI Chg%", numeric: true, isChange: true },
+  { header: "OI",     key: "OI", numeric: true },
+  { header: "OI Chg", key: "OI Chg", numeric: true, isChange: true },
+  { header: "OI Chg%",key: "OI Chg%", numeric: true, isChange: true },
 
-{ header: "IV",     key: "IV", numeric: true },
-{ header: "IV Chg%",key: "IV Chg%", numeric: true, isChange: true },
+  { header: "IV",     key: "IV", numeric: true },
+  { header: "IV Chg%",key: "IV Chg%", numeric: true, isChange: true },
 
-{ header: "Spot",   key: "Spot", numeric: true },
+  { header: "Spot",   key: "Spot", numeric: true },
 
-{ header: "Delta",  key: "Delta", numeric: true },
-{ header: "Gamma",  key: "Gamma", numeric: true },
-{ header: "Rho",    key: "Rho", numeric: true },
-{ header: "Theta",  key: "Theta", numeric: true },
-{ header: "Vega",   key: "Vega", numeric: true },
+  { header: "Delta",  key: "Delta", numeric: true },
+  { header: "Gamma",  key: "Gamma", numeric: true },
+  { header: "Rho",    key: "Rho", numeric: true },
+  { header: "Theta",  key: "Theta", numeric: true },
+  { header: "Vega",   key: "Vega", numeric: true },
 
-{ header: "Buildup",key: "Buildup" }
+  { header: "Buildup",key: "Buildup" }
 ];
 
 async function handleFile(file){
-const name = file.name.toLowerCase();
-let rows = [];
+  const name = file.name.toLowerCase();
+  let rows = [];
 
-if (name.endsWith('.csv')) {
-rows = await new Promise(resolve => {
-Papa.parse(file, {
-header: true,
-skipEmptyLines: true,
-complete: result => resolve(result.data)
-});
-});
-} else {
-const data = await file.arrayBuffer();
-const wb = XLSX.read(data, {type:'array'});
-const ws = wb.Sheets[wb.SheetNames[0]];
-rows = XLSX.utils.sheet_to_json(ws, { defval:"" });
-}
+  if (name.endsWith('.csv')) {
+    rows = await new Promise(resolve => {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: result => resolve(result.data)
+      });
+    });
+  } else {
+    const data = await file.arrayBuffer();
+    const wb = XLSX.read(data, {type:'array'});
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    rows = XLSX.utils.sheet_to_json(ws, { defval:"" });
+  }
 
-globalRows = rows;
+  globalRows = rows;
 
-const symbols = [...new Set(rows.map(r => r.Symbol).filter(Boolean))];
-stockDropdown.innerHTML = '<option value="">-- Upload file to load symbols --</option>';
+  const symbols = [...new Set(rows.map(r => r.Symbol).filter(Boolean))];
+  stockDropdown.innerHTML = '<option value="">-- Upload file to load symbols --</option>';
 
-symbols.forEach(sym => {
-const opt = document.createElement('option');
-opt.value = sym;
-opt.textContent = sym;
-stockDropdown.appendChild(opt);
-});
+  symbols.forEach(sym => {
+    const opt = document.createElement('option');
+    opt.value = sym;
+    opt.textContent = sym;
+    stockDropdown.appendChild(opt);
+  });
 
-tableBody.innerHTML = "";
-summaryBox.innerHTML = "";
-tradePanel.innerHTML = "";
+  tableBody.innerHTML = "";
+  summaryBox.innerHTML = "";
+  tradePanel.innerHTML = "";
 }
 
 /* Highlight hottest CE & PE */
 function highlightHottestStrikes(rows, atmStrike){
-let bestCE = null, bestPE = null;
-let bestCEScore = -Infinity, bestPEScore = -Infinity;
+  let bestCE = null, bestPE = null;
+  let bestCEScore = -Infinity, bestPEScore = -Infinity;
 
-rows.forEach(r => {
-const type   = String(r.Type || '').toUpperCase();
-const oiChg  = toNumber(r["OI Chg%"]) || 0;
-const volChg = toNumber(r["Volume Chg%"]) || 0;
-const delta  = toNumber(r["Delta"]) || 0;
-const dayChg = toNumber(r["Day Chg%"]) || 0;
-const strike = toNumber(r.Strike) || 0;
+  rows.forEach(r => {
+    const type   = String(r.Type || '').toUpperCase();
+    const oiChg  = toNumber(r["OI Chg%"]) || 0;
+    const volChg = toNumber(r["Volume Chg%"]) || 0;
+    const delta  = toNumber(r["Delta"]) || 0;
+    const dayChg = toNumber(r["Day Chg%"]) || 0;
+    const strike = toNumber(r.Strike) || 0;
 
-const deltaScore = 1 - Math.min(Math.abs(Math.abs(delta) - 0.35), 0.35) / 0.35; // 0–1 around 0.35
-const distPenalty = Math.abs(strike - atmStrike) * 0.01;
+    const deltaScore = 1 - Math.min(Math.abs(Math.abs(delta) - 0.35), 0.35) / 0.35; // 0–1 around 0.35
+    const distPenalty = Math.abs(strike - atmStrike) * 0.01;
 
-const score =
-oiChg * 0.8 +
-volChg * 0.5 +
-dayChg * 0.6 +
-deltaScore * 3 -
-distPenalty;
+    const score =
+      oiChg * 0.8 +
+      volChg * 0.5 +
+      dayChg * 0.6 +
+      deltaScore * 3 -
+      distPenalty;
 
-if ((type === "CE" || type === "CALL") && score > bestCEScore) {
-bestCEScore = score;
-bestCE = r;
-}
+    if ((type === "CE" || type === "CALL") && score > bestCEScore) {
+      bestCEScore = score;
+      bestCE = r;
+    }
 
-if ((type === "PE" || type === "PUT") && score > bestPEScore) {
-bestPEScore = score;
-bestPE = r;
-}
-});
+    if ((type === "PE" || type === "PUT") && score > bestPEScore) {
+      bestPEScore = score;
+      bestPE = r;
+    }
+  });
 
-const trs = document.querySelectorAll("#tableBody tr");
+  const trs = document.querySelectorAll("#tableBody tr");
 
-trs.forEach(tr => {
-tr.classList.remove("hot-ce", "hot-pe");
+  trs.forEach(tr => {
+    tr.classList.remove("hot-ce", "hot-pe");
 
-const strike = Number(tr.children[2].textContent);
-const type = tr.children[1].textContent.trim().toUpperCase();
+    const strike = Number(tr.children[2].textContent);
+    const type = tr.children[1].textContent.trim().toUpperCase();
 
-if (bestCE && strike === Number(bestCE.Strike) && (type === "CE" || type === "CALL")) {
-tr.classList.add("hot-ce");
-}
+    if (bestCE && strike === Number(bestCE.Strike) && (type === "CE" || type === "CALL")) {
+      tr.classList.add("hot-ce");
+    }
 
-if (bestPE && strike === Number(bestPE.Strike) && (type === "PE" || type === "PUT")) {
-tr.classList.add("hot-pe");
-}
-});
+    if (bestPE && strike === Number(bestPE.Strike) && (type === "PE" || type === "PUT")) {
+      tr.classList.add("hot-pe");
+    }
+  });
 }
 
 /* ---------------- LOAD STOCK DATA ---------------- */
 function loadStockData(symbol){
-tableBody.innerHTML = "";
-summaryBox.innerHTML = "";
-tradePanel.innerHTML = "";
+  tableBody.innerHTML = "";
+  summaryBox.innerHTML = "";
+  tradePanel.innerHTML = "";
 
-if (!symbol) return;
+  if (!symbol) return;
 
-// FULL STRIKES → display everything in table (all strikes)
-let fullRows = globalRows
-.filter(r => r.Symbol === symbol)
-.filter(r => r.Strike !== undefined && r.Strike !== null && String(r.Strike).trim() !== "");
+  // FULL STRIKES → display everything in table (all strikes)
+  let fullRows = globalRows
+    .filter(r => r.Symbol === symbol)
+    .filter(r => r.Strike !== undefined && r.Strike !== null && String(r.Strike).trim() !== "");
 
-if (!fullRows.length) return;
+  if (!fullRows.length) return;
 
-fullRows.sort((a,b)=> (toNumber(a.Strike) || 0) - (toNumber(b.Strike) || 0));
+  fullRows.sort((a,b)=> (toNumber(a.Strike) || 0) - (toNumber(b.Strike) || 0));
 
-// ---------------- LIQUIDITY AUTO-THRESHOLD ENGINE ----------------
-const volArr = fullRows
-.map(r => toNumber(r.Volume))
-.filter(x => x !== null && isFinite(x) && x > 0);
+  // ---------------- LIQUIDITY AUTO-THRESHOLD ENGINE ----------------
+  const volArr = fullRows
+    .map(r => toNumber(r.Volume))
+    .filter(x => x !== null && isFinite(x) && x > 0);
 
-const oiArr = fullRows
-.map(r => toNumber(r.OI))
-.filter(x => x !== null && isFinite(x) && x > 0);
+  const oiArr = fullRows
+    .map(r => toNumber(r.OI))
+    .filter(x => x !== null && isFinite(x) && x > 0);
 
-const medianVol = median(volArr) || 0;
-const medianOI  = median(oiArr) || 0;
+  const medianVol = median(volArr) || 0;
+  const medianOI  = median(oiArr) || 0;
 
-// Dynamic thresholds (you can tweak multipliers if needed)
-const volThreshold = medianVol * 0.75;
-const oiThreshold  = medianOI  * 0.75;
+  // Dynamic thresholds
+  const volThreshold = medianVol * 0.75;
+  const oiThreshold  = medianOI  * 0.75;
 
-const liquidRows = fullRows.filter(r => {
-const v = toNumber(r.Volume);
-const o = toNumber(r.OI);
-return (v !== null && v >= volThreshold) &&
-(o !== null && o >= oiThreshold);
-});
+  const liquidRows = fullRows.filter(r => {
+    const v = toNumber(r.Volume);
+    const o = toNumber(r.OI);
+    return (v !== null && v >= volThreshold) &&
+           (o !== null && o >= oiThreshold);
+  });
 
-// Rows used for *all calculations* (smart money style)
-const calcRows = liquidRows.length > 0 ? liquidRows : fullRows;
+  // Rows used for *all calculations* (smart money style)
+  const calcRows = liquidRows.length > 0 ? liquidRows : fullRows;
 
-if (!calcRows.length) return;
+  if (!calcRows.length) return;
 
-// ---------------- CORE METRICS (based on calcRows) ----------------
-let spot = toNumber(calcRows[0].Spot);
+  // ---------------- CORE METRICS (based on calcRows) ----------------
+  let spot = toNumber(calcRows[0].Spot);
 
-// ATM strike from calcRows
-let atmRow = calcRows.reduce((prev, curr) =>
-Math.abs(toNumber(curr.Strike) - spot) <
-Math.abs(toNumber(prev.Strike) - spot)
-? curr : prev
-);
-let atmStrike = toNumber(atmRow.Strike);
+  // ATM strike from calcRows
+  let atmRow = calcRows.reduce((prev, curr) =>
+    Math.abs(toNumber(curr.Strike) - spot) <
+    Math.abs(toNumber(prev.Strike) - spot)
+    ? curr : prev
+  );
+  let atmStrike = toNumber(atmRow.Strike);
 
-// IV Rank from calcRows
-const ivValues = calcRows
-.map(r => toNumber(r.IV))
-.filter(x => x !== null && isFinite(x));
+  // IV Rank from calcRows
+  const ivValues = calcRows
+    .map(r => toNumber(r.IV))
+    .filter(x => x !== null && isFinite(x));
 
-let ivRank = null;
-if (ivValues.length > 1) {
-const minIV = Math.min(...ivValues);
-const maxIV = Math.max(...ivValues);
-const currentIV = toNumber(atmRow.IV);
-if (currentIV !== null && maxIV !== minIV) {
-ivRank = ((currentIV - minIV) / (maxIV - minIV)) * 100;
-}
-}
+  let ivRank = null;
+  if (ivValues.length > 1) {
+    const minIV = Math.min(...ivValues);
+    const maxIV = Math.max(...ivValues);
+    const currentIV = toNumber(atmRow.IV);
+    if (currentIV !== null && maxIV !== minIV) {
+      ivRank = ((currentIV - minIV) / (maxIV - minIV)) * 100;
+    }
+  }
 
-// Cheapest strike by IV (within calcRows)
-let cheapestStrike = null;
-let cheapestIV = Infinity;
-calcRows.forEach(r => {
-const iv = toNumber(r.IV);
-if (iv !== null && iv < cheapestIV) {
-cheapestIV = iv;
-cheapestStrike = r;
-}
-});
+  // Cheapest strike by IV (within calcRows)
+  let cheapestStrike = null;
+  let cheapestIV = Infinity;
+  calcRows.forEach(r => {
+    const iv = toNumber(r.IV);
+    if (iv !== null && iv < cheapestIV) {
+      cheapestIV = iv;
+      cheapestStrike = r;
+    }
+  });
 
-// PCR from calcRows only (smart money style)
-let totalCallOI = 0, totalPutOI = 0;
-calcRows.forEach(r => {
-const oi = toNumber(r.OI);
-if (!oi) return;
-const t = String(r.Type || '').toUpperCase();
-if (t === 'CE' || t === 'CALL') totalCallOI += oi;
-else if (t === 'PE' || t === 'PUT') totalPutOI += oi;
-});
-let pcr = null;
-if (totalCallOI > 0) pcr = totalPutOI / totalCallOI;
-const pcrText = pcr !== null && isFinite(pcr) ? pcr.toFixed(2) : 'N/A';
-const pcrView = classifyPCR(pcr);
+  // PCR from calcRows only (smart money style)
+  let totalCallOI = 0, totalPutOI = 0;
+  calcRows.forEach(r => {
+    const oi = toNumber(r.OI);
+    if (!oi) return;
+    const t = String(r.Type || '').toUpperCase();
+    if (t === 'CE' || t === 'CALL') totalCallOI += oi;
+    else if (t === 'PE' || t === 'PUT') totalPutOI += oi;
+  });
+  let pcr = null;
+  if (totalCallOI > 0) pcr = totalPutOI / totalCallOI;
+  const pcrText = pcr !== null && isFinite(pcr) ? pcr.toFixed(2) : 'N/A';
+  const pcrView = classifyPCR(pcr);
 
-// Rank liquid/calc rows for trade analysis
-let ranked = calcRows.slice().sort((a, b) =>
-masterStrikeScore(b, atmStrike) - masterStrikeScore(a, atmStrike)
-);
-let best10 = ranked; // can slice if you want to restrict
+  // Rank liquid/calc rows for trade analysis
+  let ranked = calcRows.slice().sort((a, b) =>
+    masterStrikeScore(b, atmStrike) - masterStrikeScore(a, atmStrike)
+  );
+  let best10 = ranked; // can slice if you want to restrict
 
-// Summary (TOP line)
-summaryBox.innerHTML = `
-<b>Spot:</b> ${spot ?? '—'} &nbsp;&nbsp;
-<b>ATM:</b> ${atmStrike ?? '—'} &nbsp;&nbsp;
-<b>PCR:</b> ${pcrText} ${pcrView !== 'N/A' ? `(${pcrView})` : ''} &nbsp;&nbsp;
-<b>IV Rank:</b> ${ivRank !== null ? ivRank.toFixed(1) + '%' : '—'} &nbsp;&nbsp;
-<b>Cheap Strike:</b> ${
-cheapestStrike
-? `${cheapestStrike.Strike} ${String(cheapestStrike.Type).toUpperCase()} (IV ${cheapestIV.toFixed(2)})`
-: '—'
-}
-<br/>
-<span style="font-size:12px;color:#6b7280;">
-Liquidity engine: using ${calcRows.length} of ${fullRows.length} strikes (Volume ≥ ${volThreshold.toFixed(0)}, OI ≥ ${oiThreshold.toFixed(0)}).
-</span>
-`;
+  // Summary (TOP line)
+  summaryBox.innerHTML = `
+    <b>Spot:</b> ${spot ?? '—'} &nbsp;&nbsp;
+    <b>ATM:</b> ${atmStrike ?? '—'} &nbsp;&nbsp;
+    <b>PCR:</b> ${pcrText} ${pcrView !== 'N/A' ? `(${pcrView})` : ''} &nbsp;&nbsp;
+    <b>IV Rank:</b> ${ivRank !== null ? ivRank.toFixed(1) + '%' : '—'} &nbsp;&nbsp;
+    <b>Cheap Strike:</b> ${
+      cheapestStrike
+        ? `${cheapestStrike.Strike} ${String(cheapestStrike.Type).toUpperCase()} (IV ${cheapestIV.toFixed(2)})`
+        : '—'
+    }
+    <br/>
+    <span style="font-size:12px;color:#6b7280;">
+      Liquidity engine: using ${calcRows.length} of ${fullRows.length} strikes (Volume ≥ ${volThreshold.toFixed(0)}, OI ≥ ${oiThreshold.toFixed(0)}).
+    </span>
+  `;
 
-// Populate table with ALL strikes
-fullRows.forEach(row => {
-const tr = document.createElement('tr');
+  // Populate table with ALL strikes
+  fullRows.forEach(row => {
+    const tr = document.createElement('tr');
 
-if (row.Type === "CE" || row.Type === "Call") tr.classList.add("call-row");
-if (row.Type === "PE" || row.Type === "Put") tr.classList.add("put-row");
-if (toNumber(row.Strike) === atmStrike) tr.classList.add("atm-row");
+    if (row.Type === "CE" || row.Type === "Call") tr.classList.add("call-row");
+    if (row.Type === "PE" || row.Type === "Put") tr.classList.add("put-row");
+    if (toNumber(row.Strike) === atmStrike) tr.classList.add("atm-row");
 
-COLUMNS.forEach(col => {
-const td = document.createElement('td');
-const v = num(row[col.key]);
+    COLUMNS.forEach(col => {
+      const td = document.createElement('td');
+      const v = num(row[col.key]);
 
-td.textContent = v;
+      td.textContent = v;
 
-if (col.numeric && v !== "" && !isNaN(v))
-td.classList.add("numeric");
+      if (col.numeric && v !== "" && !isNaN(v))
+        td.classList.add("numeric");
 
-if (col.isChange && v !== "" && !isNaN(v)) {
-if (Number(v) > 0) td.style.color = "green";
-if (Number(v) < 0) td.style.color = "red";
-}
+      if (col.isChange && v !== "" && !isNaN(v)) {
+        if (Number(v) > 0) td.style.color = "green";
+        if (Number(v) < 0) td.style.color = "red";
+      }
 
-tr.appendChild(td);
-});
+      tr.appendChild(td);
+    });
 
-tableBody.appendChild(tr);
-});
+    tableBody.appendChild(tr);
+  });
 
-// FADE-IN ANIMATION FOR TABLE
-tableBody.classList.add("fade-in");
-setTimeout(() => tableBody.classList.remove("fade-in"), 500);
+  // FADE-IN ANIMATION FOR TABLE
+  tableBody.classList.add("fade-in");
+  setTimeout(() => tableBody.classList.remove("fade-in"), 500);
 
-// Highlight hottest CE & PE (based on calcRows)
-highlightHottestStrikes(calcRows, atmStrike);
+  // Highlight hottest CE & PE (based on calcRows)
+  highlightHottestStrikes(calcRows, atmStrike);
 
-// Liquidity metadata for Smart Money tab
-const liquidityInfo = {
-medianVolume: medianVol,
-medianOI: medianOI,
-volThreshold,
-oiThreshold,
-liquidCount: calcRows.length,
-totalCount: fullRows.length
-};
+  // Liquidity metadata for Smart Money tab
+  const liquidityInfo = {
+    medianVolume: medianVol,
+    medianOI: medianOI,
+    volThreshold,
+    oiThreshold,
+    liquidCount: calcRows.length,
+    totalCount: fullRows.length
+  };
 
-// Generate full professional trade analysis panel with tabs
-generateTradePanel(best10, atmStrike, spot, symbol, fullRows, pcr, pcrView, liquidityInfo, ivRank);
+  // Generate full professional trade analysis panel with tabs
+  generateTradePanel(best10, atmStrike, spot, symbol, fullRows, pcr, pcrView, liquidityInfo, ivRank);
 }
 
 /* -------- Trade analysis logic ---------- */
 
 function scoreRow(row){
-const type    = String(row.Type || '').toLowerCase();
-const buildup = String(row.Buildup || '').toLowerCase();
+  const type    = String(row.Type || '').toLowerCase();
+  const buildup = String(row.Buildup || '').toLowerCase();
 
-const dayChg = toNumber(row['Day Chg%']);
-const oiChgP = toNumber(row['OI Chg%']);
-const oiChg  = toNumber(row['OI Chg']);
-const ivChgP = toNumber(row['IV Chg%']);
-const delta  = toNumber(row['Delta']);
+  const dayChg = toNumber(row['Day Chg%']);
+  const oiChgP = toNumber(row['OI Chg%']);
+  const oiChg  = toNumber(row['OI Chg']);
+  const ivChgP = toNumber(row['IV Chg%']);
+  const delta  = toNumber(row['Delta']);
 
-let s = 0;
+  let s = 0;
 
-// buildup based
-if (buildup.includes('long build'))      s += 2;
-if (buildup.includes('short covering'))  s += 1;
-if (buildup.includes('short build'))     s -= 2;
-if (buildup.includes('long unwinding'))  s -= 1;
+  // buildup based
+  if (buildup.includes('long build'))      s += 2;
+  if (buildup.includes('short covering'))  s += 1;
+  if (buildup.includes('short build'))     s -= 2;
+  if (buildup.includes('long unwinding'))  s -= 1;
 
-// OI change
-if (oiChgP !== null) {
-if (oiChgP > 15)      s += 2;
-else if (oiChgP > 0)  s += 1;
-else if (oiChgP < -15)s -= 2;
-else if (oiChgP < 0)  s -= 1;
-} else if (oiChg !== null) {
-s += Math.sign(oiChg) * 0.5;
-}
+  // OI change
+  if (oiChgP !== null) {
+    if (oiChgP > 15)      s += 2;
+    else if (oiChgP > 0)  s += 1;
+    else if (oiChgP < -15)s -= 2;
+    else if (oiChgP < 0)  s -= 1;
+  } else if (oiChg !== null) {
+    s += Math.sign(oiChg) * 0.5;
+  }
 
-// Price change
-if (dayChg !== null) {
-if (dayChg > 3)      s += 2;
-else if (dayChg > 0) s += 1;
-else if (dayChg < -3)s -= 2;
-else if (dayChg < 0) s -= 1;
-}
+  // Price change
+  if (dayChg !== null) {
+    if (dayChg > 3)      s += 2;
+    else if (dayChg > 0) s += 1;
+    else if (dayChg < -3)s -= 2;
+    else if (dayChg < 0) s -= 1;
+  }
 
-// IV change (smaller weight)
-if (ivChgP !== null) {
-if (ivChgP > 5)      s += 1;
-else if (ivChgP > 0) s += 0.5;
-else if (ivChgP < -5)s -= 1;
-else if (ivChgP < 0) s -= 0.5;
-}
+  // IV change (smaller weight)
+  if (ivChgP !== null) {
+    if (ivChgP > 5)      s += 1;
+    else if (ivChgP > 0) s += 0.5;
+    else if (ivChgP < -5)s -= 1;
+    else if (ivChgP < 0) s -= 0.5;
+  }
 
-// Delta sweet spot (around 0.3–0.4)
-if (delta !== null && !isNaN(delta)) {
-const dAbs = Math.abs(delta);
-const bonus = 1 - Math.min(Math.abs(dAbs - 0.35), 0.35) / 0.35; // 0–1
-s += Math.max(0, Math.min(1, bonus));
-}
+  // Delta sweet spot (around 0.3–0.4)
+  if (delta !== null && !isNaN(delta)) {
+    const dAbs = Math.abs(delta);
+    const bonus = 1 - Math.min(Math.abs(dAbs - 0.35), 0.35) / 0.35; // 0–1
+    s += Math.max(0, Math.min(1, bonus));
+  }
 
-// Direction from type + score
-let direction = 'neutral';
-if (type.includes('call')) {
-if (s > 0.5)  direction = 'bullish';
-if (s < -0.5) direction = 'bearish';
-} else if (type.includes('put')) {
-if (s > 0.5)  direction = 'bearish';
-if (s < -0.5) direction = 'bullish';
-}
+  // Direction from type + score
+  let direction = 'neutral';
+  if (type.includes('call')) {
+    if (s > 0.5)  direction = 'bullish';
+    if (s < -0.5) direction = 'bearish';
+  } else if (type.includes('put')) {
+    if (s > 0.5)  direction = 'bearish';
+    if (s < -0.5) direction = 'bullish';
+  }
 
-return { score: s, direction };
+  return { score: s, direction };
 }
 
 function masterStrikeScore(row, atmStrike) {
-const base = scoreRow(row).score;
+  const base = scoreRow(row).score;
 
-const oiChg  = toNumber(row["OI Chg%"]) || 0;
-const volChg = toNumber(row["Volume Chg%"]) || 0;
-const ivChg  = toNumber(row["IV Chg%"]) || 0;
-const delta  = Math.abs(toNumber(row["Delta"]) || 0);
-const strike = toNumber(row.Strike);
+  const oiChg  = toNumber(row["OI Chg%"]) || 0;
+  const volChg = toNumber(row["Volume Chg%"]) || 0;
+  const ivChg  = toNumber(row["IV Chg%"]) || 0;
+  const delta  = Math.abs(toNumber(row["Delta"]) || 0);
+  const strike = toNumber(row.Strike);
 
-let score = base;
+  let score = base;
 
-// OI, Volume, IV momentum
-score += oiChg  * 0.4;
-score += volChg * 0.3;
-score += ivChg  * 0.2;
+  // OI, Volume, IV momentum
+  score += oiChg  * 0.4;
+  score += volChg * 0.3;
+  score += ivChg  * 0.2;
 
-// Proximity to ATM is rewarded
-score -= Math.abs(strike - atmStrike) * 0.01;
+  // Proximity to ATM is rewarded
+  score -= Math.abs(strike - atmStrike) * 0.01;
 
-// Delta sweet spot around 0.30–0.45
-score += (1 - Math.abs(delta - 0.35) * 2);
+  // Delta sweet spot around 0.30–0.45
+  score += (1 - Math.abs(delta - 0.35) * 2);
 
-return score;
+  return score;
 }
 
 // Intraday scoring – more weight to today’s move and momentum
 function computeIntradayScore(row, base, atmStrike){
-let score = base;
+  let score = base;
 
-const dayChg = toNumber(row['Day Chg%']);
-const oiChgP = toNumber(row['OI Chg%']);
-const volChg = toNumber(row['Volume Chg%']);
-const ivChgP = toNumber(row['IV Chg%']);
-const strike = toNumber(row.Strike);
+  const dayChg = toNumber(row['Day Chg%']);
+  const oiChgP = toNumber(row['OI Chg%']);
+  const volChg = toNumber(row['Volume Chg%']);
+  const ivChgP = toNumber(row['IV Chg%']);
+  const strike = toNumber(row.Strike);
 
-if (dayChg !== null) score += dayChg * 0.15;
-if (oiChgP !== null) score += oiChgP * 0.10;
-if (volChg !== null) score += volChg * 0.05;
-if (ivChgP !== null) score += ivChgP * 0.05;
+  if (dayChg !== null) score += dayChg * 0.15;
+  if (oiChgP !== null) score += oiChgP * 0.10;
+  if (volChg !== null) score += volChg * 0.05;
+  if (ivChgP !== null) score += ivChgP * 0.05;
 
-if (strike !== null && atmStrike !== null) {
-const dist = Math.abs(strike - atmStrike);
-score -= dist * 0.01;
-}
+  if (strike !== null && atmStrike !== null) {
+    const dist = Math.abs(strike - atmStrike);
+    score -= dist * 0.01;
+  }
 
-return score;
+  return score;
 }
 
 // Swing scoring – more weight to stability, delta & IV
 function computeSwingScore(row, base, atmStrike){
-let score = base;
+  let score = base;
 
-const delta = Math.abs(toNumber(row['Delta']));
-const iv    = toNumber(row['IV']);
-const strike= toNumber(row.Strike);
+  const delta = Math.abs(toNumber(row['Delta']));
+  const iv    = toNumber(row['IV']);
+  const strike= toNumber(row.Strike);
 
-if (delta !== null) {
-const bonus = 1 - Math.min(Math.abs(delta - 0.5), 0.5) / 0.5; // aim near 0.5
-score += bonus * 2;
-}
+  if (delta !== null) {
+    const bonus = 1 - Math.min(Math.abs(delta - 0.5), 0.5) / 0.5; // aim near 0.5
+    score += bonus * 2;
+  }
 
-if (iv !== null) {
-if (iv < 15)      score += 1.5;
-else if (iv < 25) score += 1;
-else if (iv > 35) score -= 1;
-}
+  if (iv !== null) {
+    if (iv < 15)      score += 1.5;
+    else if (iv < 25) score += 1;
+    else if (iv > 35) score -= 1;
+  }
 
-if (strike !== null && atmStrike !== null) {
-const dist = Math.abs(strike - atmStrike);
-score -= dist * 0.02;
-}
+  if (strike !== null && atmStrike !== null) {
+    const dist = Math.abs(strike - atmStrike);
+    score -= dist * 0.02;
+  }
 
-return score;
+  return score;
 }
 
 function computeLevels(ltp, riskPct, rrMultiple, targetPct){
-const entry = ltp || 0;
-const risk  = entry * (riskPct/100);
-const sl    = Math.max(0, entry - risk);
+  const entry = ltp || 0;
+  const risk  = entry * (riskPct/100);
+  const sl    = Math.max(0, entry - risk);
 
-let t1, t2;
-if (targetPct && targetPct > 0) {
-t2 = entry * (1 + targetPct/100);
-t1 = entry * (1 + (targetPct/100)*0.75);
-} else {
-t2 = entry + risk * rrMultiple;
-t1 = entry + risk * rrMultiple * 0.75;
-}
-return { entry, sl, t1, t2 };
-}
-
-function buildNarrative(row, direction, levels, sentiment, trend, strengthScore){
-const type   = String(row.Type || '').toUpperCase();
-const strike = toNumber(row.Strike);
-const ltp    = toNumber(row.LTP);
-const dayChg = toNumber(row['Day Chg%']);
-const oi     = toNumber(row['OI']);
-const oiChg  = toNumber(row['OI Chg']);
-const oiChgP = toNumber(row['OI Chg%']);
-const iv     = toNumber(row['IV']);
-const ivChgP = toNumber(row['IV Chg%']);
-const vol    = toNumber(row['Volume']);
-const volChg = toNumber(row['Volume Chg%']);
-const delta  = toNumber(row['Delta']);
-const gamma  = toNumber(row['Gamma']);
-const theta  = toNumber(row['Theta']);
-const vega   = toNumber(row['Vega']);
-const buildup= String(row.Buildup || '');
-
-const summary = [];
-summary.push(`Setup aligns with a ${sentiment.toLowerCase()} bias and a ${trend.toLowerCase()} structure.`);
-if (buildup) {
-summary.push(`Buildup tag: ${buildup}.`);
-}
-if (dayChg !== null && oiChgP !== null) {
-if (dayChg > 0 && oiChgP > 0) {
-summary.push(`Price and OI are both rising — classic continuation behaviour.`);
-} else if (dayChg > 0 && oiChgP < 0) {
-summary.push(`Price up with falling OI — short covering dominated move.`);
-} else if (dayChg < 0 && oiChgP > 0) {
-summary.push(`Price down with rising OI — fresh counter-trend positioning.`);
-}
+  let t1, t2;
+  if (targetPct && targetPct > 0) {
+    t2 = entry * (1 + targetPct/100);
+    t1 = entry * (1 + (targetPct/100)*0.75);
+  } else {
+    t2 = entry + risk * rrMultiple;
+    t1 = entry + risk * rrMultiple * 0.75;
+  }
+  return { entry, sl, t1, t2 };
 }
 
-const keyData = [];
-keyData.push(`Strike: ${strike ?? '—'} ${type}`);
-keyData.push(`LTP: ${ltp !== null ? ltp.toFixed(2) : '—'} | Day Chg%: ${dayChg !== null ? dayChg.toFixed(2) + '%' : '—'}`);
-keyData.push(`OI: ${oi !== null ? oi.toFixed(0) : '—'} | OI Chg: ${oiChg !== null ? oiChg.toFixed(0) : '—'} | OI Chg%: ${oiChgP !== null ? oiChgP.toFixed(1) + '%' : '—'}`);
-keyData.push(`IV: ${iv !== null ? iv.toFixed(1) : '—'} | IV Chg%: ${ivChgP !== null ? ivChgP.toFixed(1)+'%' : '—'}`);
-keyData.push(`Volume: ${vol !== null ? vol.toFixed(0) : '—'} | Vol Chg%: ${volChg !== null ? volChg.toFixed(1)+'%' : '—'}`);
-keyData.push(`Delta: ${delta !== null ? delta.toFixed(2) : '—'} | Gamma: ${gamma !== null ? gamma.toFixed(4) : '—'} | Theta: ${theta !== null ? theta.toFixed(2) : '—'} | Vega: ${vega !== null ? vega.toFixed(2) : '—'}`);
+/* ---------- STWP EDGE SCORE (0–10, BALANCED) ---------- */
+function computeEdgeScore(row, atmStrike, ivRank){
+  const delta   = Math.abs(toNumber(row.Delta));
+  const oiChgP  = toNumber(row["OI Chg%"]);
+  const volChg  = toNumber(row["Volume Chg%"]);
+  const iv      = toNumber(row["IV"]);
+  const ivChgP  = toNumber(row["IV Chg%"]);
+  const strike  = toNumber(row.Strike);
+  const buildup = String(row.Buildup || "").toLowerCase();
 
-const interp = [];
-if (strengthScore >= 3.5) {
-interp.push(`This stands out as a strong, institutional-quality setup — suitable for primary trade consideration.`);
-} else if (strengthScore >= 2.0) {
-interp.push(`Structure is mixed to moderate — good candidate with controlled risk and proper position sizing.`);
-} else {
-interp.push(`Signal strength is on the weaker side — treat as lower conviction or wait for further confirmation.`);
-}
-if (delta !== null) {
-if (Math.abs(delta) >= 0.25 && Math.abs(delta) <= 0.45) {
-interp.push(`Delta is in the sweet spot for options buying — balance of convexity and ITM probability.`);
-} else if (Math.abs(delta) > 0.45) {
-interp.push(`Higher delta — behaves closer to futures, with smoother but less explosive payoff.`);
-} else {
-interp.push(`Low delta — requires a cleaner move or volatility expansion to unlock edge.`);
-}
-}
+  // Delta component (target band around ~0.45)
+  let deltaComp = 4;
+  if (delta !== null && isFinite(delta)) {
+    const dist = Math.abs(delta - 0.45);
+    const maxDist = 0.45; // anything beyond is worst
+    const norm = Math.max(0, 1 - dist / maxDist); // 0–1
+    deltaComp = 2 + norm * 8; // 2–10
+  }
 
-const why = [];
-if (buildup.toLowerCase().includes('long build')) {
-why.push(`Long build-up indicates fresh positions being added in the direction of the trade.`);
-}
-if (buildup.toLowerCase().includes('short covering')) {
-why.push(`Short covering adds fuel to momentum as trapped positions exit.`);
-}
-if (dayChg !== null && dayChg > 0 && oiChgP !== null && oiChgP > 0) {
-why.push(`Price up with OI up suggests trend-following long activity rather than random noise.`);
-}
-if (volChg !== null && volChg > 10) {
-why.push(`Volume expansion supports the credibility of the move — not just a thinly traded spike.`);
-}
-if (ivChgP !== null && ivChgP > 5) {
-why.push(`IV expansion supports premium growth if momentum continues.`);
-}
+  // OI + Volume momentum
+  function momentumScore(x){
+    if (x == null || !isFinite(x)) return 0;
+    const capped = Math.max(-30, Math.min(60, x)); // clamp range
+    if (capped <= 0) return 0;
+    return (capped / 60) * 10; // 0–10
+  }
+  const oiComp   = momentumScore(oiChgP);
+  const volComp  = momentumScore(volChg);
+  const oiVolComp= Math.min(10, (oiComp * 0.6 + volComp * 0.4));
 
-if (!why.length) {
-why.push(`Setup offers a balanced risk–reward profile around a liquid, actively traded strike.`);
-}
+  // Buildup quality
+  let buildRaw = 0;
+  if (buildup.includes("long build")) buildRaw += 3;
+  if (buildup.includes("short cover") || buildup.includes("short covering")) buildRaw += 2;
+  if (buildup.includes("short build")) buildRaw -= 3;
+  if (buildup.includes("long unwind") || buildup.includes("long unwinding")) buildRaw -= 2;
+  const buildupComp = Math.max(0, Math.min(10, 5 + buildRaw * 1.5));
 
-return { summary, keyData, interp, why };
-}
+  // IV behaviour (small stabiliser)
+  let ivComp = 5;
+  if (iv != null && isFinite(iv)){
+    if (iv < 15) ivComp -= 1;
+    else if (iv > 35) ivComp -= 2;
+  }
+  if (ivChgP != null && isFinite(ivChgP)){
+    if (ivChgP > 5) ivComp += 2;
+    else if (ivChgP < -5) ivComp -= 2;
+  }
+  if (ivRank != null && isFinite(ivRank)){
+    if (ivRank < 30) ivComp += 1;        // cheaper volatility favours debits
+    else if (ivRank > 70) ivComp -= 1;   // expensive
+  }
+  ivComp = Math.max(0, Math.min(10, ivComp));
 
-function buildTradeObject(row, direction, sentiment, trend, atmStrike, modeLabel){
-const ltp          = toNumber(row.LTP);
-const riskLongPct  = toNumber(riskInput.value) ?? 35;
-const rrMultiple   = toNumber(rrInput.value)   ?? 2;
-const targetPct    = toNumber(targetInput.value) ?? 0;
+  // ATM proximity
+  let atmComp = 5;
+  if (atmStrike != null && isFinite(atmStrike) && strike != null && isFinite(strike)){
+    const dist   = Math.abs(strike - atmStrike);
+    const maxDist= Math.max(1, Math.abs(atmStrike) * 0.05); // 5% band
+    const norm   = Math.max(0, 1 - dist / maxDist); // 0–1
+    atmComp = 2 + norm * 8; // 2–10
+  }
 
-const levels = computeLevels(ltp, riskLongPct, rrMultiple, targetPct);
+  // Weighted sum (Balanced: Delta30 + OI/Vol30 + Buildup20 + IV10 + ATM10)
+  const edgeScore =
+      deltaComp  * 0.30 +
+      oiVolComp  * 0.30 +
+      buildupComp* 0.20 +
+      ivComp     * 0.10 +
+      atmComp    * 0.10;
 
-const baseScoreObj = scoreRow(row);
-const strengthNorm = Math.max(0, Math.min(5, ((baseScoreObj.score + 5) / 10) * 5));
-
-const narrative = buildNarrative(row, direction, levels, sentiment, trend, strengthNorm);
-
-const type   = String(row.Type || '').toUpperCase();
-const strike = toNumber(row.Strike);
-
-return {
-modeLabel,
-sentiment,
-trend,
-strength: strengthNorm,
-strike,
-type,
-levels,
-riskLongPct,
-rrMultiple,
-targetPct,
-narrative
-};
+  return Math.max(0, Math.min(10, edgeScore));
 }
 
-function strengthColor(strength) {
-if (strength >= 4.0) return "tag-bullish"; // green
-if (strength >= 2.5) return "tag-neutral"; // grey
-return "tag-bearish"; // red
+function buildNarrative(row, direction, levels, sentiment, trend, edgeScore, strengthBand){
+  const type   = String(row.Type || '').toUpperCase();
+  const strike = toNumber(row.Strike);
+  const ltp    = toNumber(row.LTP);
+  const dayChg = toNumber(row['Day Chg%']);
+  const oi     = toNumber(row['OI']);
+  const oiChg  = toNumber(row['OI Chg']);
+  const oiChgP = toNumber(row['OI Chg%']);
+  const iv     = toNumber(row['IV']);
+  const ivChgP = toNumber(row['IV Chg%']);
+  const vol    = toNumber(row['Volume']);
+  const volChg = toNumber(row['Volume Chg%']);
+  const delta  = toNumber(row['Delta']);
+  const gamma  = toNumber(row['Gamma']);
+  const theta  = toNumber(row['Theta']);
+  const vega   = toNumber(row['Vega']);
+  const buildup= String(row.Buildup || '');
+
+  const summary = [];
+  summary.push(`Setup aligns with a ${sentiment.toLowerCase()} bias and a ${trend.toLowerCase()} structure.`);
+
+  if (strengthBand === 'strong') {
+    summary.push(`STWP Edge Score is high, indicating a strong, institution-style alignment between price, OI and volatility.`);
+  } else if (strengthBand === 'moderate') {
+    summary.push(`STWP Edge Score is moderate – structure is tradable, but position size must stay disciplined.`);
+  } else {
+    summary.push(`STWP Edge Score is weak – better handled as a watchlist candidate rather than a core trade.`);
+  }
+
+  if (buildup) {
+    summary.push(`Buildup tag: ${buildup}.`);
+  }
+  if (dayChg !== null && oiChgP !== null) {
+    if (dayChg > 0 && oiChgP > 0) {
+      summary.push(`Price and OI are both rising — classic continuation behaviour.`);
+    } else if (dayChg > 0 && oiChgP < 0) {
+      summary.push(`Price up with falling OI — short covering dominated move.`);
+    } else if (dayChg < 0 && oiChgP > 0) {
+      summary.push(`Price down with rising OI — fresh counter-trend positioning.`);
+    }
+  }
+
+  const keyData = [];
+  keyData.push(`Strike: ${strike ?? '—'} ${type}`);
+  keyData.push(`LTP: ${ltp !== null ? ltp.toFixed(2) : '—'} | Day Chg%: ${dayChg !== null ? dayChg.toFixed(2) + '%' : '—'}`);
+  keyData.push(`OI: ${oi !== null ? oi.toFixed(0) : '—'} | OI Chg: ${oiChg !== null ? oiChg.toFixed(0) : '—'} | OI Chg%: ${oiChgP !== null ? oiChgP.toFixed(1) + '%' : '—'}`);
+  keyData.push(`IV: ${iv !== null ? iv.toFixed(1) : '—'} | IV Chg%: ${ivChgP !== null ? ivChgP.toFixed(1)+'%' : '—'}`);
+  keyData.push(`Volume: ${vol !== null ? vol.toFixed(0) : '—'} | Vol Chg%: ${volChg !== null ? volChg.toFixed(1)+'%' : '—'}`);
+  keyData.push(`Delta: ${delta !== null ? delta.toFixed(2) : '—'} | Gamma: ${gamma !== null ? gamma.toFixed(4) : '—'} | Theta: ${theta !== null ? theta.toFixed(2) : '—'} | Vega: ${vega !== null ? vega.toFixed(2) : '—'}`);
+
+  const interp = [];
+  if (edgeScore >= 8) {
+    interp.push(`This stands out as a strong, institutional-quality setup — suitable for primary trade consideration.`);
+  } else if (edgeScore >= 5) {
+    interp.push(`Structure is mixed to moderate — good candidate with controlled risk and proper position sizing.`);
+  } else {
+    interp.push(`Signal strength is on the weaker side — treat as lower conviction or wait for further confirmation.`);
+  }
+  if (delta !== null) {
+    if (Math.abs(delta) >= 0.25 && Math.abs(delta) <= 0.45) {
+      interp.push(`Delta is in the sweet spot for options buying — balance of convexity and ITM probability.`);
+    } else if (Math.abs(delta) > 0.45) {
+      interp.push(`Higher delta — behaves closer to futures, with smoother but less explosive payoff.`);
+    } else {
+      interp.push(`Low delta — requires a cleaner move or volatility expansion to unlock edge.`);
+    }
+  }
+
+  const why = [];
+  if (buildup.toLowerCase().includes('long build')) {
+    why.push(`Long build-up indicates fresh positions being added in the direction of the trade.`);
+  }
+  if (buildup.toLowerCase().includes('short covering')) {
+    why.push(`Short covering adds fuel to momentum as trapped positions exit.`);
+  }
+  if (dayChg !== null && dayChg > 0 && oiChgP !== null && oiChgP > 0) {
+    why.push(`Price up with OI up suggests trend-following long activity rather than random noise.`);
+  }
+  if (volChg !== null && volChg > 10) {
+    why.push(`Volume expansion supports the credibility of the move — not just a thinly traded spike.`);
+  }
+  if (ivChgP !== null && ivChgP > 5) {
+    why.push(`IV expansion supports premium growth if momentum continues.`);
+  }
+
+  if (!why.length) {
+    why.push(`Setup offers a balanced risk–reward profile around a liquid, actively traded strike.`);
+  }
+
+  return { summary, keyData, interp, why };
+}
+
+function buildTradeObject(row, direction, sentiment, trend, atmStrike, modeLabel, ivRank){
+  const ltp          = toNumber(row.LTP);
+  const riskLongPct  = toNumber(riskInput.value) ?? 35;
+  const rrMultiple   = toNumber(rrInput.value)   ?? 2;
+  const targetPct    = toNumber(targetInput.value) ?? 0;
+
+  const levels = computeLevels(ltp, riskLongPct, rrMultiple, targetPct);
+
+  const baseScoreObj = scoreRow(row);
+  const edgeScore    = computeEdgeScore(row, atmStrike, ivRank);
+  const strengthBand = edgeScore >= 8 ? "strong" : edgeScore >= 5 ? "moderate" : "weak";
+
+  const narrative = buildNarrative(row, direction, levels, sentiment, trend, edgeScore, strengthBand);
+
+  const type   = String(row.Type || '').toUpperCase();
+  const strike = toNumber(row.Strike);
+
+  return {
+    modeLabel,
+    sentiment,
+    trend,
+    edgeScore,
+    strengthBand,
+    strike,
+    type,
+    levels,
+    riskLongPct,
+    rrMultiple,
+    targetPct,
+    narrative
+  };
+}
+
+function strengthColor(edgeScore) {
+  if (edgeScore >= 8.0) return "tag-bullish"; // strong
+  if (edgeScore >= 5.0) return "tag-neutral"; // medium
+  return "tag-bearish"; // weak
 }
 
 function findDelta50Strike(rows, sentiment) {
-let targetDelta = sentiment === "Bullish" ? 0.50 : -0.50;
+  let targetDelta = sentiment === "Bullish" ? 0.50 : -0.50;
 
-let best = null;
-let bestDiff = Infinity;
+  let best = null;
+  let bestDiff = Infinity;
 
-rows.forEach(r => {
-const delta = toNumber(r.Delta);
-if (delta === null) return;
+  rows.forEach(r => {
+    const delta = toNumber(r.Delta);
+    if (delta === null) return;
 
-const diff = Math.abs(delta - targetDelta);
-if (diff < bestDiff) {
-bestDiff = diff;
-best = r;
-}
-});
+    const diff = Math.abs(delta - targetDelta);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      best = r;
+    }
+  });
 
-return best;
+  return best;
 }
 
 function renderTradeHtml(trade, symbol){
-const sentimentClass =
-trade.sentiment === 'Bullish' ? 'tag-bullish' :
-trade.sentiment === 'Bearish' ? 'tag-bearish' : 'tag-neutral';
+  const sentimentClass =
+    trade.sentiment === 'Bullish' ? 'tag-bullish' :
+    trade.sentiment === 'Bearish' ? 'tag-bearish' : 'tag-neutral';
 
-const trendClass =
-trade.trend === 'Up' ? 'tag-trend-up' :
-trade.trend === 'Down' ? 'tag-trend-down' : 'tag-trend-range';
+  const trendClass =
+    trade.trend === 'Up' ? 'tag-trend-up' :
+    trade.trend === 'Down' ? 'tag-trend-down' : 'tag-trend-range';
 
-// best strike near delta 0.50 based on sentiment
-const delta50 = findDelta50Strike(window.best10Global || [], trade.sentiment);
+  // best strike near delta 0.50 based on sentiment
+  const delta50 = findDelta50Strike(window.best10Global || [], trade.sentiment);
 
-const delta50Label = delta50
-? `Strike ${delta50.Strike} – Δ ${toNumber(delta50.Delta).toFixed(2)}`
-: "—";
+  const delta50Label = delta50
+    ? `Strike ${delta50.Strike} – Δ ${toNumber(delta50.Delta).toFixed(2)}`
+    : "—";
 
-return `
+  const qualityLabel =
+    trade.strengthBand === "strong"   ? "Strong Edge" :
+    trade.strengthBand === "moderate" ? "Moderate Edge" :
+    "Weak Edge";
+
+  return `
 <h2>STWP ${trade.modeLabel} Trade – ${symbol}</h2>
 <div style="margin-bottom:6px;">
-<span class="tag ${sentimentClass}">Sentiment: ${trade.sentiment}</span>
-<span class="tag ${trendClass}">Trend: ${trade.trend}</span>
-<span class="tag ${strengthColor(trade.strength)}"> Strength: ${trade.strength.toFixed(1)}/5 </span>
-<span class="tag ${trade.sentiment === 'Bullish' ? 'tag-bullish' : trade.sentiment === 'Bearish' ? 'tag-bearish' : 'tag-neutral' }">Strike (Δ≈0.50): ${delta50Label}</span>
+  <span class="tag ${sentimentClass}">Sentiment: ${trade.sentiment}</span>
+  <span class="tag ${trendClass}">Trend: ${trade.trend}</span>
+  <span class="tag ${strengthColor(trade.edgeScore)}"> STWP Edge: ${trade.edgeScore.toFixed(1)}/10 </span>
+  <span class="tag tag-gray"> Quality: ${qualityLabel} </span>
+  <span class="tag ${trade.sentiment === 'Bullish' ? 'tag-bullish' : trade.sentiment === 'Bearish' ? 'tag-bearish' : 'tag-neutral' }">Strike (Δ≈0.50): ${delta50Label}</span>
 </div>
 
 <div style="margin-bottom:6px;font-size:13px;">
-<b>Strike to trade:</b> ${trade.strike ?? '—'} ${trade.type} &nbsp;|&nbsp;
-<b>Entry:</b> ${trade.levels.entry.toFixed(2)} &nbsp;|&nbsp;
-<b>Stop Loss:</b> ${trade.levels.sl.toFixed(2)} &nbsp;|&nbsp;
-<b>Target 1:</b> ${trade.levels.t1.toFixed(2)} &nbsp;|&nbsp;
-<b>Target 2:</b> ${trade.levels.t2.toFixed(2)} &nbsp;|&nbsp;
-<b>R:R:</b> ${trade.rrMultiple?.toFixed ? trade.rrMultiple.toFixed(2) : trade.rrMultiple}
-&nbsp;|&nbsp;
-<b>Risk % (Long):</b> ${trade.riskLongPct?.toFixed ? trade.riskLongPct.toFixed(1) : trade.riskLongPct}%
-${trade.targetPct && trade.targetPct>0 ? `&nbsp;|&nbsp;<b>Target% override:</b> ${trade.targetPct.toFixed(1)}%` : ''}
+  <b>Strike to trade:</b> ${trade.strike ?? '—'} ${trade.type} &nbsp;|&nbsp;
+  <b>Entry:</b> ${trade.levels.entry.toFixed(2)} &nbsp;|&nbsp;
+  <b>Stop Loss:</b> ${trade.levels.sl.toFixed(2)} &nbsp;|&nbsp;
+  <b>Target 1:</b> ${trade.levels.t1.toFixed(2)} &nbsp;|&nbsp;
+  <b>Target 2:</b> ${trade.levels.t2.toFixed(2)} &nbsp;|&nbsp;
+  <b>R:R:</b> ${trade.rrMultiple?.toFixed ? trade.rrMultiple.toFixed(2) : trade.rrMultiple}
+  &nbsp;|&nbsp;
+  <b>Risk % (Long):</b> ${trade.riskLongPct?.toFixed ? trade.riskLongPct.toFixed(1) : trade.riskLongPct}%
+  ${trade.targetPct && trade.targetPct>0 ? `&nbsp;|&nbsp;<b>Target% override:</b> ${trade.targetPct.toFixed(1)}%` : ''}
 </div>
 
 <div class="section-title">Summary (Professional View):</div>
@@ -943,17 +1033,17 @@ ${trade.targetPct && trade.targetPct>0 ? `&nbsp;|&nbsp;<b>Target% override:</b> 
 
 <div class="section-title">Key Data:</div>
 <ul>
-${trade.narrative.keyData.map(x => `<li>${x}</li>`).join('')}
+  ${trade.narrative.keyData.map(x => `<li>${x}</li>`).join('')}
 </ul>
 
 <div class="section-title">Interpretation:</div>
 <ul>
-${trade.narrative.interp.map(x => `<li>${x}</li>`).join('')}
+  ${trade.narrative.interp.map(x => `<li>${x}</li>`).join('')}
 </ul>
 
 <div class="section-title">Why take this trade?</div>
 <ul>
-${trade.narrative.why.map(x => `<li>${x}</li>`).join('')}
+  ${trade.narrative.why.map(x => `<li>${x}</li>`).join('')}
 </ul>
 <div style="
     font-size:14px; 
@@ -974,298 +1064,481 @@ ${trade.narrative.why.map(x => `<li>${x}</li>`).join('')}
 
 /* ---------- Shared buildup stats helper ---------- */
 function computeBuildupStats(rows){
-const stats = {
-call: { longBuild:0, shortBuild:0, shortCover:0, longUnwind:0 },
-put:  { longBuild:0, shortBuild:0, shortCover:0, longUnwind:0 }
-};
+  const stats = {
+    call: { longBuild:0, shortBuild:0, shortCover:0, longUnwind:0 },
+    put:  { longBuild:0, shortBuild:0, shortCover:0, longUnwind:0 }
+  };
 
-rows.forEach(r=>{
-const b = String(r.Buildup || '').toLowerCase();
-const t = String(r.Type    || '').toLowerCase();
+  rows.forEach(r=>{
+    const b = String(r.Buildup || '').toLowerCase();
+    const t = String(r.Type    || '').toLowerCase();
 
-let side = null;
-if (t.includes('call')) side = 'call';
-else if (t.includes('put')) side = 'put';
-if (!side) return;
+    let side = null;
+    if (t.includes('call')) side = 'call';
+    else if (t.includes('put')) side = 'put';
+    if (!side) return;
 
-// LONG BUILD-UP (avoid double counting)
-if (b.includes('long build')) stats[side].longBuild++;
+    // LONG BUILD-UP
+    if (b.includes('long build')) stats[side].longBuild++;
 
+    // SHORT BUILD-UP
+    if (b.includes('short build')) stats[side].shortBuild++;
 
-// SHORT BUILD-UP
-if (b.includes('short build')) stats[side].shortBuild++;
+    // SHORT COVER
+    if (b.includes('short cover')) stats[side].shortCover++;
 
-// SHORT COVER
-// SHORT COVER
-if (b.includes('short cover')) stats[side].shortCover++;
+    // LONG UNWIND
+    if (b.includes('long unwind') || b.includes('long unwinding'))
+      stats[side].longUnwind++;
+  });
 
-// LONG UNWIND
-if (b.includes('long unwind') || b.includes('long unwinding'))
-stats[side].longUnwind++;
-});
-
-return stats;
+  return stats;
 }
 
 function clusterLabel(n){
-if (n >= 7) return "Strong";
-if (n >= 3) return "Moderate";
-if (n >= 1) return "Weak";
-return "None";
+  if (n >= 7) return "Strong";
+  if (n >= 3) return "Moderate";
+  if (n >= 1) return "Weak";
+  return "None";
 }
 
 /* ---------- Volatility Insight HTML ---------- */
 function buildVolatilityInsightHTML(rows){
-const ivRows = rows
-.map(r => ({ iv: toNumber(r.IV), strike: toNumber(r.Strike), type: String(r.Type || '').toUpperCase() }))
-.filter(r => r.iv !== null && isFinite(r.iv));
+  const ivRows = rows
+    .map(r => ({ iv: toNumber(r.IV), strike: toNumber(r.Strike), type: String(r.Type || '').toUpperCase() }))
+    .filter(r => r.iv !== null && isFinite(r.iv));
 
-if (!ivRows.length) {
-return `<div style="font-size:13px;color:#6b7280;">No IV data available for this symbol.</div>`;
-}
+  if (!ivRows.length) {
+    return `<div style="font-size:13px;color:#6b7280;">No IV data available for this symbol.</div>`;
+  }
 
-const avgIV = ivRows.reduce((a,b)=>a+b.iv,0) / ivRows.length;
-let maxIV = ivRows[0], minIV = ivRows[0];
-ivRows.forEach(r => {
-if (r.iv > maxIV.iv) maxIV = r;
-if (r.iv < minIV.iv) minIV = r;
-});
+  const avgIV = ivRows.reduce((a,b)=>a+b.iv,0) / ivRows.length;
+  let maxIV = ivRows[0], minIV = ivRows[0];
+  ivRows.forEach(r => {
+    if (r.iv > maxIV.iv) maxIV = r;
+    if (r.iv < minIV.iv) minIV = r;
+  });
 
-return `
+  return `
 <h2>Volatility Insight</h2>
 <div class="section-title">IV Summary:</div>
 <ul>
-<li>Avg IV: ${avgIV.toFixed(2)}%</li>
-<li>High IV: ${maxIV.iv.toFixed(2)}% @ ${maxIV.strike} ${maxIV.type}</li>
-<li>Low IV: ${minIV.iv.toFixed(2)}% @ ${minIV.strike} ${minIV.type}</li>
+  <li>Avg IV: ${avgIV.toFixed(2)}%</li>
+  <li>High IV: ${maxIV.iv.toFixed(2)}% @ ${maxIV.strike} ${maxIV.type}</li>
+  <li>Low IV: ${minIV.iv.toFixed(2)}% @ ${minIV.strike} ${minIV.type}</li>
 </ul>
 <div style="font-size:12px;color:#6b7280;">
 Elevated IV supports credit strategies (spreads / iron condors), while lower IV favours directional debit structures.
+</div>
+<div style="
+    font-size:14px; 
+    font-weight:bold; 
+    color:#374151; 
+    margin-top:12px; 
+    padding:10px 12px; 
+    background:#f3f4f6; 
+    border-left:4px solid #4b5563;
+    border-radius:4px;
+    line-height:1.5;
+">
+| ⚠️ This tool is strictly for educational purposes only and not for any investment advice; Options involve high risk and potential losses. |<br>
+| Please consult a SEBI-registered advisor before trading, As all decisions and outcomes remain solely your responsibility and STWP assumes no liability. |
 </div>
 `;
 }
 
 /* ---------- Buildup Heat Overview (UPGRADED) ---------- */
 function buildBuildupHeatHTML(rows){
-const stats = computeBuildupStats(rows);
+  const stats = computeBuildupStats(rows);
 
-const c = stats.call;
-const p = stats.put;
+  const c = stats.call;
+  const p = stats.put;
 
-return `
+  return `
 <h2>Buildup Heat Overview</h2>
 
 <div class="section-title">Build-up Distribution (CALL side)</div>
 <ul>
-<li>Long Build-up: ${c.longBuild} (${clusterLabel(c.longBuild)})</li>
-<li>Short Build-up: ${c.shortBuild} (${clusterLabel(c.shortBuild)})</li>
-<li>Short Cover: ${c.shortCover} (${clusterLabel(c.shortCover)})</li>
-<li>Long Unwind: ${c.longUnwind} (${clusterLabel(c.longUnwind)})</li>
+  <li>Long Build-up: ${c.longBuild} (${clusterLabel(c.longBuild)})</li>
+  <li>Short Build-up: ${c.shortBuild} (${clusterLabel(c.shortBuild)})</li>
+  <li>Short Cover: ${c.shortCover} (${clusterLabel(c.shortCover)})</li>
+  <li>Long Unwind: ${c.longUnwind} (${clusterLabel(c.longUnwind)})</li>
 </ul>
 
 <div class="section-title">Build-up Distribution (PUT side)</div>
 <ul>
-<li>Long Build-up: ${p.longBuild} (${clusterLabel(p.longBuild)})</li>
-<li>Short Build-up: ${p.shortBuild} (${clusterLabel(p.shortBuild)})</li>
-<li>Short Cover: ${p.shortCover} (${clusterLabel(p.shortCover)})</li>
-<li>Long Unwind: ${p.longUnwind} (${clusterLabel(p.longUnwind)})</li>
+  <li>Long Build-up: ${p.longBuild} (${clusterLabel(p.longBuild)})</li>
+  <li>Short Build-up: ${p.shortBuild} (${clusterLabel(p.shortBuild)})</li>
+  <li>Short Cover: ${p.shortCover} (${clusterLabel(p.shortCover)})</li>
+  <li>Long Unwind: ${p.longUnwind} (${clusterLabel(p.longUnwind)})</li>
 </ul>
 
 <div style="font-size:12px;color:#6b7280;">
 Long Build and Short Cover clusters highlight strength zones; Short Build and Long Unwind highlight supply and exhaustion pockets.
+</div>
+<div style="
+    font-size:14px; 
+    font-weight:bold; 
+    color:#374151; 
+    margin-top:12px; 
+    padding:10px 12px; 
+    background:#f3f4f6; 
+    border-left:4px solid #4b5563;
+    border-radius:4px;
+    line-height:1.5;
+">
+| ⚠️ This tool is strictly for educational purposes only and not for any investment advice; Options involve high risk and potential losses. |<br>
+| Please consult a SEBI-registered advisor before trading, As all decisions and outcomes remain solely your responsibility and STWP assumes no liability. |
 </div>
 `;
 }
 
 /* ---------- ATM Snapshot HTML ---------- */
 function buildATMSnapshotHTML(rows, atmStrike){
-if (atmStrike === null || !isFinite(atmStrike)){
-return `<div style="font-size:13px;color:#6b7280;">ATM could not be identified cleanly for this symbol.</div>`;
-}
+  if (atmStrike === null || !isFinite(atmStrike)){
+    return `<div style="font-size:13px;color:#6b7280;">ATM could not be identified cleanly for this symbol.</div>`;
+  }
 
-const ceRows = rows.filter(r => {
-const t = String(r.Type || '').toUpperCase();
-return (t === 'CE' || t === 'CALL');
-});
-const peRows = rows.filter(r => {
-const t = String(r.Type || '').toUpperCase();
-return (t === 'PE' || t === 'PUT');
-});
+  const ceRows = rows.filter(r => {
+    const t = String(r.Type || '').toUpperCase();
+    return (t === 'CE' || t === 'CALL');
+  });
+  const peRows = rows.filter(r => {
+    const t = String(r.Type || '').toUpperCase();
+    return (t === 'PE' || t === 'PUT');
+  });
 
-function nearestATM(list){
-if (!list.length) return null;
-let best = list[0], bestDiff = Math.abs(toNumber(list[0].Strike)-atmStrike);
-list.forEach(r=>{
-const d = Math.abs(toNumber(r.Strike)-atmStrike);
-if (d < bestDiff){ bestDiff = d; best = r; }
-});
-return best;
-}
+  function nearestATM(list){
+    if (!list.length) return null;
+    let best = list[0], bestDiff = Math.abs(toNumber(list[0].Strike)-atmStrike);
+    list.forEach(r=>{
+      const d = Math.abs(toNumber(r.Strike)-atmStrike);
+      if (d < bestDiff){ bestDiff = d; best = r; }
+    });
+    return best;
+  }
 
-const ceATM = nearestATM(ceRows);
-const peATM = nearestATM(peRows);
+  const ceATM = nearestATM(ceRows);
+  const peATM = nearestATM(peRows);
 
-if (!ceATM && !peATM){
-return `<div style="font-size:13px;color:#6b7280;">No CE/PE legs close enough to ATM for snapshot.</div>`;
-}
+  if (!ceATM && !peATM){
+    return `<div style="font-size:13px;color:#6b7280;">No CE/PE legs close enough to ATM for snapshot.</div>`;
+  }
 
-function legLine(label, row){
-if (!row) return `${label}: —`;
-const ltp   = toNumber(row.LTP);
-const delta = toNumber(row.Delta);
-const iv    = toNumber(row.IV);
-return `${label}: ${ltp!==null?ltp.toFixed(2):'—'} (Delta: ${delta!==null?delta.toFixed(2):'—'}, IV: ${iv!==null?iv.toFixed(2)+'%':'—'})`;
-}
+  function legLine(label, row){
+    if (!row) return `${label}: —`;
+    const ltp   = toNumber(row.LTP);
+    const delta = toNumber(row.Delta);
+    const iv    = toNumber(row.IV);
+    return `${label}: ${ltp!==null?ltp.toFixed(2):'—'} (Delta: ${delta!==null?delta.toFixed(2):'—'}, IV: ${iv!==null?iv.toFixed(2)+'%':'—'})`;
+  }
 
-return `
+  return `
 <h2>ATM Zone Snapshot</h2>
 <div><b>ATM Strike:</b> ${atmStrike}</div>
 <ul>
-<li>${legLine('CE', ceATM)}</li>
-<li>${legLine('PE', peATM)}</li>
+  <li>${legLine('CE', ceATM)}</li>
+  <li>${legLine('PE', peATM)}</li>
 </ul>
 <div style="font-size:12px;color:#6b7280;">
 ATM legs drive gamma and intraday sensitivity. Monitoring CE / PE IV & Delta here helps track who is in control.
 </div>
+<div style="
+    font-size:14px; 
+    font-weight:bold; 
+    color:#374151; 
+    margin-top:12px; 
+    padding:10px 12px; 
+    background:#f3f4f6; 
+    border-left:4px solid #4b5563;
+    border-radius:4px;
+    line-height:1.5;
+">
+| ⚠️ This tool is strictly for educational purposes only and not for any investment advice; Options involve high risk and potential losses. |<br>
+| Please consult a SEBI-registered advisor before trading, As all decisions and outcomes remain solely your responsibility and STWP assumes no liability. |
+</div>
 `;
 }
 
-/* ---------- Strategy Suggestion HTML (existing tab) ---------- */
-function buildStrategySuggestionHTML(rows, sentiment, atmStrike){
-if (!rows.length){
-return `<div style="font-size:13px;color:#6b7280;">No data available for strategy suggestion.</div>`;
-}
+/* ---------- Strategy Auto-Selector (INSTITUTIONAL MODE) ---------- */
+function buildStrategySuggestionHTML(rows, sentiment, atmStrike, ivRank, pcrValue){
+  if (!rows.length){
+    return `<div style="font-size:13px;color:#6b7280;">No data available for strategy suggestion.</div>`;
+  }
 
-let callLB=0, putLB=0, callSB=0, putSB=0;
-rows.forEach(r=>{
-const b = String(r.Buildup || '').toLowerCase();
-const t = String(r.Type || '').toLowerCase();
-if (t.includes('call')){
-if (b.includes('long build')) callLB++;
-if (b.includes('short build')) callSB++;
-} else if (t.includes('put')){
-if (b.includes('long build')) putLB++;
-if (b.includes('short build')) putSB++;
-}
-});
+  const stats = computeBuildupStats(rows);
+  const c = stats.call;
+  const p = stats.put;
 
-let trendStrength = 'Neutral';
-let reason = 'Flows look mixed between calls and puts.';
-const putDominance  = putLB + callSB;
-const callDominance = callLB + putSB;
+  // Flow-based bias from buildup clusters
+  const callPositive = c.longBuild + p.shortCover;
+  const putPositive  = p.longBuild + c.shortBuild;
 
-if (putDominance > callDominance + 1){
-trendStrength = 'Moderately Bearish';
-reason = 'Put-side buildup and call-side pressure are dominating recent strikes.';
-} else if (callDominance > putDominance + 1) {
-trendStrength = 'Moderately Bullish';
-reason = 'Call-side buildup and put unwinding are supporting the upside structure.';
-}
+  let flowBias = "Mixed / Balanced";
+  if (callPositive > putPositive + 1) flowBias = "Call-Dominated (Upside flows)";
+  else if (putPositive > callPositive + 1) flowBias = "Put-Dominated (Downside flows)";
 
-let suggestionTitle = '';
-let lines = [];
+  // IV environment from IV Rank (fallback to avg IV)
+  let avgIV = null;
+  const ivRows = rows
+    .map(r => toNumber(r.IV))
+    .filter(x => x !== null && isFinite(x));
+  if (ivRows.length){
+    avgIV = ivRows.reduce((a,b)=>a+b,0)/ivRows.length;
+  }
 
-const stepGuess = (() => {
-const strikes = [...new Set(rows.map(r=>toNumber(r.Strike)).filter(x=>x!==null && isFinite(x)))].sort((a,b)=>a-b);
-if (strikes.length < 2) return 0;
-let diff = strikes[1] - strikes[0];
-return isFinite(diff) && diff>0 ? diff : 0;
-})();
+  let ivEnv = "Normal";
+  let ivRankUsed = ivRank;
+  if (ivRankUsed === null && avgIV !== null){
+    // rough proxy if ivRank not available
+    if (avgIV < 15) ivRankUsed = 20;
+    else if (avgIV > 35) ivRankUsed = 80;
+    else ivRankUsed = 50;
+  }
+  if (ivRankUsed !== null){
+    if (ivRankUsed < 30) ivEnv = "Low IV (favour debits)";
+    else if (ivRankUsed > 70) ivEnv = "High IV (favour credits)";
+    else ivEnv = "Mid IV (balanced)";
+  }
 
-if (sentiment === 'Bullish'){
-suggestionTitle = 'Bullish Bias – Bull Call / Naked Call';
-const buyStrike  = atmStrike;
-const sellStrike = stepGuess ? atmStrike + stepGuess : atmStrike + 100;
-lines = [
-`• Bull Call Spread: Buy CE @ ${buyStrike}, Sell CE @ ${sellStrike}.`,
-`• Naked Call Buy: CE near ATM where buildup + delta support continuation.`,
-`• Avoid aggressive put buying unless IV crush risk is low.`
-];
-} else if (sentiment === 'Bearish'){
-suggestionTitle = 'Bearish Bias – Bear Put / Naked Put';
-const buyStrike  = atmStrike;
-const sellStrike = stepGuess ? atmStrike - stepGuess : atmStrike - 100;
-lines = [
-`• Bear Put Spread: Buy PE @ ${buyStrike}, Sell PE @ ${sellStrike}.`,
-`• Naked Put Buy: PE near ATM aligned with short build / breakdown zones.`,
-`• Weakness in calls confirms continuation on the downside.`
-];
-} else {
-suggestionTitle = 'Neutral / Compression – Non-directional Structures';
-const ceStrike = stepGuess ? atmStrike + stepGuess : atmStrike + 100;
-const peStrike = stepGuess ? atmStrike - stepGuess : atmStrike - 100;
-lines = [
-`• ATM Straddle: Buy CE & PE @ ${atmStrike} for breakout expectation.`,
-`• Strangle: Buy CE @ ${ceStrike}, Buy PE @ ${peStrike} when range is narrow & IV is moderate.`,
-`• Iron Condor: Sell CE @ ${ceStrike}, Sell PE @ ${peStrike} with further wings for hedged credit.`
-];
-}
+  // PCR based context
+  const pcrText = (pcrValue !== null && isFinite(pcrValue)) ? pcrValue.toFixed(2) : "N/A";
 
-return `
-<h2>Trend Strength & Strategy Suggestion</h2>
-<div><b>Trend Strength:</b> ${trendStrength}</div>
-<div style="margin:4px 0 8px 0;">${reason}</div>
-<div class="section-title">Suggested Structure:</div>
-<div style="margin-bottom:4px;font-weight:bold;">${suggestionTitle}</div>
+  // Final directional view blend: sentiment + flowBias + PCR
+  let finalBias = sentiment; // Bullish / Bearish / Neutral
+  if (finalBias === "Neutral"){
+    if (pcrValue !== null && isFinite(pcrValue)){
+      if (pcrValue > 1.05) finalBias = "Bullish";
+      else if (pcrValue < 0.85) finalBias = "Bearish";
+    }
+  }
+  if (flowBias.includes("Upside") && finalBias === "Neutral") finalBias = "Bullish";
+  if (flowBias.includes("Downside") && finalBias === "Neutral") finalBias = "Bearish";
+
+  let suggestionTitle = '';
+  let core = [];
+  let satellite = [];
+  let riskNote = '';
+
+  // Distance step estimate
+  const strikes = [...new Set(rows.map(r=>toNumber(r.Strike)).filter(x=>x!==null && isFinite(x)))].sort((a,b)=>a-b);
+  let stepGuess = 0;
+  if (strikes.length >= 2) {
+    stepGuess = strikes[1] - strikes[0];
+  }
+
+  const atm = atmStrike || (strikes.length ? strikes[Math.floor(strikes.length/2)] : null);
+  const oneStepUp = atm && stepGuess ? atm + stepGuess : atm;
+  const oneStepDn = atm && stepGuess ? atm - stepGuess : atm;
+
+  if (finalBias === "Bullish"){
+    suggestionTitle = 'Bullish Bias – Directional + Spread Structures';
+
+    if (ivRankUsed !== null && ivRankUsed < 30){
+      // Low IV – favour debit
+      core = [
+        `Directional CE Buy near ATM (${atm}) with STWP Edge confirmation.`,
+        `Bull Call Debit Spread: Buy CE @ ${atm}, Sell CE @ ${oneStepUp} to control theta risk.`
+      ];
+      satellite = [
+        `Stagger entries across intraday pullbacks towards support instead of chasing gaps.`,
+        `Use partial booking at Target 1; trail SL to cost once structure moves in favour.`
+      ];
+      riskNote = 'Low IV supports debit strategies – but avoid over-leveraging size, as moves may still take time to play out.';
+    } else if (ivRankUsed !== null && ivRankUsed > 70){
+      // High IV – favour credit
+      core = [
+        `Bull Put Credit Spread: Sell PE @ ${oneStepDn}, Buy PE one or two strikes lower for defined risk.`,
+        `Conservative Bull Call Spread: Buy slightly ITM CE, Sell OTM CE to harvest rich IV.`
+      ];
+      satellite = [
+        `Avoid naked CE buying when IV is already stretched – premium decay can be brutal after event cooling.`,
+        `Align spreads with higher STWP Edge legs and avoid illiquid wings.`
+      ];
+      riskNote = 'High IV demands defined-risk spreads; keep margin exposure under control and respect event risk.';
+    } else {
+      // Mid IV
+      core = [
+        `Near-ATM CE Buy with clear SL and STWP Edge > 7 on the chosen strike.`,
+        `Bull Call Spread around ATM if Smart Money Heat is supportive on calls.`
+      ];
+      satellite = [
+        `Short-term intraday scalps can be taken on higher Edge intraday legs; overnight exposure better via spreads.`,
+        `If structure weakens intraday (Edge falling, OI flipping), reduce risk rather than averaging.`
+      ];
+      riskNote = 'Balanced IV allows both debit and limited-risk spread structures – favour those where STWP Edge and liquidity align.';
+    }
+
+  } else if (finalBias === "Bearish"){
+    suggestionTitle = 'Bearish Bias – Downside Structures';
+
+    if (ivRankUsed !== null && ivRankUsed < 30){
+      // Low IV – favour debit PEs
+      core = [
+        `Directional PE Buy near ATM (${atm}) on breakdown legs with strong STWP Edge.`,
+        `Bear Put Debit Spread: Buy PE @ ${atm}, Sell PE @ ${oneStepDn} to reduce decay.`
+      ];
+      satellite = [
+        `Focus on clean breakdowns below key supports; avoid shorting into exhaustion candles.`,
+        `Book partials aggressively on sharp intraday flushes; bear legs often retrace fast.`
+      ];
+      riskNote = 'Low IV means downside options may still be reasonably priced – but volatility expansion is needed for best payoff.';
+    } else if (ivRankUsed !== null && ivRankUsed > 70){
+      // High IV – credit structures
+      core = [
+        `Bear Call Credit Spread: Sell CE @ ${oneStepUp}, Buy CE higher to cap risk.`,
+        `Bear Put Spread with reduced quantity, using high IV to your advantage.`
+      ];
+      satellite = [
+        `Avoid deep OTM lottery PEs; they bleed fastest once IV cools off.`,
+        `Size spreads such that a gap against you does not damage capital permanently.`
+      ];
+      riskNote = 'High IV into weakness suggests crowd fear – use defined risk credit / limited debit spreads rather than naked shots.';
+    } else {
+      // Mid IV
+      core = [
+        `PE Buy or Bear Put Spread near ATM on clean breakdown candle with volume.`,
+        `For conservative traders, Bear Call Spread slightly OTM can express view with limited risk.`
+      ];
+      satellite = [
+        `Track Smart Money Heat – if put long build cluster is strong, stick to downside bias until data reverses.`,
+        `Avoid chasing moves after extended vertical drops; wait for minor pullbacks to structure entries.`
+      ];
+      riskNote = 'Bearish structures work best when breakdowns align with OI expansion and Smart Money Heat tilts to the downside.';
+    }
+
+  } else {
+    // Neutral / Compression
+    suggestionTitle = 'Neutral / Compression – Non-Directional Structures';
+
+    if (ivRankUsed !== null && ivRankUsed > 70){
+      // High IV – favour credit
+      core = [
+        `Iron Condor around ${atm}: Sell CE @ ${oneStepUp}, Sell PE @ ${oneStepDn}, hedge with further OTM wings.`,
+        `Short Strangle / Credit Strangle only for advanced traders with strict risk controls.`
+      ];
+      satellite = [
+        `Place structures outside immediate noise zone – just beyond recent swing high / low clusters.`,
+        `Adjust or exit if price breaks out with strong STWP Edge reading in one direction.`
+      ];
+      riskNote = 'High IV + range structures favour income trades, but need strict risk management and clear hedge levels.';
+    } else if (ivRankUsed !== null && ivRankUsed < 30){
+      // Low IV – favour long vega
+      core = [
+        `ATM Straddle: Buy CE & PE @ ${atm} when compression is tight and breakout risk is high.`,
+        `Strangle: Buy CE @ ${oneStepUp}, Buy PE @ ${oneStepDn} when range is well-defined.`
+      ];
+      satellite = [
+        `Use time-based stops if breakout does not come – low IV can stay low for longer than expected.`,
+        `Position sizing must assume both sides can decay if market keeps drifting.`
+      ];
+      riskNote = 'Low IV with tight ranges is ideal for long vega trades – but patience and disciplined exits are crucial.';
+    } else {
+      // Mid IV, neutral
+      core = [
+        `Balanced Iron Fly or slightly skewed Iron Condor around ATM zone.`,
+        `Light-weight directional spread on side where STWP Edge is marginally higher, combined with partial non-directional income.`
+      ];
+      satellite = [
+        `Monitor breakouts from the compression box; be ready to flip from non-directional to directional if tape shifts.`,
+        `Keep exposure small around major data events; neutral structures can be hit on both sides in high-volatility news regimes.`
+      ];
+      riskNote = 'When signals are balanced, trade smaller, trade smarter, and treat structures as income rather than jackpot bets.';
+    }
+  }
+
+  return `
+<h2>Trend Strength & Strategy Suggestion (STWP Institutional Lens)</h2>
+<div><b>Final Bias:</b> ${finalBias}</div>
+<div><b>Flows:</b> ${flowBias}</div>
+<div><b>IV Environment:</b> ${ivEnv}</div>
+<div><b>PCR (liquid strikes):</b> ${pcrText}</div>
+
+<div class="section-title">Core Strategy Structures:</div>
 <ul>
-${lines.map(x=>`<li>${x}</li>`).join('')}
+  ${core.map(x=>`<li>${x}</li>`).join('')}
 </ul>
+
+<div class="section-title">Satellite / Tactical Ideas:</div>
+<ul>
+  ${satellite.map(x=>`<li>${x}</li>`).join('')}
+</ul>
+
+<div class="section-title">Risk & Execution Note:</div>
+<div style="font-size:13px;margin-bottom:6px;">
+  ${riskNote}
+</div>
+
 <div style="font-size:12px;color:#6b7280;">
-This view is structural and educational. Always align final trades with your own risk, timing and broader market context.
+This strategy map blends sentiment, IV regime, buildup clusters and PCR into one institutional-style suggestion. 
+It is purely educational – final trade decisions, sizing and timing must follow your own tested framework and risk rules.
+</div>
+<div style="
+    font-size:14px; 
+    font-weight:bold; 
+    color:#374151; 
+    margin-top:12px; 
+    padding:10px 12px; 
+    background:#f3f4f6; 
+    border-left:4px solid #4b5563;
+    border-radius:4px;
+    line-height:1.5;
+">
+| ⚠️ This tool is strictly for educational purposes only and not for any investment advice; Options involve high risk and potential losses. |<br>
+| Please consult a SEBI-registered advisor before trading, As all decisions and outcomes remain solely your responsibility and STWP assumes no liability. |
 </div>
 `;
 }
 
 /* ---------- SMART MONEY HEAT TAB ---------- */
 function buildSmartMoneyHeatHTML(rows, atmStrike, sentiment, pcrValue, pcrView, liquidityInfo, ivRank){
-if (!rows.length){
-return `<div style="font-size:13px;color:#6b7280;">No data for Smart Money Heat.</div>`;
-}
+  if (!rows.length){
+    return `<div style="font-size:13px;color:#6b7280;">No data for Smart Money Heat.</div>`;
+  }
 
-const stats = computeBuildupStats(rows);
-const c = stats.call;
-const p = stats.put;
+  const stats = computeBuildupStats(rows);
+  const c = stats.call;
+  const p = stats.put;
 
-// Simple smart-money scoring
-const bullScore =
-c.longBuild * 2 +
-p.shortCover * 1 +
-c.shortCover * 0.5;
+  // Simple smart-money scoring
+  const bullScore =
+    c.longBuild * 2 +
+    p.shortCover * 1 +
+    c.shortCover * 0.5;
 
-const bearScore =
-p.longBuild * 2 +
-c.shortBuild * 2 +
-p.shortBuild * 1 +
-c.longUnwind * 0.5 +
-p.longUnwind * 0.5;
+  const bearScore =
+    p.longBuild * 2 +
+    c.shortBuild * 2 +
+    p.shortBuild * 1 +
+    c.longUnwind * 0.5 +
+    p.longUnwind * 0.5;
 
-let bullPercent = 50;
-const totalAbs = Math.abs(bullScore) + Math.abs(bearScore);
-if (totalAbs > 0){
-bullPercent = Math.round((Math.max(bullScore,0) / totalAbs) * 100);
-}
+  let bullPercent = 50;
+  const totalAbs = Math.abs(bullScore) + Math.abs(bearScore);
+  if (totalAbs > 0){
+    bullPercent = Math.round((Math.max(bullScore,0) / totalAbs) * 100);
+  }
 
-let biasLabel = "Neutral / Mixed";
-if (bullPercent >= 60) biasLabel = "Bullish";
-else if (bullPercent <= 40) biasLabel = "Bearish";
+  let biasLabel = "Neutral / Mixed";
+  if (bullPercent >= 60) biasLabel = "Bullish";
+  else if (bullPercent <= 40) biasLabel = "Bearish";
 
-function buildMeter(pct, label){
-const totalBlocks = 20;
-const filled = Math.round((pct/100) * totalBlocks);
-const empty  = totalBlocks - filled;
+  function buildMeter(pct, label){
+    const totalBlocks = 20;
+    const filled = Math.round((pct/100) * totalBlocks);
+    const empty  = totalBlocks - filled;
 
-// Choose color based on momentum
-let block = "■";
-let colorBlock = label === "Bearish" ? "🟥" : label === "Bullish" ? "🟩" : "🟦";
+    // Choose block symbol
+    let colorBlock = label === "Bearish" ? "🟥" : label === "Bullish" ? "🟩" : "🟦";
 
-return `
+    return `
 <div class="smart-meter-bar">
 |${colorBlock.repeat(filled)}${"□".repeat(empty)}| ${pct}% ${label}
 </div>
 `;
-}
+  }
 
-const liquidityLine = `
+  const liquidityLine = `
 Total strikes: ${liquidityInfo.totalCount},
 Liquid (used for analytics): ${liquidityInfo.liquidCount},
 Median Vol: ${liquidityInfo.medianVolume.toFixed(0)},
@@ -1273,20 +1546,20 @@ Median OI: ${liquidityInfo.medianOI.toFixed(0)},
 Vol ≥ ${liquidityInfo.volThreshold.toFixed(0)}, OI ≥ ${liquidityInfo.oiThreshold.toFixed(0)}.
 `;
 
-// Light-weight strategy flavour based on sentiment + bullPercent
-let smartStrat = "";
-if (sentiment === "Bullish" && bullPercent >= 55){
-smartStrat = "Smart money tilt is bullish. Favour bull call spreads or controlled CE buying near ATM, sized with discipline.";
-} else if (sentiment === "Bearish" && bullPercent <= 45){
-smartStrat = "Smart money tilt is bearish. Bear put spreads or PE buying closer to ATM align better with current flows.";
-} else {
-smartStrat = "Flows are mixed. Non-directional or wait-for-confirmation setups suit this tape better than aggressive naked options.";
-}
+  // Light-weight strategy flavour based on sentiment + bullPercent
+  let smartStrat = "";
+  if (sentiment === "Bullish" && bullPercent >= 55){
+    smartStrat = "Smart money tilt is bullish. Favour bull call spreads or controlled CE buying near ATM, sized with discipline.";
+  } else if (sentiment === "Bearish" && bullPercent <= 45){
+    smartStrat = "Smart money tilt is bearish. Bear put spreads or PE buying closer to ATM align better with current flows.";
+  } else {
+    smartStrat = "Flows are mixed. Non-directional or wait-for-confirmation setups suit this tape better than aggressive naked options.";
+  }
 
-const pcrText = (pcrValue !== null && isFinite(pcrValue)) ? pcrValue.toFixed(2) : "N/A";
-const ivRankText = ivRank !== null ? ivRank.toFixed(1) + "%" : "—";
+  const pcrText = (pcrValue !== null && isFinite(pcrValue)) ? pcrValue.toFixed(2) : "N/A";
+  const ivRankText = ivRank !== null ? ivRank.toFixed(1) + "%" : "—";
 
-return `
+  return `
 <h2>Smart Money Heat – Institutional Flow Snapshot</h2>
 
 <div class="section-title">Smart Money Momentum</div>
@@ -1298,261 +1571,271 @@ Momentum score is derived from Long Build-up, Short Build-up, Short Cover and Lo
 
 <div class="section-title">Build-up Distribution (CALL side)</div>
 <ul>
-<li>Long Build-up: ${c.longBuild} (${clusterLabel(c.longBuild)})</li>
-<li>Short Build-up: ${c.shortBuild} (${clusterLabel(c.shortBuild)})</li>
-<li>Short Cover: ${c.shortCover} (${clusterLabel(c.shortCover)})</li>
-<li>Long Unwind: ${c.longUnwind} (${clusterLabel(c.longUnwind)})</li>
+  <li>Long Build-up: ${c.longBuild} (${clusterLabel(c.longBuild)})</li>
+  <li>Short Build-up: ${c.shortBuild} (${clusterLabel(c.shortBuild)})</li>
+  <li>Short Cover: ${c.shortCover} (${clusterLabel(c.shortCover)})</li>
+  <li>Long Unwind: ${c.longUnwind} (${clusterLabel(c.longUnwind)})</li>
 </ul>
 
 <div class="section-title">Build-up Distribution (PUT side)</div>
 <ul>
-<li>Long Build-up: ${p.longBuild} (${clusterLabel(p.longBuild)})</li>
-<li>Short Build-up: ${p.shortBuild} (${clusterLabel(p.shortBuild)})</li>
-<li>Short Cover: ${p.shortCover} (${clusterLabel(p.shortCover)})</li>
-<li>Long Unwind: ${p.longUnwind} (${clusterLabel(p.longUnwind)})</li>
+  <li>Long Build-up: ${p.longBuild} (${clusterLabel(p.longBuild)})</li>
+  <li>Short Build-up: ${p.shortBuild} (${clusterLabel(p.shortBuild)})</li>
+  <li>Short Cover: ${p.shortCover} (${clusterLabel(p.shortCover)})</li>
+  <li>Long Unwind: ${p.longUnwind} (${clusterLabel(p.longUnwind)})</li>
 </ul>
 
 <div class="section-title">Liquidity Engine Snapshot</div>
 <div style="font-size:13px;margin-bottom:6px;">
-${liquidityLine}
+  ${liquidityLine}
 </div>
 
 <div class="section-title">Global Derivative Context</div>
 <ul>
-<li>PCR (on liquid strikes): <b>${pcrText}</b> ${pcrView && pcrView !== 'N/A' ? `(${pcrView})` : ''}</li>
-<li>IV Rank (ATM leg): <b>${ivRankText}</b></li>
-<li>ATM Strike anchor: <b>${atmStrike ?? '—'}</b></li>
-<li>Panel Sentiment (options flow powered): <b>${sentiment}</b></li>
+  <li>PCR (on liquid strikes): <b>${pcrText}</b> ${pcrView && pcrView !== 'N/A' ? `(${pcrView})` : ''}</li>
+  <li>IV Rank (ATM leg): <b>${ivRankText}</b></li>
+  <li>ATM Strike anchor: <b>${atmStrike ?? '—'}</b></li>
+  <li>Panel Sentiment (options flow powered): <b>${sentiment}</b></li>
 </ul>
 
 <div class="section-title">Smart Money Strategy Lens</div>
 <div style="font-size:13px;margin-bottom:6px;">
-${smartStrat}
+  ${smartStrat}
 </div>
 
-<div style="font-size:11px;color:#6b7280;">
-This Smart Money Heat view is educational and designed to show where institutional-style flows concentrate.
-It is not a direct trade call. Always integrate your own framework, timing and risk sizing before taking exposure.
+<div style="
+    font-size:14px; 
+    font-weight:bold; 
+    color:#374151; 
+    margin-top:12px; 
+    padding:10px 12px; 
+    background:#f3f4f6; 
+    border-left:4px solid #4b5563;
+    border-radius:4px;
+    line-height:1.5;
+">
+| ⚠️ This tool is strictly for educational purposes only and not for any investment advice; Options involve high risk and potential losses. |<br>
+| Please consult a SEBI-registered advisor before trading, As all decisions and outcomes remain solely your responsibility and STWP assumes no liability. |
 </div>
 `;
 }
 
 /* ---------- Generate Trade Panel + Tabs ---------- */
 function generateTradePanel(best10, atmStrike, spot, symbol, fullRows, pcrValue, pcrView, liquidityInfo, ivRank){
-tradePanel.innerHTML = "";
-window.best10Global = best10;
-if (!best10 || !best10.length) return;
+  tradePanel.innerHTML = "";
+  window.best10Global = best10;
+  if (!best10 || !best10.length) return;
 
-const rowsForScoring = best10;
-const allRows = fullRows && fullRows.length ? fullRows : best10;
+  const rowsForScoring = best10;
+  const allRows = fullRows && fullRows.length ? fullRows : best10;
 
-const scored = rowsForScoring.map(r => {
-const s = scoreRow(r);
-return { row: r, baseScore: s.score, direction: s.direction };
-});
+  const scored = rowsForScoring.map(r => {
+    const s = scoreRow(r);
+    return { row: r, baseScore: s.score, direction: s.direction };
+  });
 
-let bullPower = 0, bearPower = 0;
-scored.forEach(x => {
-if (x.direction === 'bullish') bullPower += x.baseScore;
-if (x.direction === 'bearish') bearPower += x.baseScore;
-});
+  let bullPower = 0, bearPower = 0;
+  scored.forEach(x => {
+    if (x.direction === 'bullish') bullPower += x.baseScore;
+    if (x.direction === 'bearish') bearPower += x.baseScore;
+  });
 
-let sentiment = 'Neutral';
-if (bullPower - bearPower > 1.5) sentiment = 'Bullish';
-else if (bearPower - bullPower > 1.5) sentiment = 'Bearish';
+  let sentiment = 'Neutral';
+  if (bullPower - bearPower > 1.5) sentiment = 'Bullish';
+  else if (bearPower - bullPower > 1.5) sentiment = 'Bearish';
 
-let trend = 'Range';
-if (sentiment === 'Bullish') trend = 'Up';
-else if (sentiment === 'Bearish') trend = 'Down';
+  let trend = 'Range';
+  if (sentiment === 'Bullish') trend = 'Up';
+  else if (sentiment === 'Bearish') trend = 'Down';
 
-const directional = scored.filter(x => x.direction !== 'neutral');
-if (!directional.length) {
-tradePanel.innerHTML = `<div style="font-size:13px;color:#6b7280;margin-top:8px;">No strong directional edge detected from the nearest strikes.</div>`;
-return;
-}
+  const directional = scored.filter(x => x.direction !== 'neutral');
+  if (!directional.length) {
+    tradePanel.innerHTML = `<div style="font-size:13px;color:#6b7280;margin-top:8px;">No strong directional edge detected from the nearest strikes.</div>`;
+    return;
+  }
 
-const intradayCandidates = directional.map(x => ({
-...x,
-modeScore: computeIntradayScore(x.row, x.baseScore, atmStrike)
-}));
-intradayCandidates.sort((a,b) => b.modeScore - a.modeScore);
-const bestIntraday = intradayCandidates[0];
+  const intradayCandidates = directional.map(x => ({
+    ...x,
+    modeScore: computeIntradayScore(x.row, x.baseScore, atmStrike)
+  }));
+  intradayCandidates.sort((a,b) => b.modeScore - a.modeScore);
+  const bestIntraday = intradayCandidates[0];
 
-const swingCandidates = directional.map(x => ({
-...x,
-modeScore: computeSwingScore(x.row, x.baseScore, atmStrike)
-}));
-swingCandidates.sort((a,b) => b.modeScore - a.modeScore);
-const bestSwing = swingCandidates[0];
+  const swingCandidates = directional.map(x => ({
+    ...x,
+    modeScore: computeSwingScore(x.row, x.baseScore, atmStrike)
+  }));
+  swingCandidates.sort((a,b) => b.modeScore - a.modeScore);
+  const bestSwing = swingCandidates[0];
 
-let intradayTrade = null;
-let swingTrade    = null;
+  let intradayTrade = null;
+  let swingTrade    = null;
 
-if (bestIntraday) {
-intradayTrade = buildTradeObject(bestIntraday.row, bestIntraday.direction, sentiment, trend, atmStrike, "Intraday / Next-Day");
-}
-if (bestSwing) {
-swingTrade = buildTradeObject(bestSwing.row, bestSwing.direction, sentiment, trend, atmStrike, "Swing (2–5 Days)");
-}
+  if (bestIntraday) {
+    intradayTrade = buildTradeObject(bestIntraday.row, bestIntraday.direction, sentiment, trend, atmStrike, "Intraday / Next-Day", ivRank);
+  }
+  if (bestSwing) {
+    swingTrade = buildTradeObject(bestSwing.row, bestSwing.direction, sentiment, trend, atmStrike, "Swing (2–5 Days)", ivRank);
+  }
 
-const volHTML      = buildVolatilityInsightHTML(allRows);
-const buildupHTML  = buildBuildupHeatHTML(allRows);
-const atmHTML      = buildATMSnapshotHTML(allRows, atmStrike);
-const strategyHTML = buildStrategySuggestionHTML(allRows, sentiment, atmStrike);
-const smartHTML    = buildSmartMoneyHeatHTML(allRows, atmStrike, sentiment, pcrValue, pcrView, liquidityInfo, ivRank);
+  const volHTML      = buildVolatilityInsightHTML(allRows);
+  const buildupHTML  = buildBuildupHeatHTML(allRows);
+  const atmHTML      = buildATMSnapshotHTML(allRows, atmStrike);
+  const strategyHTML = buildStrategySuggestionHTML(allRows, sentiment, atmStrike, ivRank, pcrValue);
+  const smartHTML    = buildSmartMoneyHeatHTML(allRows, atmStrike, sentiment, pcrValue, pcrView, liquidityInfo, ivRank);
 
-let tabsHtml = `
+  let tabsHtml = `
 <div class="tab-buttons">
-<button class="tab-button active" data-tab="intraday">Intraday / Next-Day</button>
-<button class="tab-button" data-tab="swing">Swing (2–5 Days)</button>
-<button class="tab-button" data-tab="vol">Volatility Insight</button>
-<button class="tab-button" data-tab="buildup">Buildup Heat Overview</button>
-<button class="tab-button" data-tab="atm">ATM Zone Snapshot</button>
-<button class="tab-button" data-tab="strategy">Strategy Suggestion</button>
-<button class="tab-button" data-tab="smartmoney">Smart Money Heat</button>
+  <button class="tab-button active" data-tab="intraday">Intraday / Next-Day</button>
+  <button class="tab-button" data-tab="swing">Swing (2–5 Days)</button>
+  <button class="tab-button" data-tab="vol">Volatility Insight</button>
+  <button class="tab-button" data-tab="buildup">Buildup Heat Overview</button>
+  <button class="tab-button" data-tab="atm">ATM Zone Snapshot</button>
+  <button class="tab-button" data-tab="strategy">Strategy Suggestion</button>
+  <button class="tab-button" data-tab="smartmoney">Smart Money Heat</button>
 </div>
 
 <!-- EXPORT TXT -->
 <button id="exportTxtBtn"
 style="padding:6px 14px; background:#374151; color:#fff; border:none; border-radius:6px; margin:10px 0; cursor:pointer;">
-Export All Tabs (TXT)
+  Export All Tabs (TXT)
 </button>
 
 <div id="tab-intraday" class="tab-content active">
-${intradayTrade ? renderTradeHtml(intradayTrade, symbol)
-: '<div style="font-size:13px;color:#6b7280;">No clear intraday edge detected.</div>'}
+  ${intradayTrade ? renderTradeHtml(intradayTrade, symbol)
+    : '<div style="font-size:13px;color:#6b7280;">No clear intraday edge detected.</div>'}
 </div>
 
 <div id="tab-swing" class="tab-content">
-${swingTrade ? renderTradeHtml(swingTrade, symbol)
-: '<div style="font-size:13px;color:#6b7280;">No clear swing edge detected.</div>'}
+  ${swingTrade ? renderTradeHtml(swingTrade, symbol)
+    : '<div style="font-size:13px;color:#6b7280;">No clear swing edge detected.</div>'}
 </div>
 
 <div id="tab-vol" class="tab-content">
-${volHTML}
+  ${volHTML}
 </div>
 
 <div id="tab-buildup" class="tab-content">
-${buildupHTML}
+  ${buildupHTML}
 </div>
 
 <div id="tab-atm" class="tab-content">
-${atmHTML}
+  ${atmHTML}
 </div>
 
 <div id="tab-strategy" class="tab-content">
-${strategyHTML}
+  ${strategyHTML}
 </div>
 
 <div id="tab-smartmoney" class="tab-content">
-${smartHTML}
+  ${smartHTML}
 </div>
 `;
 
-tradePanel.innerHTML = tabsHtml;
-tradePanel.classList.add('fade-in');
-setTimeout(() => tradePanel.classList.remove('fade-in'), 500);
+  tradePanel.innerHTML = tabsHtml;
+  tradePanel.classList.add('fade-in');
+  setTimeout(() => tradePanel.classList.remove('fade-in'), 500);
 
-const tabButtons  = tradePanel.querySelectorAll('.tab-button');
-const tabContents = tradePanel.querySelectorAll('.tab-content');
+  const tabButtons  = tradePanel.querySelectorAll('.tab-button');
+  const tabContents = tradePanel.querySelectorAll('.tab-content');
 
-tabButtons.forEach(btn => {
-btn.addEventListener('click', () => {
-const tab = btn.getAttribute('data-tab');
-tabButtons.forEach(b => b.classList.remove('active'));
-btn.classList.add('active');
+  tabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.getAttribute('data-tab');
+      tabButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
 
-tabContents.forEach(c => c.classList.remove('active'));
-const target = tradePanel.querySelector(`#tab-${tab}`);
-if (target) target.classList.add('active');
-});
-});
+      tabContents.forEach(c => c.classList.remove('active'));
+      const target = tradePanel.querySelector(`#tab-${tab}`);
+      if (target) target.classList.add('active');
+    });
+  });
 }
 
 /* ------------- RESET with SMOOTH FADE-OUT ------------- */
 document.getElementById("resetBtn").addEventListener("click", () => {
-tableBody.classList.add("fade-out");
-summaryBox.classList.add("fade-out");
-tradePanel.classList.add("fade-out");
+  tableBody.classList.add("fade-out");
+  summaryBox.classList.add("fade-out");
+  tradePanel.classList.add("fade-out");
 
-setTimeout(() => {
+  setTimeout(() => {
 
-tableBody.classList.add("hidden");
-summaryBox.classList.add("hidden");
-tradePanel.classList.add("hidden");
+    tableBody.classList.add("hidden");
+    summaryBox.classList.add("hidden");
+    tradePanel.classList.add("hidden");
 
-tableBody.innerHTML = "";
-summaryBox.innerHTML = "";
-tradePanel.innerHTML = "";
+    tableBody.innerHTML = "";
+    summaryBox.innerHTML = "";
+    tradePanel.innerHTML = "";
 
-stockDropdown.innerHTML = '<option value="">-- Upload file to load symbols --</option>';
+    stockDropdown.innerHTML = '<option value="">-- Upload file to load symbols --</option>';
 
-fileInput.value = "";
+    fileInput.value = "";
 
-globalRows = [];
+    globalRows = [];
 
-tableBody.classList.remove("fade-out", "fade-in", "hidden");
-summaryBox.classList.remove("fade-out", "fade-in", "hidden");
-tradePanel.classList.remove("fade-out", "fade-in", "hidden");
+    tableBody.classList.remove("fade-out", "fade-in", "hidden");
+    summaryBox.classList.remove("fade-out", "fade-in", "hidden");
+    tradePanel.classList.remove("fade-out", "fade-in", "hidden");
 
-}, 400);
+  }, 400);
 });
 
 fileInput.addEventListener('change', () => {
-const file = fileInput.files[0];
-if (file) handleFile(file);
+  const file = fileInput.files[0];
+  if (file) handleFile(file);
 });
 
 stockDropdown.addEventListener('change', () => {
-loadStockData(stockDropdown.value);
+  loadStockData(stockDropdown.value);
 });
 
 // -------------------------------------
 // EXPORT TABS → TXT
 // -------------------------------------
 document.addEventListener("click", function(e){
-if (e.target.id === "exportTxtBtn") {
-exportTabsAsTxt();
-}
+  if (e.target.id === "exportTxtBtn") {
+    exportTabsAsTxt();
+  }
 });
 
 // Collect all tab content
 function collectTabText(){
-const tabIds = [
-"tab-intraday",
-"tab-swing",
-"tab-vol",
-"tab-buildup",
-"tab-atm",
-"tab-strategy",
-"tab-smartmoney"
-];
+  const tabIds = [
+    "tab-intraday",
+    "tab-swing",
+    "tab-vol",
+    "tab-buildup",
+    "tab-atm",
+    "tab-strategy",
+    "tab-smartmoney"
+  ];
 
-let output = "";
+  let output = "";
 
-tabIds.forEach(id => {
-const div = document.getElementById(id);
-if (!div) return;
+  tabIds.forEach(id => {
+    const div = document.getElementById(id);
+    if (!div) return;
 
-output += "============================\n";
-output += id.replace("tab-", "").toUpperCase() + "\n";
-output += "============================\n";
-output += div.innerText.trim() + "\n\n\n";
-});
+    output += "============================\n";
+    output += id.replace("tab-", "").toUpperCase() + "\n";
+    output += "============================\n";
+    output += div.innerText.trim() + "\n\n\n";
+  });
 
-return output;
+  return output;
 }
 
 // TXT EXPORT
 function exportTabsAsTxt(){
-const text = collectTabText();
-const blob = new Blob([text], { type: "text/plain" });
-const link = document.createElement("a");
-link.href = URL.createObjectURL(blob);
-link.download = "STWP_Options_Insights.txt";
-link.click();
+  const text = collectTabText();
+  const blob = new Blob([text], { type: "text/plain" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "STWP_Options_Insights.txt";
+  link.click();
 }
 </script>
 
 </body>
-</html> 
+</html>
