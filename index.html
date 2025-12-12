@@ -2118,9 +2118,55 @@ function buildWhyTakeTrade(row) {
     return reasons.slice(0, 6);
 }
 
-//----------------------------------------------
+// =====================================================
+// STWP TOP 10 ENGINE – OPTIMIZED v2.0 (FINAL)
+// =====================================================
+
+// Safe fallback edge score generator
+function safeEdgeScore(row) {
+    return computeEdgeScore(
+        row,
+        toNumber(row.Strike),   // Safe ATM reference
+        50                      // Neutral IV rank fallback
+    );
+}
+
+// Safe symbol-level ATM detector
+function getATMStrike(rows) {
+    const spot = toNumber(rows[0]?.Spot);
+    if (!spot) return null;
+
+    let best = rows[0];
+    let bestDiff = Math.abs(toNumber(rows[0].Strike) - spot);
+
+    rows.forEach(r => {
+        const diff = Math.abs(toNumber(r.Strike) - spot);
+        if (diff < bestDiff) {
+            bestDiff = diff;
+            best = r;
+        }
+    });
+
+    return toNumber(best.Strike);
+}
+
+// Core scoring engine (master-level)
+function scoreBestStrike(rows) {
+    if (!rows.length) return null;
+
+    const atmStrike = getATMStrike(rows);
+    if (!atmStrike) return null;
+
+    const scored = rows.map(r => ({
+        row: r,
+        score: masterStrikeScore(r, atmStrike) || 0
+    }));
+
+    scored.sort((a, b) => b.score - a.score);
+    return scored[0] || null;
+}
+
 // EXPORT TOP 10 ACROSS ALL STOCKS
-//----------------------------------------------
 function exportTop10AcrossAllStocks() {
 
     if (!globalRows.length) {
@@ -2132,29 +2178,15 @@ function exportTop10AcrossAllStocks() {
     let bestPerStock = [];
 
     symbols.forEach(sym => {
-        let rows = globalRows.filter(r => r.Symbol === sym);
+        const rows = globalRows.filter(r => r.Symbol === sym);
         if (!rows.length) return;
 
-        const spot = toNumber(rows[0].Spot);
-
-        let atmRow = rows.reduce((prev, curr) =>
-            Math.abs(toNumber(curr.Strike) - spot) <
-            Math.abs(toNumber(prev.Strike) - spot)
-                ? curr : prev
-        );
-        const atmStrike = toNumber(atmRow.Strike);
-
-        let scored = rows.map(r => ({
-            row: r,
-            score: masterStrikeScore(r, atmStrike)
-        }));
-
-        let best = scored.sort((a, b) => b.score - a.score)[0];
+        const best = scoreBestStrike(rows);
         if (best) bestPerStock.push(best);
     });
 
     if (!bestPerStock.length) {
-        alert("No valid candidates.");
+        alert("No valid candidates found.");
         return;
     }
 
@@ -2162,24 +2194,28 @@ function exportTop10AcrossAllStocks() {
         .sort((a, b) => b.score - a.score)
         .slice(0, 10);
 
-    let text = `STWP TOP 10 OPTIONS – ONE BEST STRIKE PER STOCK\n`;
+    // -----------------------------
+    // TEXT OUTPUT
+    // -----------------------------
+    let text = `STWP TOP 10 – ONE BEST STRIKE PER STOCK\n`;
     text += `Generated: ${new Date().toLocaleString()}\n\n`;
 
     finalTop10.forEach((x, i) => {
         const r = x.row;
-        const why = buildWhyTakeTrade(r);
 
-        const liquidity = computeLiquidityGrade(r);
+        const liquidity  = computeLiquidityGrade(r);
         const strikeType = classifyStrikeType(r, toNumber(r.Spot));
-        const edgeScore = computeEdgeScore(r, toNumber(r.Strike), 50);
-        const decision = buildDecisionLine(edgeScore, liquidity);
+        const edgeScore  = safeEdgeScore(r);
+        const decision   = buildDecisionLine(edgeScore, liquidity);
 
-        const risk = computeRiskGrade(r);
-        const moveBand = computeExpectedMoveBand(r);
-        const costEff = computeCostEfficiency(r);
-        const heat = computeSmartMoneyHeat(r);
+        const risk       = computeRiskGrade(r);
+        const moveBand   = computeExpectedMoveBand(r);
+        const costEff    = computeCostEfficiency(r);
+        const heat       = computeSmartMoneyHeat(r);
         const divergence = computeOIDivergence(r);
-        const align = computeTrendAlignment(r);
+        const align      = computeTrendAlignment(r);
+
+        const why        = buildWhyTakeTrade(r);
 
         text += `${i + 1}. ${r.Symbol} ${r.Strike} ${r.Type}\n`;
         text += `   Score: ${x.score.toFixed(2)}\n`;
@@ -2192,7 +2228,6 @@ function exportTop10AcrossAllStocks() {
         text += `   Volume: ${r.Volume} (Chg: ${r["Volume Chg%"]}%)\n`;
         text += `   IV: ${r.IV} (Chg: ${r["IV Chg%"]}%)\n`;
         text += `   Delta: ${r.Delta}\n`;
-
         text += `   Risk Grade: ${risk}\n`;
         text += `   Expected Move: ${moveBand}\n`;
         text += `   Cost Efficiency: ${costEff}/10\n`;
@@ -2212,6 +2247,10 @@ function exportTop10AcrossAllStocks() {
     link.click();
 }
 
+
+// -----------------------------
+// EXPORT TOP 10 CE (Optimized)
+// -----------------------------
 function exportTop10CE() {
     if (!globalRows.length) {
         alert("No file loaded.");
@@ -2222,9 +2261,10 @@ function exportTop10CE() {
     let bestCEPerStock = [];
 
     symbols.forEach(sym => {
-        let rows = globalRows.filter(r => r.Symbol === sym);
+        const rows = globalRows.filter(r => String(r.Symbol) === String(sym));
         if (!rows.length) return;
 
+        // filter CE legs only
         const ceRows = rows.filter(r => {
             const t = String(r.Type || "").toUpperCase();
             return t === "CE" || t === "CALL";
@@ -2232,23 +2272,16 @@ function exportTop10CE() {
 
         if (!ceRows.length) return;
 
-        const spot = toNumber(ceRows[0].Spot);
+        // Use symbol-specific ATM for CE set
+        const atmStrike = getATMStrike(ceRows) || toNumber(ceRows[0]?.Strike);
 
-        // Identify ATM strike for CE scoring
-        let atmRow = ceRows.reduce((prev, curr) =>
-            Math.abs(toNumber(curr.Strike) - spot) <
-            Math.abs(toNumber(prev.Strike) - spot)
-                ? curr : prev
-        );
-        const atmStrike = toNumber(atmRow.Strike);
-
-        let scored = ceRows.map(r => ({
+        const scored = ceRows.map(r => ({
             row: r,
-            score: masterStrikeScore(r, atmStrike)
+            score: masterStrikeScore(r, atmStrike) || 0
         }));
 
-        let best = scored.sort((a, b) => b.score - a.score)[0];
-        if (best) bestCEPerStock.push(best);
+        scored.sort((a, b) => b.score - a.score);
+        if (scored[0]) bestCEPerStock.push(scored[0]);
     });
 
     if (!bestCEPerStock.length) {
@@ -2264,19 +2297,18 @@ function exportTop10CE() {
 
     finalTop10.forEach((x, i) => {
         const r = x.row;
-        const why = buildWhyTakeTrade(r);
-
-        const liquidity = computeLiquidityGrade(r);
+        const liquidity  = computeLiquidityGrade(r);
         const strikeType = classifyStrikeType(r, toNumber(r.Spot));
-        const edgeScore = computeEdgeScore(r, toNumber(r.Strike), 50);
-        const decision = buildDecisionLine(edgeScore, liquidity);
+        const edgeScore  = safeEdgeScore(r);
+        const decision   = buildDecisionLine(edgeScore, liquidity);
 
-        const risk = computeRiskGrade(r);
-        const moveBand = computeExpectedMoveBand(r);
-        const costEff = computeCostEfficiency(r);
-        const heat = computeSmartMoneyHeat(r);
+        const risk       = computeRiskGrade(r);
+        const moveBand   = computeExpectedMoveBand(r);
+        const costEff    = computeCostEfficiency(r);
+        const heat       = computeSmartMoneyHeat(r);
         const divergence = computeOIDivergence(r);
-        const align = computeTrendAlignment(r);
+        const align      = computeTrendAlignment(r);
+        const why        = buildWhyTakeTrade(r);
 
         text += `${i + 1}. ${r.Symbol} ${r.Strike} ${r.Type}\n`;
         text += `   Score: ${x.score.toFixed(2)}\n`;
@@ -2289,7 +2321,6 @@ function exportTop10CE() {
         text += `   Volume: ${r.Volume} (Chg: ${r["Volume Chg%"]}%)\n`;
         text += `   IV: ${r.IV} (Chg: ${r["IV Chg%"]}%)\n`;
         text += `   Delta: ${r.Delta}\n`;
-
         text += `   Risk Grade: ${risk}\n`;
         text += `   Expected Move: ${moveBand}\n`;
         text += `   Cost Efficiency: ${costEff}/10\n`;
@@ -2309,6 +2340,9 @@ function exportTop10CE() {
     link.click();
 }
 
+// -----------------------------
+// EXPORT TOP 10 PE (Optimized)
+// -----------------------------
 function exportTop10PE() {
     if (!globalRows.length) {
         alert("No file loaded.");
@@ -2319,9 +2353,10 @@ function exportTop10PE() {
     let bestPEPerStock = [];
 
     symbols.forEach(sym => {
-        let rows = globalRows.filter(r => r.Symbol === sym);
+        const rows = globalRows.filter(r => String(r.Symbol) === String(sym));
         if (!rows.length) return;
 
+        // filter PE legs only
         const peRows = rows.filter(r => {
             const t = String(r.Type || "").toUpperCase();
             return t === "PE" || t === "PUT";
@@ -2329,23 +2364,16 @@ function exportTop10PE() {
 
         if (!peRows.length) return;
 
-        const spot = toNumber(peRows[0].Spot);
+        // Use symbol-specific ATM for PE set
+        const atmStrike = getATMStrike(peRows) || toNumber(peRows[0]?.Strike);
 
-        // Identify ATM strike for PE scoring
-        let atmRow = peRows.reduce((prev, curr) =>
-            Math.abs(toNumber(curr.Strike) - spot) <
-            Math.abs(toNumber(prev.Strike) - spot)
-                ? curr : prev
-        );
-        const atmStrike = toNumber(atmRow.Strike);
-
-        let scored = peRows.map(r => ({
+        const scored = peRows.map(r => ({
             row: r,
-            score: masterStrikeScore(r, atmStrike)
+            score: masterStrikeScore(r, atmStrike) || 0
         }));
 
-        let best = scored.sort((a, b) => b.score - a.score)[0];
-        if (best) bestPEPerStock.push(best);
+        scored.sort((a, b) => b.score - a.score);
+        if (scored[0]) bestPEPerStock.push(scored[0]);
     });
 
     if (!bestPEPerStock.length) {
@@ -2361,19 +2389,18 @@ function exportTop10PE() {
 
     finalTop10.forEach((x, i) => {
         const r = x.row;
-        const why = buildWhyTakeTrade(r);
-
-        const liquidity = computeLiquidityGrade(r);
+        const liquidity  = computeLiquidityGrade(r);
         const strikeType = classifyStrikeType(r, toNumber(r.Spot));
-        const edgeScore = computeEdgeScore(r, toNumber(r.Strike), 50);
-        const decision = buildDecisionLine(edgeScore, liquidity);
+        const edgeScore  = safeEdgeScore(r);
+        const decision   = buildDecisionLine(edgeScore, liquidity);
 
-        const risk = computeRiskGrade(r);
-        const moveBand = computeExpectedMoveBand(r);
-        const costEff = computeCostEfficiency(r);
-        const heat = computeSmartMoneyHeat(r);
+        const risk       = computeRiskGrade(r);
+        const moveBand   = computeExpectedMoveBand(r);
+        const costEff    = computeCostEfficiency(r);
+        const heat       = computeSmartMoneyHeat(r);
         const divergence = computeOIDivergence(r);
-        const align = computeTrendAlignment(r);
+        const align      = computeTrendAlignment(r);
+        const why        = buildWhyTakeTrade(r);
 
         text += `${i + 1}. ${r.Symbol} ${r.Strike} ${r.Type}\n`;
         text += `   Score: ${x.score.toFixed(2)}\n`;
@@ -2386,7 +2413,6 @@ function exportTop10PE() {
         text += `   Volume: ${r.Volume} (Chg: ${r["Volume Chg%"]}%)\n`;
         text += `   IV: ${r.IV} (Chg: ${r["IV Chg%"]}%)\n`;
         text += `   Delta: ${r.Delta}\n`;
-
         text += `   Risk Grade: ${risk}\n`;
         text += `   Expected Move: ${moveBand}\n`;
         text += `   Cost Efficiency: ${costEff}/10\n`;
@@ -2405,8 +2431,6 @@ function exportTop10PE() {
     link.download = `STWP_TOP10_PE_PER_STOCK.txt`;
     link.click();
 }
-
-
 
 </script>
 
