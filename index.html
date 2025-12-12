@@ -1,4 +1,6 @@
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1137,13 +1139,9 @@ font-weight:bold;
 color:#374151;
 margin-top:12px;
 padding:10px 12px;
-background:#f3f4f6;
-border-left:4px solid #4b5563;
 border-radius:4px;
 line-height:1.5;
 ">
-| ⚠️ This tool is strictly for educational purposes only and not for any investment advice; Options involve high risk and potential losses. |<br>
-| Please consult a SEBI-registered advisor before trading, As all decisions and outcomes remain solely your responsibility and STWP assumes no liability. |
 </div>
 `;
 }
@@ -1183,13 +1181,9 @@ font-weight:bold;
 color:#374151;
 margin-top:12px;
 padding:10px 12px;
-background:#f3f4f6;
-border-left:4px solid #4b5563;
 border-radius:4px;
 line-height:1.5;
 ">
-| ⚠️ This tool is strictly for educational purposes only and not for any investment advice; Options involve high risk and potential losses. |<br>
-| Please consult a SEBI-registered advisor before trading, As all decisions and outcomes remain solely your responsibility and STWP assumes no liability. |
 </div>
 `;
 }
@@ -1689,9 +1683,7 @@ let tabsHtml = `
 <div class="tab-buttons">
 <button class="tab-button active" data-tab="intraday">Intraday / Next-Day</button>
 <button class="tab-button" data-tab="swing">Swing (2–5 Days)</button>
-<button class="tab-button" data-tab="vol">Volatility Insight</button>
-<button class="tab-button" data-tab="buildup">Buildup Heat Overview</button>
-<button class="tab-button" data-tab="atm">ATM Zone Snapshot</button>
+<button class="tab-button" data-tab="micro">STWP Structure Snapshot</button>
 <button class="tab-button" data-tab="strategy">Strategy Suggestion</button>
 <button class="tab-button" data-tab="smartmoney">Smart Money Heat</button>
 </div>
@@ -1707,6 +1699,24 @@ style="padding:6px 14px; background:#0f766e; color:#fff; border:none; border-rad
 Export ALL Stocks (TXT)
 </button>
 
+<button id="exportTop10AllBtn"
+style="padding:6px 14px; background:#7c3aed; color:#fff; border:none;
+border-radius:6px; margin-left:10px; cursor:pointer;">
+TOP 10 – ALL STOCKS
+</button>
+
+<button id="exportTop10CEBtn"
+style="padding:6px 14px; background:#16a34a; color:#fff; border:none;
+border-radius:6px; margin-left:10px; cursor:pointer;">
+TOP 10 CE
+</button>
+
+<button id="exportTop10PEBtn"
+style="padding:6px 14px; background:#dc2626; color:#fff; border:none;
+border-radius:6px; margin-left:10px; cursor:pointer;">
+TOP 10 PE
+</button>
+
 <div id="tab-intraday" class="tab-content active">
 ${intradayTrade ? renderTradeHtml(intradayTrade, symbol)
 : '<div style="font-size:13px;color:#6b7280;">No clear intraday edge detected.</div>'}
@@ -1717,16 +1727,18 @@ ${swingTrade ? renderTradeHtml(swingTrade, symbol)
 : '<div style="font-size:13px;color:#6b7280;">No clear swing edge detected.</div>'}
 </div>
 
-<div id="tab-vol" class="tab-content">
+<div id="tab-micro" class="tab-content">
+
 ${volHTML}
-</div>
 
-<div id="tab-buildup" class="tab-content">
+<hr style="margin:18px 0; border:0; border-top:1px solid #d1d5db;" />
+
 ${buildupHTML}
-</div>
 
-<div id="tab-atm" class="tab-content">
+<hr style="margin:18px 0; border:0; border-top:1px solid #d1d5db;" />
+
 ${atmHTML}
+
 </div>
 
 <div id="tab-strategy" class="tab-content">
@@ -1818,30 +1830,29 @@ exportTabsAsTxt();
 
 // Collect all tab content
 function collectTabText(){
-const tabIds = [
-"tab-intraday",
-"tab-swing",
-"tab-vol",
-"tab-buildup",
-"tab-atm",
-"tab-strategy",
-"tab-smartmoney"
-];
+    const tabIds = [
+        "tab-intraday",
+        "tab-swing",
+        "tab-micro",
+        "tab-strategy",
+        "tab-smartmoney"
+    ];
 
-let output = "";
+    let output = "";
 
-tabIds.forEach(id => {
-const div = document.getElementById(id);
-if (!div) return;
+    tabIds.forEach(id => {
+        const div = document.getElementById(id);
+        if (!div) return;
 
-output += "============================\n";
-output += id.replace("tab-", "").toUpperCase() + "\n";
-output += "============================\n";
-output += div.innerText.trim() + "\n\n\n";
-});
+        output += "============================\n";
+        output += id.replace("tab-", "").toUpperCase() + "\n";
+        output += "============================\n";
+        output += div.innerText.trim() + "\n\n\n";
+    });
 
-return output;
+    return output;
 }
+
 
 // TXT EXPORT
 function exportTabsAsTxt(){
@@ -1886,6 +1897,520 @@ link.href = URL.createObjectURL(blob);
 link.download = "STWP_ALL_STOCKS_ANALYSIS.txt";
 link.click();
 }
+
+//----------------------------------------------
+// STWP – TOP 10 ACROSS ALL STOCKS ENGINE
+//----------------------------------------------
+
+// Listener for TOP 10 ALL STOCKS button
+document.addEventListener("click", function(e){
+    if (e.target.id === "exportTop10AllBtn") {
+        exportTop10AcrossAllStocks();
+    }
+});
+
+document.addEventListener("click", function(e){
+    if (e.target.id === "exportTop10CEBtn") {
+        exportTop10CE();
+    }
+    if (e.target.id === "exportTop10PEBtn") {
+        exportTop10PE();
+    }
+});
+
+
+//----------------------------------------------
+// STWP ANALYTICAL MODULES
+//----------------------------------------------
+
+// Liquidity Grade
+function computeLiquidityGrade(row){
+    const vol = toNumber(row.Volume);
+    const oi  = toNumber(row.OI);
+    if (vol > 10000 && oi > 300000) return "A";
+    if (vol > 3000 && oi > 100000)  return "B";
+    return "C";
+}
+
+// Strike Classification
+function classifyStrikeType(row, spot){
+    const strike = toNumber(row.Strike);
+    if (!strike || !spot) return "Noise";
+    const dist = Math.abs(strike - spot) / spot;
+    if (dist <= 0.015) return "Momentum Zone";
+    if (dist <= 0.03) return "Reversal Zone";
+    return "Breakout Zone";
+}
+
+// STWP Decision Line
+function buildDecisionLine(edgeScore, liquidity) {
+
+    // CASE 1 — Liquidity C always caps conviction
+    if (liquidity === "C") {
+        if (edgeScore >= 8)
+            return "Thin Liquidity – High Edge but Not Institution-Grade. Prefer to Avoid or Trade Ultra-Small.";
+        if (edgeScore >= 6)
+            return "Moderate Edge but Liquidity Weak – Not a preferred setup.";
+        return "Avoid – Weak alignment and poor liquidity.";
+    }
+
+    // CASE 2 — Good liquidity A/B
+    if (liquidity === "A") {
+        if (edgeScore >= 8) return "High Conviction – Institution-grade setup.";
+        if (edgeScore >= 6) return "Tradable with controlled sizing.";
+        return "Avoid – Weak structure.";
+    }
+
+    if (liquidity === "B") {
+        if (edgeScore >= 8) return "High Potential – Solid structure but size moderately.";
+        if (edgeScore >= 6) return "Tradable with controlled sizing.";
+        return "Avoid – Weak structure.";
+    }
+
+    return "Avoid – Insufficient data.";
+}
+
+
+// Risk Grade
+function computeRiskGrade(row) {
+    const iv = toNumber(row.IV);
+    const delta = Math.abs(toNumber(row.Delta));
+    const vol = toNumber(row.Volume);
+    const oi = toNumber(row.OI);
+
+    let riskScore = 0;
+
+    if (iv > 35) riskScore += 2;
+    else if (iv > 25) riskScore += 1;
+
+    if (delta < 0.20) riskScore += 2;
+    else if (delta > 0.60) riskScore += 1;
+
+    if (vol < 1500 || oi < 50000) riskScore += 2;
+    else if (vol < 3000 || oi < 100000) riskScore += 1;
+
+    if (riskScore <= 1) return "A – Low Risk";
+    if (riskScore <= 3) return "B – Controlled Risk";
+    if (riskScore <= 5) return "C – Elevated Risk";
+    return "D – High Risk";
+}
+
+// Expected Move Band
+function computeExpectedMoveBand(row) {
+    const iv = toNumber(row.IV);
+    const delta = Math.abs(toNumber(row.Delta));
+
+    if (iv < 18 && delta < 0.30) return "Low Move Band";
+    if (iv < 25 && delta < 0.50) return "Medium Move Band";
+    if (iv < 35) return "High Move Band";
+    return "Extreme Move Band";
+}
+
+// Cost Efficiency Score
+function computeCostEfficiency(row){
+    const ltp = toNumber(row.LTP);
+    const delta = Math.abs(toNumber(row.Delta));
+    const iv = toNumber(row.IV);
+
+    let score = 0;
+
+    if (ltp < 20) score += 4;
+    else if (ltp < 50) score += 2;
+
+    if (delta >= 0.25 && delta <= 0.55) score += 4;
+    else if (delta < 0.20) score += 2;
+
+    if (iv < 18) score += 2;
+    else if (iv < 25) score += 1;
+
+    return Math.min(score, 10);
+}
+
+// Smart Money Heat
+function computeSmartMoneyHeat(row){
+    const oiChg = toNumber(row["OI Chg%"]);
+    const volChg = toNumber(row["Volume Chg%"]);
+
+    if (oiChg > 50 && volChg > 300) return "🔥 Strong Smart Money";
+    if (oiChg > 20 && volChg > 100) return "⚡ Moderate Smart Money";
+    return "• Weak Smart Money";
+}
+
+// OI Divergence Tag
+function computeOIDivergence(row){
+    const oiChg = toNumber(row["OI Chg%"]);
+    const ltpChg = toNumber(row["Day Chg%"]);
+
+    if (oiChg > 0 && ltpChg > 0) return "Positive Divergence – Trend Supported";
+    if (oiChg > 0 && ltpChg < 0) return "Negative Divergence – Supply Pressure";
+    return "Neutral Divergence";
+}
+
+// Trend Alignment Note
+function computeTrendAlignment(row){
+    const spot = toNumber(row.Spot);
+    const strike = toNumber(row.Strike);
+    const type = String(row.Type || "").toLowerCase();
+
+    if (!spot || !strike) return "Countertrend Positioning";
+
+    // If CALL is below Spot → generally aligned with bullish structure
+    if (type === "call" || type === "ce") {
+        if (strike <= spot) return "Aligned with Uptrend";
+        return "Countertrend Positioning";
+    }
+
+    // If PUT is above Spot → bearish alignment
+    if (type === "put" || type === "pe") {
+        if (strike >= spot) return "Aligned with Downtrend";
+        return "Countertrend Positioning";
+    }
+
+    return "Countertrend Positioning";
+}
+
+
+//----------------------------------------------
+// WHY TAKE THIS TRADE (MULTILINE)
+//----------------------------------------------
+function buildWhyTakeTrade(row) {
+    const oiChg  = toNumber(row["OI Chg%"]);
+    const volChg = toNumber(row["Volume Chg%"]);
+    const ivChg  = toNumber(row["IV Chg%"]);
+    const delta  = toNumber(row["Delta"]);
+    const iv     = toNumber(row["IV"]);
+    const strike = toNumber(row["Strike"]);
+    const spot   = toNumber(row["Spot"]);
+    const buildup = String(row.Buildup || "").toLowerCase();
+
+    let reasons = [];
+
+    if (oiChg > 20) reasons.push("Strong OI expansion indicates institutional positioning.");
+    if (oiChg > 50) reasons.push("Massive OI build-up confirms firm directional intent.");
+    if (volChg > 100) reasons.push("Volume spike shows aggressive participation, not random prints.");
+
+    if (Math.abs(delta) >= 0.25 && Math.abs(delta) <= 0.45)
+        reasons.push("Delta sits in the ideal momentum zone for clean follow-through.");
+    if (Math.abs(delta) > 0.50)
+        reasons.push("High delta offers futures-like behaviour with cleaner payoff.");
+    if (Math.abs(delta) < 0.20)
+        reasons.push("Low delta offers convexity – sharp payoffs if move extends.");
+
+    if (strike && spot) {
+        const distance = Math.abs(strike - spot);
+        if (distance <= spot * 0.01)
+            reasons.push("Strike is extremely close to ATM – reacts immediately to price direction.");
+        else if (distance <= spot * 0.03)
+            reasons.push("Strike sits in the momentum zone – balanced responsiveness.");
+        else
+            reasons.push("OTM strike provides convexity with manageable premium.");
+    }
+
+    if (buildup.includes("long build")) reasons.push("Long build-up indicates trend-following interest.");
+    if (buildup.includes("short build")) reasons.push("Short build-up signals supply pressure.");
+    if (buildup.includes("short cover")) reasons.push("Short-covering often fuels momentum bursts.");
+    if (buildup.includes("long unwind")) reasons.push("Long unwinding confirms weakening trend strength.");
+
+    if (ivChg > 5) reasons.push("IV expansion may boost premiums during continuation.");
+    if (ivChg < -5) reasons.push("IV cooling supports cleaner directional behavior.");
+    if (iv < 18) reasons.push("Low IV keeps premium fair for directional entries.");
+
+    if (!reasons.length)
+        reasons.push("Balanced structure with acceptable liquidity and directional alignment.");
+
+    return reasons.slice(0, 6);
+}
+
+//----------------------------------------------
+// EXPORT TOP 10 ACROSS ALL STOCKS
+//----------------------------------------------
+function exportTop10AcrossAllStocks() {
+
+    if (!globalRows.length) {
+        alert("No file loaded.");
+        return;
+    }
+
+    const symbols = [...new Set(globalRows.map(r => r.Symbol).filter(Boolean))];
+    let bestPerStock = [];
+
+    symbols.forEach(sym => {
+        let rows = globalRows.filter(r => r.Symbol === sym);
+        if (!rows.length) return;
+
+        const spot = toNumber(rows[0].Spot);
+
+        let atmRow = rows.reduce((prev, curr) =>
+            Math.abs(toNumber(curr.Strike) - spot) <
+            Math.abs(toNumber(prev.Strike) - spot)
+                ? curr : prev
+        );
+        const atmStrike = toNumber(atmRow.Strike);
+
+        let scored = rows.map(r => ({
+            row: r,
+            score: masterStrikeScore(r, atmStrike)
+        }));
+
+        let best = scored.sort((a, b) => b.score - a.score)[0];
+        if (best) bestPerStock.push(best);
+    });
+
+    if (!bestPerStock.length) {
+        alert("No valid candidates.");
+        return;
+    }
+
+    const finalTop10 = bestPerStock
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10);
+
+    let text = `STWP TOP 10 OPTIONS – ONE BEST STRIKE PER STOCK\n`;
+    text += `Generated: ${new Date().toLocaleString()}\n\n`;
+
+    finalTop10.forEach((x, i) => {
+        const r = x.row;
+        const why = buildWhyTakeTrade(r);
+
+        const liquidity = computeLiquidityGrade(r);
+        const strikeType = classifyStrikeType(r, toNumber(r.Spot));
+        const edgeScore = computeEdgeScore(r, atmStrike, ivRank);
+        const decision = buildDecisionLine(edgeScore, liquidity);
+
+        const risk = computeRiskGrade(r);
+        const moveBand = computeExpectedMoveBand(r);
+        const costEff = computeCostEfficiency(r);
+        const heat = computeSmartMoneyHeat(r);
+        const divergence = computeOIDivergence(r);
+        const align = computeTrendAlignment(r);
+
+        text += `${i + 1}. ${r.Symbol} ${r.Strike} ${r.Type}\n`;
+        text += `   Score: ${x.score.toFixed(2)}\n`;
+        text += `   Liquidity Grade: ${liquidity}\n`;
+        text += `   Strike Classification: ${strikeType}\n`;
+        text += `   STWP Edge Score: ${edgeScore.toFixed(1)}/10\n`;
+        text += `   Decision: ${decision}\n`;
+        text += `   LTP: ${r.LTP}\n`;
+        text += `   OI: ${r.OI} (Chg: ${r["OI Chg%"]}%)\n`;
+        text += `   Volume: ${r.Volume} (Chg: ${r["Volume Chg%"]}%)\n`;
+        text += `   IV: ${r.IV} (Chg: ${r["IV Chg%"]}%)\n`;
+        text += `   Delta: ${r.Delta}\n`;
+
+        text += `   Risk Grade: ${risk}\n`;
+        text += `   Expected Move: ${moveBand}\n`;
+        text += `   Cost Efficiency: ${costEff}/10\n`;
+        text += `   Smart Money Heat: ${heat}\n`;
+        text += `   OI Divergence: ${divergence}\n`;
+        text += `   Trend Alignment: ${align}\n`;
+
+        text += `   Why take this trade:\n`;
+        why.forEach(line => text += `      • ${line}\n`);
+        text += `\n`;
+    });
+
+    const blob = new Blob([text], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `STWP_TOP10_ACROSS_STOCKS.txt`;
+    link.click();
+}
+
+function exportTop10CE() {
+    if (!globalRows.length) {
+        alert("No file loaded.");
+        return;
+    }
+
+    const symbols = [...new Set(globalRows.map(r => r.Symbol).filter(Boolean))];
+    let bestCEPerStock = [];
+
+    symbols.forEach(sym => {
+        let rows = globalRows.filter(r => r.Symbol === sym);
+        if (!rows.length) return;
+
+        const ceRows = rows.filter(r => {
+            const t = String(r.Type || "").toUpperCase();
+            return t === "CE" || t === "CALL";
+        });
+
+        if (!ceRows.length) return;
+
+        const spot = toNumber(ceRows[0].Spot);
+
+        // Identify ATM strike for CE scoring
+        let atmRow = ceRows.reduce((prev, curr) =>
+            Math.abs(toNumber(curr.Strike) - spot) <
+            Math.abs(toNumber(prev.Strike) - spot)
+                ? curr : prev
+        );
+        const atmStrike = toNumber(atmRow.Strike);
+
+        let scored = ceRows.map(r => ({
+            row: r,
+            score: masterStrikeScore(r, atmStrike)
+        }));
+
+        let best = scored.sort((a, b) => b.score - a.score)[0];
+        if (best) bestCEPerStock.push(best);
+    });
+
+    if (!bestCEPerStock.length) {
+        alert("No CE candidates found.");
+        return;
+    }
+
+    const finalTop10 = bestCEPerStock
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10);
+
+    let text = `STWP TOP 10 CALL OPTIONS – ONE BEST CE PER STOCK\nGenerated: ${new Date().toLocaleString()}\n\n`;
+
+    finalTop10.forEach((x, i) => {
+        const r = x.row;
+        const why = buildWhyTakeTrade(r);
+
+        const liquidity = computeLiquidityGrade(r);
+        const strikeType = classifyStrikeType(r, toNumber(r.Spot));
+        const edgeScore = computeEdgeScore(r, toNumber(r.Strike), 50);
+        const decision = buildDecisionLine(edgeScore, liquidity);
+
+        const risk = computeRiskGrade(r);
+        const moveBand = computeExpectedMoveBand(r);
+        const costEff = computeCostEfficiency(r);
+        const heat = computeSmartMoneyHeat(r);
+        const divergence = computeOIDivergence(r);
+        const align = computeTrendAlignment(r);
+
+        text += `${i + 1}. ${r.Symbol} ${r.Strike} ${r.Type}\n`;
+        text += `   Score: ${x.score.toFixed(2)}\n`;
+        text += `   Liquidity Grade: ${liquidity}\n`;
+        text += `   Strike Classification: ${strikeType}\n`;
+        text += `   STWP Edge Score: ${edgeScore.toFixed(1)}/10\n`;
+        text += `   Decision: ${decision}\n`;
+        text += `   LTP: ${r.LTP}\n`;
+        text += `   OI: ${r.OI} (Chg: ${r["OI Chg%"]}%)\n`;
+        text += `   Volume: ${r.Volume} (Chg: ${r["Volume Chg%"]}%)\n`;
+        text += `   IV: ${r.IV} (Chg: ${r["IV Chg%"]}%)\n`;
+        text += `   Delta: ${r.Delta}\n`;
+
+        text += `   Risk Grade: ${risk}\n`;
+        text += `   Expected Move: ${moveBand}\n`;
+        text += `   Cost Efficiency: ${costEff}/10\n`;
+        text += `   Smart Money Heat: ${heat}\n`;
+        text += `   OI Divergence: ${divergence}\n`;
+        text += `   Trend Alignment: ${align}\n`;
+
+        text += `   Why take this trade:\n`;
+        why.forEach(line => text += `      • ${line}\n`);
+        text += `\n`;
+    });
+
+    const blob = new Blob([text], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `STWP_TOP10_CE_PER_STOCK.txt`;
+    link.click();
+}
+
+function exportTop10PE() {
+    if (!globalRows.length) {
+        alert("No file loaded.");
+        return;
+    }
+
+    const symbols = [...new Set(globalRows.map(r => r.Symbol).filter(Boolean))];
+    let bestPEPerStock = [];
+
+    symbols.forEach(sym => {
+        let rows = globalRows.filter(r => r.Symbol === sym);
+        if (!rows.length) return;
+
+        const peRows = rows.filter(r => {
+            const t = String(r.Type || "").toUpperCase();
+            return t === "PE" || t === "PUT";
+        });
+
+        if (!peRows.length) return;
+
+        const spot = toNumber(peRows[0].Spot);
+
+        // Identify ATM strike for PE scoring
+        let atmRow = peRows.reduce((prev, curr) =>
+            Math.abs(toNumber(curr.Strike) - spot) <
+            Math.abs(toNumber(prev.Strike) - spot)
+                ? curr : prev
+        );
+        const atmStrike = toNumber(atmRow.Strike);
+
+        let scored = peRows.map(r => ({
+            row: r,
+            score: masterStrikeScore(r, atmStrike)
+        }));
+
+        let best = scored.sort((a, b) => b.score - a.score)[0];
+        if (best) bestPEPerStock.push(best);
+    });
+
+    if (!bestPEPerStock.length) {
+        alert("No PE candidates found.");
+        return;
+    }
+
+    const finalTop10 = bestPEPerStock
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 10);
+
+    let text = `STWP TOP 10 PUT OPTIONS – ONE BEST PE PER STOCK\nGenerated: ${new Date().toLocaleString()}\n\n`;
+
+    finalTop10.forEach((x, i) => {
+        const r = x.row;
+        const why = buildWhyTakeTrade(r);
+
+        const liquidity = computeLiquidityGrade(r);
+        const strikeType = classifyStrikeType(r, toNumber(r.Spot));
+        const edgeScore = computeEdgeScore(r, toNumber(r.Strike), 50);
+        const decision = buildDecisionLine(edgeScore, liquidity);
+
+        const risk = computeRiskGrade(r);
+        const moveBand = computeExpectedMoveBand(r);
+        const costEff = computeCostEfficiency(r);
+        const heat = computeSmartMoneyHeat(r);
+        const divergence = computeOIDivergence(r);
+        const align = computeTrendAlignment(r);
+
+        text += `${i + 1}. ${r.Symbol} ${r.Strike} ${r.Type}\n`;
+        text += `   Score: ${x.score.toFixed(2)}\n`;
+        text += `   Liquidity Grade: ${liquidity}\n`;
+        text += `   Strike Classification: ${strikeType}\n`;
+        text += `   STWP Edge Score: ${edgeScore.toFixed(1)}/10\n`;
+        text += `   Decision: ${decision}\n`;
+        text += `   LTP: ${r.LTP}\n`;
+        text += `   OI: ${r.OI} (Chg: ${r["OI Chg%"]}%)\n`;
+        text += `   Volume: ${r.Volume} (Chg: ${r["Volume Chg%"]}%)\n`;
+        text += `   IV: ${r.IV} (Chg: ${r["IV Chg%"]}%)\n`;
+        text += `   Delta: ${r.Delta}\n`;
+
+        text += `   Risk Grade: ${risk}\n`;
+        text += `   Expected Move: ${moveBand}\n`;
+        text += `   Cost Efficiency: ${costEff}/10\n`;
+        text += `   Smart Money Heat: ${heat}\n`;
+        text += `   OI Divergence: ${divergence}\n`;
+        text += `   Trend Alignment: ${align}\n`;
+
+        text += `   Why take this trade:\n`;
+        why.forEach(line => text += `      • ${line}\n`);
+        text += `\n`;
+    });
+
+    const blob = new Blob([text], { type: "text/plain" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `STWP_TOP10_PE_PER_STOCK.txt`;
+    link.click();
+}
+
+
+
 </script>
 
 </body>
